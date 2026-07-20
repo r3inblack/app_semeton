@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedStockLevelsRouteImport } from './routes/_authenticated/stock.levels'
 import { Route as AuthenticatedMasterWarehousesRouteImport } from './routes/_authenticated/master.warehouses'
 import { Route as AuthenticatedMasterSuppliersRouteImport } from './routes/_authenticated/master.suppliers'
 import { Route as AuthenticatedMasterProductsRouteImport } from './routes/_authenticated/master.products'
@@ -38,6 +39,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedStockLevelsRoute =
+  AuthenticatedStockLevelsRouteImport.update({
+    id: '/stock/levels',
+    path: '/stock/levels',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMasterWarehousesRoute =
   AuthenticatedMasterWarehousesRouteImport.update({
     id: '/master/warehouses',
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/master/products': typeof AuthenticatedMasterProductsRoute
   '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
+  '/stock/levels': typeof AuthenticatedStockLevelsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -88,6 +96,7 @@ export interface FileRoutesByTo {
   '/master/products': typeof AuthenticatedMasterProductsRoute
   '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
+  '/stock/levels': typeof AuthenticatedStockLevelsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -100,6 +109,7 @@ export interface FileRoutesById {
   '/_authenticated/master/products': typeof AuthenticatedMasterProductsRoute
   '/_authenticated/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
   '/_authenticated/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
+  '/_authenticated/stock/levels': typeof AuthenticatedStockLevelsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/master/products'
     | '/master/suppliers'
     | '/master/warehouses'
+    | '/stock/levels'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/master/products'
     | '/master/suppliers'
     | '/master/warehouses'
+    | '/stock/levels'
   id:
     | '__root__'
     | '/'
@@ -133,6 +145,7 @@ export interface FileRouteTypes {
     | '/_authenticated/master/products'
     | '/_authenticated/master/suppliers'
     | '/_authenticated/master/warehouses'
+    | '/_authenticated/stock/levels'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -169,6 +182,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stock/levels': {
+      id: '/_authenticated/stock/levels'
+      path: '/stock/levels'
+      fullPath: '/stock/levels'
+      preLoaderRoute: typeof AuthenticatedStockLevelsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/master/warehouses': {
@@ -216,6 +236,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMasterProductsRoute: typeof AuthenticatedMasterProductsRoute
   AuthenticatedMasterSuppliersRoute: typeof AuthenticatedMasterSuppliersRoute
   AuthenticatedMasterWarehousesRoute: typeof AuthenticatedMasterWarehousesRoute
+  AuthenticatedStockLevelsRoute: typeof AuthenticatedStockLevelsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -225,6 +246,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMasterProductsRoute: AuthenticatedMasterProductsRoute,
   AuthenticatedMasterSuppliersRoute: AuthenticatedMasterSuppliersRoute,
   AuthenticatedMasterWarehousesRoute: AuthenticatedMasterWarehousesRoute,
+  AuthenticatedStockLevelsRoute: AuthenticatedStockLevelsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
