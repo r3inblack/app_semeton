@@ -1,0 +1,253 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { AppShell } from "@/components/app-shell";
+import { PageHeader, MetricCard } from "@/components/page-header";
+import { useRole } from "@/hooks/use-role";
+import { fmtIDR, fmtDate, fmtNum } from "@/lib/format";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "@/components/ui/table";
+import { Wallet, TrendingUp, TrendingDown, HandCoins } from "lucide-react";
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
+} from "recharts";
+
+export const Route = createFileRoute("/_authenticated/dashboard")({
+  head: () => ({ meta: [{ title: "Dashboard — Aplikasi Semeton" }] }),
+  component: Dashboard,
+});
+
+function Dashboard() {
+  const { isAdmin, isStaf, profile, loading } = useRole();
+  if (loading) return <AppShell title="Dashboard"><div>Memuat…</div></AppShell>;
+  return (
+    <AppShell title="Dashboard">
+      {isAdmin ? <AdminDashboard /> : isStaf ? <StafDashboard warehouseId={profile?.warehouse_id} /> : null}
+    </AppShell>
+  );
+}
+
+function AdminDashboard() {
+  const cash = useQuery({
+    queryKey: ["cash_balance"],
+    queryFn: async () =>
+      (await supabase.from("cash_balance").select("amount").eq("id", 1).maybeSingle()).data,
+  });
+  const rec = useQuery({
+    queryKey: ["cust_bal_sum"],
+    queryFn: async () => {
+      const { data } = await supabase.from("customer_balances").select("receivable");
+      return (data ?? []).reduce((a, b) => a + Number(b.receivable), 0);
+    },
+  });
+  const pay = useQuery({
+    queryKey: ["sup_bal_sum"],
+    queryFn: async () => {
+      const { data } = await supabase.from("supplier_balances").select("payable");
+      return (data ?? []).reduce((a, b) => a + Number(b.payable), 0);
+    },
+  });
+  const sal = useQuery({
+    queryKey: ["emp_bal_sum"],
+    queryFn: async () => {
+      const { data } = await supabase.from("employee_salary_balances").select("balance");
+      return (data ?? []).reduce((a, b) => a + Number(b.balance), 0);
+    },
+  });
+  const custList = useQuery({
+    queryKey: ["cust_bal_list"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("customer_balances")
+        .select("receivable, customers(name)")
+        .order("receivable", { ascending: false });
+      return data ?? [];
+    },
+  });
+  const empList = useQuery({
+    queryKey: ["emp_bal_list"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("employee_salary_balances")
+        .select("balance, employees(name, category)")
+        .order("balance", { ascending: false });
+      return data ?? [];
+    },
+  });
+  const chart = useQuery({
+    queryKey: ["cash_chart"],
+    queryFn: async () => {
+      const since = new Date();
+      since.setDate(since.getDate() - 30);
+      const { data } = await supabase
+        .from("cash_movements")
+        .select("occurred_at, direction, amount")
+        .gte("occurred_at", since.toISOString())
+        .order("occurred_at", { ascending: true });
+      const byDay: Record<string, number> = {};
+      (data ?? []).forEach((m) => {
+        const d = new Date(m.occurred_at).toISOString().slice(0, 10);
+        const delta = m.direction === "in" ? Number(m.amount) : -Number(m.amount);
+        byDay[d] = (byDay[d] ?? 0) + delta;
+      });
+      return Object.entries(byDay).map(([date, delta]) => ({ date: date.slice(5), delta }));
+    },
+  });
+
+  return (
+    <>
+      <PageHeader title="Dashboard Super Admin" description="Ringkasan keuangan & operasional" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <MetricCard label="Saldo Kas" value={fmtIDR(cash.data?.amount)} icon={<Wallet className="h-4 w-4 text-muted-foreground" />} />
+        <MetricCard label="Total Piutang" value={fmtIDR(rec.data)} icon={<TrendingUp className="h-4 w-4 text-emerald-500" />} />
+        <MetricCard label="Total Hutang Supplier" value={fmtIDR(pay.data)} icon={<TrendingDown className="h-4 w-4 text-rose-500" />} />
+        <MetricCard label="Sisa Hutang Gaji" value={fmtIDR(sal.data)} icon={<HandCoins className="h-4 w-4 text-amber-500" />} />
+      </div>
+
+      <div className="grid gap-4 mt-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader><CardTitle>Sisa Piutang per Pelanggan</CardTitle></CardHeader>
+          <CardContent>
+            <div className="max-h-80 overflow-auto">
+              <Table>
+                <TableHeader><TableRow><TableHead>Pelanggan</TableHead><TableHead className="text-right">Piutang</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {(custList.data ?? []).map((r: any, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{r.customers?.name ?? "-"}</TableCell>
+                      <TableCell className="text-right font-medium">{fmtIDR(r.receivable)}</TableCell>
+                    </TableRow>
+                  ))}
+                  {!custList.data?.length && <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Belum ada data</TableCell></TableRow>}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Sisa Hak Gaji per Karyawan</CardTitle></CardHeader>
+          <CardContent>
+            <div className="max-h-80 overflow-auto">
+              <Table>
+                <TableHeader><TableRow><TableHead>Karyawan</TableHead><TableHead>Kategori</TableHead><TableHead className="text-right">Sisa</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {(empList.data ?? []).map((r: any, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{r.employees?.name ?? "-"}</TableCell>
+                      <TableCell className="capitalize">{r.employees?.category ?? "-"}</TableCell>
+                      <TableCell className="text-right font-medium">{fmtIDR(r.balance)}</TableCell>
+                    </TableRow>
+                  ))}
+                  {!empList.data?.length && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">Belum ada data</TableCell></TableRow>}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="mt-6">
+        <CardHeader><CardTitle>Pergerakan Kas 30 Hari Terakhir</CardTitle></CardHeader>
+        <CardContent>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chart.data ?? []}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                <XAxis dataKey="date" fontSize={12} />
+                <YAxis fontSize={12} tickFormatter={(v) => fmtNum(v)} width={80} />
+                <Tooltip formatter={(v: any) => fmtIDR(v)} />
+                <Line type="monotone" dataKey="delta" stroke="hsl(var(--primary))" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+    </>
+  );
+}
+
+function StafDashboard({ warehouseId }: { warehouseId?: string | null }) {
+  const stock = useQuery({
+    queryKey: ["staf_stock", warehouseId],
+    enabled: !!warehouseId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("stock_levels")
+        .select("qty, products(name)")
+        .eq("warehouse_id", warehouseId!);
+      return data ?? [];
+    },
+  });
+  const last = useQuery({
+    queryKey: ["staf_last_sales", warehouseId],
+    enabled: !!warehouseId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("sales")
+        .select("occurred_at, qty, total, customers(name), products(name)")
+        .eq("warehouse_id", warehouseId!)
+        .order("occurred_at", { ascending: false })
+        .limit(3);
+      return data ?? [];
+    },
+  });
+
+  if (!warehouseId) {
+    return (
+      <>
+        <PageHeader title="Dashboard Staf Gudang" />
+        <Card><CardContent className="pt-6 text-muted-foreground">
+          Akun Anda belum dikaitkan dengan gudang. Hubungi Super Admin.
+        </CardContent></Card>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <PageHeader title="Dashboard Staf Gudang" />
+      <Card>
+        <CardHeader><CardTitle>Sisa Stok di Gudang Anda</CardTitle></CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader><TableRow><TableHead>Produk</TableHead><TableHead className="text-right">Qty</TableHead></TableRow></TableHeader>
+            <TableBody>
+              {(stock.data ?? []).map((r: any, i) => (
+                <TableRow key={i}>
+                  <TableCell>{r.products?.name ?? "-"}</TableCell>
+                  <TableCell className="text-right font-medium">{fmtNum(r.qty)}</TableCell>
+                </TableRow>
+              ))}
+              {!stock.data?.length && <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Belum ada stok</TableCell></TableRow>}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <Card className="mt-4">
+        <CardHeader><CardTitle>3 Transaksi Terakhir</CardTitle></CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader><TableRow>
+              <TableHead>Waktu</TableHead><TableHead>Pelanggan</TableHead><TableHead>Produk</TableHead>
+              <TableHead className="text-right">Qty</TableHead><TableHead className="text-right">Total</TableHead>
+            </TableRow></TableHeader>
+            <TableBody>
+              {(last.data ?? []).map((r: any, i) => (
+                <TableRow key={i}>
+                  <TableCell>{fmtDate(r.occurred_at)}</TableCell>
+                  <TableCell>{r.customers?.name ?? "-"}</TableCell>
+                  <TableCell>{r.products?.name ?? "-"}</TableCell>
+                  <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
+                  <TableCell className="text-right">{fmtIDR(r.total)}</TableCell>
+                </TableRow>
+              ))}
+              {!last.data?.length && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Belum ada transaksi</TableCell></TableRow>}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </>
+  );
+}

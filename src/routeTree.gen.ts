@@ -9,38 +9,358 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
+import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedStockMutationsRouteImport } from './routes/_authenticated/stock.mutations'
+import { Route as AuthenticatedStockLevelsRouteImport } from './routes/_authenticated/stock.levels'
+import { Route as AuthenticatedStockInRouteImport } from './routes/_authenticated/stock.in'
+import { Route as AuthenticatedSalaryPaymentRouteImport } from './routes/_authenticated/salary.payment'
+import { Route as AuthenticatedSalaryBonusRouteImport } from './routes/_authenticated/salary.bonus'
+import { Route as AuthenticatedSalaryAdvanceRouteImport } from './routes/_authenticated/salary.advance'
+import { Route as AuthenticatedSalaryAccrualRouteImport } from './routes/_authenticated/salary.accrual'
+import { Route as AuthenticatedReportsReceivablesRouteImport } from './routes/_authenticated/reports.receivables'
+import { Route as AuthenticatedReportsPayablesRouteImport } from './routes/_authenticated/reports.payables'
+import { Route as AuthenticatedReportsMutationsRouteImport } from './routes/_authenticated/reports.mutations'
+import { Route as AuthenticatedReportsCashflowRouteImport } from './routes/_authenticated/reports.cashflow'
+import { Route as AuthenticatedPaymentsSupplierRouteImport } from './routes/_authenticated/payments.supplier'
+import { Route as AuthenticatedPaymentsCustomerRouteImport } from './routes/_authenticated/payments.customer'
+import { Route as AuthenticatedMasterWarehousesRouteImport } from './routes/_authenticated/master.warehouses'
+import { Route as AuthenticatedMasterSuppliersRouteImport } from './routes/_authenticated/master.suppliers'
+import { Route as AuthenticatedMasterProductsRouteImport } from './routes/_authenticated/master.products'
+import { Route as AuthenticatedMasterEmployeesRouteImport } from './routes/_authenticated/master.employees'
+import { Route as AuthenticatedMasterCustomersRouteImport } from './routes/_authenticated/master.customers'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSalesRoute = AuthenticatedSalesRouteImport.update({
+  id: '/sales',
+  path: '/sales',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedExpensesRoute = AuthenticatedExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedStockMutationsRoute =
+  AuthenticatedStockMutationsRouteImport.update({
+    id: '/stock/mutations',
+    path: '/stock/mutations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStockLevelsRoute =
+  AuthenticatedStockLevelsRouteImport.update({
+    id: '/stock/levels',
+    path: '/stock/levels',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStockInRoute = AuthenticatedStockInRouteImport.update({
+  id: '/stock/in',
+  path: '/stock/in',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSalaryPaymentRoute =
+  AuthenticatedSalaryPaymentRouteImport.update({
+    id: '/salary/payment',
+    path: '/salary/payment',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSalaryBonusRoute =
+  AuthenticatedSalaryBonusRouteImport.update({
+    id: '/salary/bonus',
+    path: '/salary/bonus',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSalaryAdvanceRoute =
+  AuthenticatedSalaryAdvanceRouteImport.update({
+    id: '/salary/advance',
+    path: '/salary/advance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSalaryAccrualRoute =
+  AuthenticatedSalaryAccrualRouteImport.update({
+    id: '/salary/accrual',
+    path: '/salary/accrual',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReportsReceivablesRoute =
+  AuthenticatedReportsReceivablesRouteImport.update({
+    id: '/reports/receivables',
+    path: '/reports/receivables',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReportsPayablesRoute =
+  AuthenticatedReportsPayablesRouteImport.update({
+    id: '/reports/payables',
+    path: '/reports/payables',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReportsMutationsRoute =
+  AuthenticatedReportsMutationsRouteImport.update({
+    id: '/reports/mutations',
+    path: '/reports/mutations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReportsCashflowRoute =
+  AuthenticatedReportsCashflowRouteImport.update({
+    id: '/reports/cashflow',
+    path: '/reports/cashflow',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaymentsSupplierRoute =
+  AuthenticatedPaymentsSupplierRouteImport.update({
+    id: '/payments/supplier',
+    path: '/payments/supplier',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaymentsCustomerRoute =
+  AuthenticatedPaymentsCustomerRouteImport.update({
+    id: '/payments/customer',
+    path: '/payments/customer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMasterWarehousesRoute =
+  AuthenticatedMasterWarehousesRouteImport.update({
+    id: '/master/warehouses',
+    path: '/master/warehouses',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMasterSuppliersRoute =
+  AuthenticatedMasterSuppliersRouteImport.update({
+    id: '/master/suppliers',
+    path: '/master/suppliers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMasterProductsRoute =
+  AuthenticatedMasterProductsRouteImport.update({
+    id: '/master/products',
+    path: '/master/products',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMasterEmployeesRoute =
+  AuthenticatedMasterEmployeesRouteImport.update({
+    id: '/master/employees',
+    path: '/master/employees',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMasterCustomersRoute =
+  AuthenticatedMasterCustomersRouteImport.update({
+    id: '/master/customers',
+    path: '/master/customers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/expenses': typeof AuthenticatedExpensesRoute
+  '/sales': typeof AuthenticatedSalesRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/master/customers': typeof AuthenticatedMasterCustomersRoute
+  '/master/employees': typeof AuthenticatedMasterEmployeesRoute
+  '/master/products': typeof AuthenticatedMasterProductsRoute
+  '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
+  '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
+  '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
+  '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
+  '/reports/mutations': typeof AuthenticatedReportsMutationsRoute
+  '/reports/payables': typeof AuthenticatedReportsPayablesRoute
+  '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
+  '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
+  '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
+  '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
+  '/salary/payment': typeof AuthenticatedSalaryPaymentRoute
+  '/stock/in': typeof AuthenticatedStockInRoute
+  '/stock/levels': typeof AuthenticatedStockLevelsRoute
+  '/stock/mutations': typeof AuthenticatedStockMutationsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/expenses': typeof AuthenticatedExpensesRoute
+  '/sales': typeof AuthenticatedSalesRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/master/customers': typeof AuthenticatedMasterCustomersRoute
+  '/master/employees': typeof AuthenticatedMasterEmployeesRoute
+  '/master/products': typeof AuthenticatedMasterProductsRoute
+  '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
+  '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
+  '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
+  '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
+  '/reports/mutations': typeof AuthenticatedReportsMutationsRoute
+  '/reports/payables': typeof AuthenticatedReportsPayablesRoute
+  '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
+  '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
+  '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
+  '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
+  '/salary/payment': typeof AuthenticatedSalaryPaymentRoute
+  '/stock/in': typeof AuthenticatedStockInRoute
+  '/stock/levels': typeof AuthenticatedStockLevelsRoute
+  '/stock/mutations': typeof AuthenticatedStockMutationsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
+  '/_authenticated/sales': typeof AuthenticatedSalesRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/master/customers': typeof AuthenticatedMasterCustomersRoute
+  '/_authenticated/master/employees': typeof AuthenticatedMasterEmployeesRoute
+  '/_authenticated/master/products': typeof AuthenticatedMasterProductsRoute
+  '/_authenticated/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
+  '/_authenticated/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
+  '/_authenticated/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
+  '/_authenticated/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/_authenticated/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
+  '/_authenticated/reports/mutations': typeof AuthenticatedReportsMutationsRoute
+  '/_authenticated/reports/payables': typeof AuthenticatedReportsPayablesRoute
+  '/_authenticated/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
+  '/_authenticated/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
+  '/_authenticated/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
+  '/_authenticated/salary/bonus': typeof AuthenticatedSalaryBonusRoute
+  '/_authenticated/salary/payment': typeof AuthenticatedSalaryPaymentRoute
+  '/_authenticated/stock/in': typeof AuthenticatedStockInRoute
+  '/_authenticated/stock/levels': typeof AuthenticatedStockLevelsRoute
+  '/_authenticated/stock/mutations': typeof AuthenticatedStockMutationsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/expenses'
+    | '/sales'
+    | '/settings'
+    | '/master/customers'
+    | '/master/employees'
+    | '/master/products'
+    | '/master/suppliers'
+    | '/master/warehouses'
+    | '/payments/customer'
+    | '/payments/supplier'
+    | '/reports/cashflow'
+    | '/reports/mutations'
+    | '/reports/payables'
+    | '/reports/receivables'
+    | '/salary/accrual'
+    | '/salary/advance'
+    | '/salary/bonus'
+    | '/salary/payment'
+    | '/stock/in'
+    | '/stock/levels'
+    | '/stock/mutations'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/expenses'
+    | '/sales'
+    | '/settings'
+    | '/master/customers'
+    | '/master/employees'
+    | '/master/products'
+    | '/master/suppliers'
+    | '/master/warehouses'
+    | '/payments/customer'
+    | '/payments/supplier'
+    | '/reports/cashflow'
+    | '/reports/mutations'
+    | '/reports/payables'
+    | '/reports/receivables'
+    | '/salary/accrual'
+    | '/salary/advance'
+    | '/salary/bonus'
+    | '/salary/payment'
+    | '/stock/in'
+    | '/stock/levels'
+    | '/stock/mutations'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/expenses'
+    | '/_authenticated/sales'
+    | '/_authenticated/settings'
+    | '/_authenticated/master/customers'
+    | '/_authenticated/master/employees'
+    | '/_authenticated/master/products'
+    | '/_authenticated/master/suppliers'
+    | '/_authenticated/master/warehouses'
+    | '/_authenticated/payments/customer'
+    | '/_authenticated/payments/supplier'
+    | '/_authenticated/reports/cashflow'
+    | '/_authenticated/reports/mutations'
+    | '/_authenticated/reports/payables'
+    | '/_authenticated/reports/receivables'
+    | '/_authenticated/salary/accrual'
+    | '/_authenticated/salary/advance'
+    | '/_authenticated/salary/bonus'
+    | '/_authenticated/salary/payment'
+    | '/_authenticated/stock/in'
+    | '/_authenticated/stock/levels'
+    | '/_authenticated/stock/mutations'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +368,221 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/sales': {
+      id: '/_authenticated/sales'
+      path: '/sales'
+      fullPath: '/sales'
+      preLoaderRoute: typeof AuthenticatedSalesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/expenses': {
+      id: '/_authenticated/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof AuthenticatedExpensesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stock/mutations': {
+      id: '/_authenticated/stock/mutations'
+      path: '/stock/mutations'
+      fullPath: '/stock/mutations'
+      preLoaderRoute: typeof AuthenticatedStockMutationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stock/levels': {
+      id: '/_authenticated/stock/levels'
+      path: '/stock/levels'
+      fullPath: '/stock/levels'
+      preLoaderRoute: typeof AuthenticatedStockLevelsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stock/in': {
+      id: '/_authenticated/stock/in'
+      path: '/stock/in'
+      fullPath: '/stock/in'
+      preLoaderRoute: typeof AuthenticatedStockInRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/salary/payment': {
+      id: '/_authenticated/salary/payment'
+      path: '/salary/payment'
+      fullPath: '/salary/payment'
+      preLoaderRoute: typeof AuthenticatedSalaryPaymentRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/salary/bonus': {
+      id: '/_authenticated/salary/bonus'
+      path: '/salary/bonus'
+      fullPath: '/salary/bonus'
+      preLoaderRoute: typeof AuthenticatedSalaryBonusRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/salary/advance': {
+      id: '/_authenticated/salary/advance'
+      path: '/salary/advance'
+      fullPath: '/salary/advance'
+      preLoaderRoute: typeof AuthenticatedSalaryAdvanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/salary/accrual': {
+      id: '/_authenticated/salary/accrual'
+      path: '/salary/accrual'
+      fullPath: '/salary/accrual'
+      preLoaderRoute: typeof AuthenticatedSalaryAccrualRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports/receivables': {
+      id: '/_authenticated/reports/receivables'
+      path: '/reports/receivables'
+      fullPath: '/reports/receivables'
+      preLoaderRoute: typeof AuthenticatedReportsReceivablesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports/payables': {
+      id: '/_authenticated/reports/payables'
+      path: '/reports/payables'
+      fullPath: '/reports/payables'
+      preLoaderRoute: typeof AuthenticatedReportsPayablesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports/mutations': {
+      id: '/_authenticated/reports/mutations'
+      path: '/reports/mutations'
+      fullPath: '/reports/mutations'
+      preLoaderRoute: typeof AuthenticatedReportsMutationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports/cashflow': {
+      id: '/_authenticated/reports/cashflow'
+      path: '/reports/cashflow'
+      fullPath: '/reports/cashflow'
+      preLoaderRoute: typeof AuthenticatedReportsCashflowRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/payments/supplier': {
+      id: '/_authenticated/payments/supplier'
+      path: '/payments/supplier'
+      fullPath: '/payments/supplier'
+      preLoaderRoute: typeof AuthenticatedPaymentsSupplierRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/payments/customer': {
+      id: '/_authenticated/payments/customer'
+      path: '/payments/customer'
+      fullPath: '/payments/customer'
+      preLoaderRoute: typeof AuthenticatedPaymentsCustomerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/master/warehouses': {
+      id: '/_authenticated/master/warehouses'
+      path: '/master/warehouses'
+      fullPath: '/master/warehouses'
+      preLoaderRoute: typeof AuthenticatedMasterWarehousesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/master/suppliers': {
+      id: '/_authenticated/master/suppliers'
+      path: '/master/suppliers'
+      fullPath: '/master/suppliers'
+      preLoaderRoute: typeof AuthenticatedMasterSuppliersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/master/products': {
+      id: '/_authenticated/master/products'
+      path: '/master/products'
+      fullPath: '/master/products'
+      preLoaderRoute: typeof AuthenticatedMasterProductsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/master/employees': {
+      id: '/_authenticated/master/employees'
+      path: '/master/employees'
+      fullPath: '/master/employees'
+      preLoaderRoute: typeof AuthenticatedMasterEmployeesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/master/customers': {
+      id: '/_authenticated/master/customers'
+      path: '/master/customers'
+      fullPath: '/master/customers'
+      preLoaderRoute: typeof AuthenticatedMasterCustomersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
+  AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedMasterCustomersRoute: typeof AuthenticatedMasterCustomersRoute
+  AuthenticatedMasterEmployeesRoute: typeof AuthenticatedMasterEmployeesRoute
+  AuthenticatedMasterProductsRoute: typeof AuthenticatedMasterProductsRoute
+  AuthenticatedMasterSuppliersRoute: typeof AuthenticatedMasterSuppliersRoute
+  AuthenticatedMasterWarehousesRoute: typeof AuthenticatedMasterWarehousesRoute
+  AuthenticatedPaymentsCustomerRoute: typeof AuthenticatedPaymentsCustomerRoute
+  AuthenticatedPaymentsSupplierRoute: typeof AuthenticatedPaymentsSupplierRoute
+  AuthenticatedReportsCashflowRoute: typeof AuthenticatedReportsCashflowRoute
+  AuthenticatedReportsMutationsRoute: typeof AuthenticatedReportsMutationsRoute
+  AuthenticatedReportsPayablesRoute: typeof AuthenticatedReportsPayablesRoute
+  AuthenticatedReportsReceivablesRoute: typeof AuthenticatedReportsReceivablesRoute
+  AuthenticatedSalaryAccrualRoute: typeof AuthenticatedSalaryAccrualRoute
+  AuthenticatedSalaryAdvanceRoute: typeof AuthenticatedSalaryAdvanceRoute
+  AuthenticatedSalaryBonusRoute: typeof AuthenticatedSalaryBonusRoute
+  AuthenticatedSalaryPaymentRoute: typeof AuthenticatedSalaryPaymentRoute
+  AuthenticatedStockInRoute: typeof AuthenticatedStockInRoute
+  AuthenticatedStockLevelsRoute: typeof AuthenticatedStockLevelsRoute
+  AuthenticatedStockMutationsRoute: typeof AuthenticatedStockMutationsRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
+  AuthenticatedSalesRoute: AuthenticatedSalesRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedMasterCustomersRoute: AuthenticatedMasterCustomersRoute,
+  AuthenticatedMasterEmployeesRoute: AuthenticatedMasterEmployeesRoute,
+  AuthenticatedMasterProductsRoute: AuthenticatedMasterProductsRoute,
+  AuthenticatedMasterSuppliersRoute: AuthenticatedMasterSuppliersRoute,
+  AuthenticatedMasterWarehousesRoute: AuthenticatedMasterWarehousesRoute,
+  AuthenticatedPaymentsCustomerRoute: AuthenticatedPaymentsCustomerRoute,
+  AuthenticatedPaymentsSupplierRoute: AuthenticatedPaymentsSupplierRoute,
+  AuthenticatedReportsCashflowRoute: AuthenticatedReportsCashflowRoute,
+  AuthenticatedReportsMutationsRoute: AuthenticatedReportsMutationsRoute,
+  AuthenticatedReportsPayablesRoute: AuthenticatedReportsPayablesRoute,
+  AuthenticatedReportsReceivablesRoute: AuthenticatedReportsReceivablesRoute,
+  AuthenticatedSalaryAccrualRoute: AuthenticatedSalaryAccrualRoute,
+  AuthenticatedSalaryAdvanceRoute: AuthenticatedSalaryAdvanceRoute,
+  AuthenticatedSalaryBonusRoute: AuthenticatedSalaryBonusRoute,
+  AuthenticatedSalaryPaymentRoute: AuthenticatedSalaryPaymentRoute,
+  AuthenticatedStockInRoute: AuthenticatedStockInRoute,
+  AuthenticatedStockLevelsRoute: AuthenticatedStockLevelsRoute,
+  AuthenticatedStockMutationsRoute: AuthenticatedStockMutationsRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
