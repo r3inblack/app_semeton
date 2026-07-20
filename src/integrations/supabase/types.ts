@@ -828,6 +828,7 @@ export type Database = {
     Functions: {
       assert_admin: { Args: never; Returns: undefined }
       current_warehouse_id: { Args: never; Returns: string }
+      get_app_name: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
