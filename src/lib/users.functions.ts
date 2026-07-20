@@ -1,21 +1,42 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-type AppRole = "super_admin" | "staf_gudang";
+type AppRole =
+  | "super_admin"
+  | "admin"
+  | "manager"
+  | "staff_keuangan"
+  | "kasir"
+  | "staf_gudang"
+  | "viewer"
+  | "custom";
 
-async function assertSuperAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase.rpc("has_role", {
-    _user_id: userId,
-    _role: "super_admin",
+const ALL_ROLES: AppRole[] = [
+  "super_admin", "admin", "manager", "staff_keuangan",
+  "kasir", "staf_gudang", "viewer", "custom",
+];
+
+async function getCallerRole(supabase: any, userId: string): Promise<AppRole | null> {
+  const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+  const roles = (data ?? []).map((r: any) => r.role as AppRole);
+  return roles.find((r: AppRole) => r === "super_admin") ?? roles[0] ?? null;
+}
+
+async function assertCanManageUsers(supabase: any, userId: string) {
+  const role = await getCallerRole(supabase, userId);
+  if (role === "super_admin") return role;
+  const { data, error } = await supabase.rpc("has_permission", {
+    _user: userId, _module: "users", _action: "manage",
   });
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: super_admin required");
+  if (!data) throw new Error("Forbidden: butuh izin mengelola user");
+  return role;
 }
 
 export const listUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertSuperAdmin(context.supabase, context.userId);
+    await assertCanManageUsers(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: usersData, error } = await supabaseAdmin.auth.admin.listUsers({
       page: 1,
@@ -36,7 +57,7 @@ export const listUsers = createServerFn({ method: "GET" })
         full_name: p?.full_name ?? null,
         is_master: p?.is_master ?? false,
         warehouse_id: p?.warehouse_id ?? null,
-        role: (r?.role ?? "staf_gudang") as AppRole,
+        role: (r?.role ?? "viewer") as AppRole,
         created_at: u.created_at,
       };
     });
@@ -54,7 +75,11 @@ export const createUser = createServerFn({ method: "POST" })
     }) => d,
   )
   .handler(async ({ data, context }) => {
-    await assertSuperAdmin(context.supabase, context.userId);
+    const callerRole = await assertCanManageUsers(context.supabase, context.userId);
+    if (!ALL_ROLES.includes(data.role)) throw new Error("Role tidak valid");
+    if (data.role === "super_admin" && callerRole !== "super_admin") {
+      throw new Error("Hanya Super Admin yang bisa membuat Super Admin");
+    }
     if (!data.username || !data.password) throw new Error("Username & password wajib");
     if (data.password.length < 6) throw new Error("Password minimal 6 karakter");
     const email = data.username.includes("@") ? data.username : `${data.username}@semeton.app`;
@@ -67,7 +92,6 @@ export const createUser = createServerFn({ method: "POST" })
     });
     if (error) throw new Error(error.message);
     const uid = created.user!.id;
-    // handle_new_user trigger already inserted default profile + role — update them
     await supabaseAdmin
       .from("profiles")
       .update({ full_name: data.full_name, warehouse_id: data.warehouse_id ?? null })
@@ -89,8 +113,13 @@ export const updateUser = createServerFn({ method: "POST" })
     }) => d,
   )
   .handler(async ({ data, context }) => {
-    await assertSuperAdmin(context.supabase, context.userId);
+    const callerRole = await assertCanManageUsers(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    if (data.role && !ALL_ROLES.includes(data.role)) throw new Error("Role tidak valid");
+    if (data.role === "super_admin" && callerRole !== "super_admin") {
+      throw new Error("Hanya Super Admin yang bisa menetapkan Super Admin");
+    }
 
     if (data.password) {
       if (data.password.length < 6) throw new Error("Password minimal 6 karakter");
@@ -108,7 +137,6 @@ export const updateUser = createServerFn({ method: "POST" })
     }
 
     if (data.role) {
-      // protect_master_user trigger blocks changes to master's roles
       const { error: delErr } = await supabaseAdmin
         .from("user_roles")
         .delete()
@@ -126,7 +154,7 @@ export const deleteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => d)
   .handler(async ({ data, context }) => {
-    await assertSuperAdmin(context.supabase, context.userId);
+    await assertCanManageUsers(context.supabase, context.userId);
     if (data.id === context.userId) throw new Error("Tidak dapat menghapus diri sendiri");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: prof } = await supabaseAdmin
@@ -137,5 +165,46 @@ export const deleteUser = createServerFn({ method: "POST" })
     if (prof?.is_master) throw new Error("User master tidak dapat dihapus");
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.id);
     if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const getUserPermissions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { user_id: string }) => d)
+  .handler(async ({ data, context }) => {
+    await assertCanManageUsers(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin
+      .from("user_permissions")
+      .select("module, action, allowed")
+      .eq("user_id", data.user_id);
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });
+
+export const setUserPermissions = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (d: { user_id: string; permissions: { module: string; action: string; allowed: boolean }[] }) => d,
+  )
+  .handler(async ({ data, context }) => {
+    await assertCanManageUsers(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Replace all rows for that user
+    const { error: delErr } = await supabaseAdmin
+      .from("user_permissions")
+      .delete()
+      .eq("user_id", data.user_id);
+    if (delErr) throw new Error(delErr.message);
+    if (data.permissions.length) {
+      const rows = data.permissions.map((p) => ({
+        user_id: data.user_id,
+        module: p.module,
+        action: p.action,
+        allowed: p.allowed,
+      }));
+      const { error: insErr } = await supabaseAdmin.from("user_permissions").insert(rows);
+      if (insErr) throw new Error(insErr.message);
+    }
     return { ok: true };
   });

@@ -26,23 +26,31 @@ export const Route = createFileRoute("/_authenticated/settings")({
 });
 
 function SettingsPage() {
-  const { isAdmin } = useRole();
+  const { isSuperAdmin, can } = useRole();
+  const canApp = isSuperAdmin || can("settings_app", "view");
+  const canTelegram = isSuperAdmin || can("settings_telegram", "view");
+  const canUsers = isSuperAdmin || can("users", "manage");
+  const canInitial = isSuperAdmin;
+  const canDanger = isSuperAdmin;
+
+  const firstTab = canApp ? "general" : canTelegram ? "telegram" : canUsers ? "users" : "initial";
+
   return (
     <AppShell title="Pengaturan">
       <PageHeader title="Pengaturan Aplikasi" />
-      <Tabs defaultValue="general">
+      <Tabs defaultValue={firstTab}>
         <TabsList className="mb-4 flex-wrap">
-          <TabsTrigger value="general">Nama Aplikasi</TabsTrigger>
-          <TabsTrigger value="telegram">Notifikasi Telegram</TabsTrigger>
-          {isAdmin && <TabsTrigger value="users">Manajemen User</TabsTrigger>}
-          <TabsTrigger value="initial">Setup Data Awal</TabsTrigger>
-          <TabsTrigger value="danger">Danger Zone</TabsTrigger>
+          {canApp && <TabsTrigger value="general">Nama Aplikasi</TabsTrigger>}
+          {canTelegram && <TabsTrigger value="telegram">Notifikasi Telegram</TabsTrigger>}
+          {canUsers && <TabsTrigger value="users">Pengguna & Hak Akses</TabsTrigger>}
+          {canInitial && <TabsTrigger value="initial">Setup Data Awal</TabsTrigger>}
+          {canDanger && <TabsTrigger value="danger">Danger Zone</TabsTrigger>}
         </TabsList>
-        <TabsContent value="general"><GeneralTab /></TabsContent>
-        <TabsContent value="telegram"><TelegramTab /></TabsContent>
-        {isAdmin && <TabsContent value="users"><UsersManager /></TabsContent>}
-        <TabsContent value="initial"><InitialTab /></TabsContent>
-        <TabsContent value="danger"><DangerTab /></TabsContent>
+        {canApp && <TabsContent value="general"><GeneralTab /></TabsContent>}
+        {canTelegram && <TabsContent value="telegram"><TelegramTab /></TabsContent>}
+        {canUsers && <TabsContent value="users"><UsersManager /></TabsContent>}
+        {canInitial && <TabsContent value="initial"><InitialTab /></TabsContent>}
+        {canDanger && <TabsContent value="danger"><DangerTab /></TabsContent>}
       </Tabs>
     </AppShell>
   );
