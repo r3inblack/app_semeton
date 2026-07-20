@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useRole } from "@/hooks/use-role";
+import { useRole, ROLE_LABELS } from "@/hooks/use-role";
 import { useAppSettings } from "@/hooks/use-app-settings";
 import { useSession } from "@/hooks/use-session";
 import {
@@ -50,72 +50,68 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-type NavChild = { title: string; url: string };
+type NavChild = { title: string; url: string; module?: string };
 type NavItem = {
   title: string;
   url?: string;
   icon: typeof LayoutDashboard;
+  module?: string;
   children?: NavChild[];
-  adminOnly?: boolean;
 };
 
 const NAV: NavItem[] = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, module: "dashboard" },
   {
     title: "Master Data",
     icon: Users,
-    adminOnly: true,
     children: [
-      { title: "Pelanggan", url: "/master/customers" },
-      { title: "Supplier", url: "/master/suppliers" },
-      { title: "Karyawan", url: "/master/employees" },
-      { title: "Gudang", url: "/master/warehouses" },
-      { title: "Produk", url: "/master/products" },
+      { title: "Pelanggan", url: "/master/customers", module: "master_customers" },
+      { title: "Supplier", url: "/master/suppliers", module: "master_suppliers" },
+      { title: "Karyawan", url: "/master/employees", module: "master_employees" },
+      { title: "Gudang", url: "/master/warehouses", module: "master_warehouses" },
+      { title: "Produk", url: "/master/products", module: "master_products" },
     ],
   },
   {
     title: "Stok",
     icon: Boxes,
     children: [
-      { title: "Stok Gudang", url: "/stock/levels" },
-      { title: "Barang Masuk", url: "/stock/in" },
-      { title: "Mutasi Stok", url: "/stock/mutations" },
+      { title: "Stok Gudang", url: "/stock/levels", module: "stock_levels" },
+      { title: "Barang Masuk", url: "/stock/in", module: "stock_in" },
+      { title: "Mutasi Stok", url: "/stock/mutations", module: "stock_mutations" },
     ],
   },
-  { title: "Penjualan", url: "/sales", icon: ShoppingCart, adminOnly: true },
+  { title: "Penjualan", url: "/sales", icon: ShoppingCart, module: "sales" },
   {
     title: "Kas",
     icon: Wallet,
-    adminOnly: true,
     children: [
-      { title: "Setoran Pelanggan", url: "/payments/customer" },
-      { title: "Bayar Supplier", url: "/payments/supplier" },
-      { title: "Pengeluaran", url: "/expenses" },
+      { title: "Setoran Pelanggan", url: "/payments/customer", module: "payments_customer" },
+      { title: "Bayar Supplier", url: "/payments/supplier", module: "payments_supplier" },
+      { title: "Pengeluaran", url: "/expenses", module: "expenses" },
     ],
   },
   {
     title: "Penggajian",
     icon: HandCoins,
-    adminOnly: true,
     children: [
-      { title: "Tambah Hak Gaji", url: "/salary/accrual" },
-      { title: "Kasbon / Uang Jalan", url: "/salary/advance" },
-      { title: "Bayar Cicilan Gaji", url: "/salary/payment" },
-      { title: "Bonus Barang", url: "/salary/bonus" },
+      { title: "Tambah Hak Gaji", url: "/salary/accrual", module: "salary_accrual" },
+      { title: "Kasbon / Uang Jalan", url: "/salary/advance", module: "salary_advance" },
+      { title: "Bayar Cicilan Gaji", url: "/salary/payment", module: "salary_payment" },
+      { title: "Bonus Barang", url: "/salary/bonus", module: "salary_bonus" },
     ],
   },
   {
     title: "Laporan",
     icon: FileBarChart,
-    adminOnly: true,
     children: [
-      { title: "Arus Kas", url: "/reports/cashflow" },
-      { title: "Piutang / Setoran", url: "/reports/receivables" },
-      { title: "Hutang Supplier", url: "/reports/payables" },
-      { title: "Mutasi Barang", url: "/reports/mutations" },
+      { title: "Arus Kas", url: "/reports/cashflow", module: "reports_cashflow" },
+      { title: "Piutang / Setoran", url: "/reports/receivables", module: "reports_receivables" },
+      { title: "Hutang Supplier", url: "/reports/payables", module: "reports_payables" },
+      { title: "Mutasi Barang", url: "/reports/mutations", module: "reports_mutations" },
     ],
   },
-  { title: "Pengaturan", url: "/settings", icon: Settings, adminOnly: true },
+  { title: "Pengaturan", url: "/settings", icon: Settings, module: "__settings__" },
 ];
 
 const ICONS: Record<string, typeof LayoutDashboard> = {
@@ -137,13 +133,31 @@ const ICONS: Record<string, typeof LayoutDashboard> = {
 };
 
 function AppSidebar() {
-  const { isAdmin } = useRole();
+  const { role, can, isSuperAdmin } = useRole();
   const { data: settings } = useAppSettings();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const { user } = useSession();
 
-  const filtered = NAV.filter((n) => !n.adminOnly || isAdmin);
+  const settingsVisible =
+    isSuperAdmin ||
+    can("users", "view") ||
+    can("users", "manage") ||
+    can("settings_app", "view") ||
+    can("settings_telegram", "view");
+
+  const filtered = NAV.map((item) => {
+    if (item.module === "__settings__") {
+      return settingsVisible ? item : null;
+    }
+    if (item.children) {
+      const kids = item.children.filter((c) => !c.module || can(c.module, "view"));
+      if (!kids.length) return null;
+      return { ...item, children: kids };
+    }
+    if (item.module && !can(item.module, "view")) return null;
+    return item;
+  }).filter(Boolean) as NavItem[];
 
   return (
     <Sidebar collapsible="icon">
@@ -157,7 +171,7 @@ function AppSidebar() {
               {settings?.app_name ?? "Aplikasi Semeton"}
             </div>
             <div className="truncate text-xs text-sidebar-foreground/60">
-              {isAdmin ? "Super Admin" : "Staf Gudang"}
+              {role ? ROLE_LABELS[role] : "—"}
             </div>
           </div>
         </div>

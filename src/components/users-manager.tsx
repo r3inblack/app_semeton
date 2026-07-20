@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { listUsers, createUser, updateUser, deleteUser } from "@/lib/users.functions";
+import {
+  listUsers, createUser, updateUser, deleteUser,
+  getUserPermissions, setUserPermissions,
+} from "@/lib/users.functions";
 import { useList } from "@/lib/list-hooks";
+import { ALL_MODULES, ROLE_LABELS, type AppRole } from "@/hooks/use-role";
+import { useRole } from "@/hooks/use-role";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -17,17 +23,22 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Plus, Pencil, Trash2, KeyRound } from "lucide-react";
+import { Plus, Pencil, Trash2, KeyRound, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
-type Role = "super_admin" | "staf_gudang";
 type UserRow = {
   id: string; email: string | undefined; full_name: string | null;
-  is_master: boolean; warehouse_id: string | null; role: Role;
+  is_master: boolean; warehouse_id: string | null; role: AppRole;
 };
+
+const ROLE_OPTIONS: AppRole[] = [
+  "super_admin", "admin", "manager", "staff_keuangan",
+  "kasir", "staf_gudang", "viewer", "custom",
+];
 
 export function UsersManager() {
   const qc = useQueryClient();
+  const { isSuperAdmin } = useRole();
   const list = useServerFn(listUsers);
   const create = useServerFn(createUser);
   const update = useServerFn(updateUser);
@@ -39,15 +50,18 @@ export function UsersManager() {
   const [openNew, setOpenNew] = useState(false);
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [pwUser, setPwUser] = useState<UserRow | null>(null);
+  const [permsUser, setPermsUser] = useState<UserRow | null>(null);
 
   const [form, setForm] = useState({
     username: "", password: "", full_name: "",
-    role: "staf_gudang" as Role, warehouse_id: "",
+    role: "viewer" as AppRole, warehouse_id: "",
   });
   const [editForm, setEditForm] = useState({
-    full_name: "", role: "staf_gudang" as Role, warehouse_id: "",
+    full_name: "", role: "viewer" as AppRole, warehouse_id: "",
   });
   const [newPw, setNewPw] = useState("");
+
+  const availableRoles = ROLE_OPTIONS.filter((r) => isSuperAdmin || r !== "super_admin");
 
   const mCreate = useMutation({
     mutationFn: () => create({ data: {
@@ -57,7 +71,7 @@ export function UsersManager() {
     onSuccess: () => {
       toast.success("User dibuat");
       setOpenNew(false);
-      setForm({ username: "", password: "", full_name: "", role: "staf_gudang", warehouse_id: "" });
+      setForm({ username: "", password: "", full_name: "", role: "viewer", warehouse_id: "" });
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
     onError: (e: any) => toast.error(e.message),
@@ -107,9 +121,10 @@ export function UsersManager() {
     <Card><CardContent className="pt-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold">Manajemen User</h3>
+          <h3 className="font-semibold">Manajemen Pengguna & Hak Akses</h3>
           <p className="text-sm text-muted-foreground">
-            Buat dan kelola user aplikasi. Username akan otomatis dijadikan email <code>username@semeton.app</code>.
+            Buat dan kelola user aplikasi. Username otomatis dijadikan email <code>username@semeton.app</code>.
+            Pilih role <b>Custom</b> untuk mengatur hak akses per-modul.
           </p>
         </div>
         <Dialog open={openNew} onOpenChange={setOpenNew}>
@@ -128,11 +143,12 @@ export function UsersManager() {
               <Field label="Password">
                 <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Minimal 6 karakter" />
               </Field>
-              <Field label="Role">
+              <Field label="Role / Level">
                 <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                  value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Role })}>
-                  <option value="super_admin">Super Admin</option>
-                  <option value="staf_gudang">Staf Gudang</option>
+                  value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as AppRole })}>
+                  {availableRoles.map((r) => (
+                    <option key={r} value={r}>{ROLE_LABELS[r]}</option>
+                  ))}
                 </select>
               </Field>
               {form.role === "staf_gudang" && (
@@ -145,6 +161,11 @@ export function UsersManager() {
                     ))}
                   </select>
                 </Field>
+              )}
+              {form.role === "custom" && (
+                <p className="text-xs text-muted-foreground">
+                  Setelah user dibuat, klik ikon perisai di baris user untuk mengatur hak akses per-modul.
+                </p>
               )}
             </div>
             <DialogFooter>
@@ -162,7 +183,7 @@ export function UsersManager() {
               <TableHead>Username / Email</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Gudang</TableHead>
-              <TableHead className="w-40 text-right">Aksi</TableHead>
+              <TableHead className="w-48 text-right">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -173,9 +194,15 @@ export function UsersManager() {
                   {u.is_master && <span className="ml-2 text-xs rounded bg-primary/20 text-primary px-1.5 py-0.5">MASTER</span>}
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{u.email}</TableCell>
-                <TableCell>{u.role === "super_admin" ? "Super Admin" : "Staf Gudang"}</TableCell>
+                <TableCell>{ROLE_LABELS[u.role] ?? u.role}</TableCell>
                 <TableCell>{warehouses.data?.find((w) => w.id === u.warehouse_id)?.name ?? "-"}</TableCell>
                 <TableCell className="text-right">
+                  {u.role === "custom" && (
+                    <Button size="icon" variant="ghost" title="Atur Hak Akses"
+                      onClick={() => setPermsUser(u)}>
+                      <ShieldCheck className="h-4 w-4" />
+                    </Button>
+                  )}
                   <Button size="icon" variant="ghost" title="Edit" onClick={() => startEdit(u)}
                     disabled={u.is_master}><Pencil className="h-4 w-4" /></Button>
                   <Button size="icon" variant="ghost" title="Ganti Password" onClick={() => { setPwUser(u); setNewPw(""); }}>
@@ -218,11 +245,12 @@ export function UsersManager() {
             <Field label="Nama Lengkap">
               <Input value={editForm.full_name} onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })} />
             </Field>
-            <Field label="Role">
+            <Field label="Role / Level">
               <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as Role })}>
-                <option value="super_admin">Super Admin</option>
-                <option value="staf_gudang">Staf Gudang</option>
+                value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as AppRole })}>
+                {availableRoles.map((r) => (
+                  <option key={r} value={r}>{ROLE_LABELS[r]}</option>
+                ))}
               </select>
             </Field>
             {editForm.role === "staf_gudang" && (
@@ -255,7 +283,119 @@ export function UsersManager() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Permissions dialog */}
+      {permsUser && (
+        <PermissionsDialog user={permsUser} onClose={() => setPermsUser(null)} />
+      )}
     </CardContent></Card>
+  );
+}
+
+function PermissionsDialog({ user, onClose }: { user: UserRow; onClose: () => void }) {
+  const getFn = useServerFn(getUserPermissions);
+  const setFn = useServerFn(setUserPermissions);
+  const [perms, setPerms] = useState<Record<string, { view: boolean; manage: boolean }>>({});
+
+  const q = useQuery({
+    queryKey: ["user-perms", user.id],
+    queryFn: () => getFn({ data: { user_id: user.id } }),
+  });
+
+  useEffect(() => {
+    if (!q.data) return;
+    const map: Record<string, { view: boolean; manage: boolean }> = {};
+    for (const m of ALL_MODULES) map[m.key] = { view: false, manage: false };
+    for (const row of q.data as any[]) {
+      if (!map[row.module]) map[row.module] = { view: false, manage: false };
+      if (row.action === "view") map[row.module].view = !!row.allowed;
+      if (row.action === "manage") map[row.module].manage = !!row.allowed;
+    }
+    setPerms(map);
+  }, [q.data]);
+
+  const toggle = (key: string, action: "view" | "manage", value: boolean) => {
+    setPerms((p) => {
+      const cur = p[key] ?? { view: false, manage: false };
+      const next = { ...cur, [action]: value };
+      // manage implies view; unchecking view also unchecks manage
+      if (action === "manage" && value) next.view = true;
+      if (action === "view" && !value) next.manage = false;
+      return { ...p, [key]: next };
+    });
+  };
+
+  const save = async () => {
+    const rows: { module: string; action: string; allowed: boolean }[] = [];
+    for (const [module, v] of Object.entries(perms)) {
+      if (v.view) rows.push({ module, action: "view", allowed: true });
+      if (v.manage) rows.push({ module, action: "manage", allowed: true });
+    }
+    try {
+      await setFn({ data: { user_id: user.id, permissions: rows } });
+      toast.success("Hak akses disimpan");
+      onClose();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
+
+  // Group modules
+  const groups = ALL_MODULES.reduce<Record<string, typeof ALL_MODULES>>((acc, m) => {
+    (acc[m.group] ??= []).push(m);
+    return acc;
+  }, {});
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto">
+        <DialogHeader>
+          <DialogTitle>Hak Akses Custom — {user.full_name ?? user.email}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          {q.isLoading && <p className="text-sm text-muted-foreground">Memuat...</p>}
+          {Object.entries(groups).map(([group, mods]) => (
+            <div key={group}>
+              <div className="text-xs font-semibold uppercase text-muted-foreground mb-2">{group}</div>
+              <div className="rounded border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="text-left p-2">Modul</th>
+                      <th className="p-2 w-24 text-center">Lihat</th>
+                      <th className="p-2 w-24 text-center">Kelola</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mods.map((m) => (
+                      <tr key={m.key} className="border-t">
+                        <td className="p-2">{m.label}</td>
+                        <td className="p-2 text-center">
+                          <Checkbox
+                            checked={!!perms[m.key]?.view}
+                            onCheckedChange={(v) => toggle(m.key, "view", !!v)}
+                          />
+                        </td>
+                        <td className="p-2 text-center">
+                          <Checkbox
+                            checked={!!perms[m.key]?.manage}
+                            onCheckedChange={(v) => toggle(m.key, "manage", !!v)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Batal</Button>
+          <Button onClick={save}>Simpan Hak Akses</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
