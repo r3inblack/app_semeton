@@ -100,7 +100,7 @@ export const updateUser = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
     }
 
-    const profileUpdate: Record<string, any> = {};
+    const profileUpdate: { full_name?: string; warehouse_id?: string | null } = {};
     if (data.full_name !== undefined) profileUpdate.full_name = data.full_name;
     if (data.warehouse_id !== undefined) profileUpdate.warehouse_id = data.warehouse_id;
     if (Object.keys(profileUpdate).length) {
