@@ -72,7 +72,7 @@ function GeneralTab() {
 }
 
 function TelegramTab() {
-  const { data } = useAppSettings();
+  const { data } = useAppSettingsAdmin();
   const qc = useQueryClient();
   const [form, setForm] = useState({ telegram_enabled: false, telegram_bot_token: "", telegram_chat_id: "" });
   useEffect(() => {
