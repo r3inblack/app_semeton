@@ -376,6 +376,27 @@ export type Database = {
           },
         ]
       }
+      role_default_permissions: {
+        Row: {
+          action: string
+          allowed: boolean
+          module: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          action: string
+          allowed?: boolean
+          module: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          action?: string
+          allowed?: boolean
+          module?: string
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: []
+      }
       salary_accruals: {
         Row: {
           amount: number
@@ -782,6 +803,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_permissions: {
+        Row: {
+          action: string
+          allowed: boolean
+          module: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          allowed?: boolean
+          module: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          allowed?: boolean
+          module?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -827,8 +869,16 @@ export type Database = {
     }
     Functions: {
       assert_admin: { Args: never; Returns: undefined }
+      assert_permission: {
+        Args: { _action: string; _module: string }
+        Returns: undefined
+      }
       current_warehouse_id: { Args: never; Returns: string }
       get_app_name: { Args: never; Returns: string }
+      has_permission: {
+        Args: { _action: string; _module: string; _user: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
