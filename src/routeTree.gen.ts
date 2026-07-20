@@ -22,6 +22,10 @@ import { Route as AuthenticatedSalaryPaymentRouteImport } from './routes/_authen
 import { Route as AuthenticatedSalaryBonusRouteImport } from './routes/_authenticated/salary.bonus'
 import { Route as AuthenticatedSalaryAdvanceRouteImport } from './routes/_authenticated/salary.advance'
 import { Route as AuthenticatedSalaryAccrualRouteImport } from './routes/_authenticated/salary.accrual'
+import { Route as AuthenticatedReportsReceivablesRouteImport } from './routes/_authenticated/reports.receivables'
+import { Route as AuthenticatedReportsPayablesRouteImport } from './routes/_authenticated/reports.payables'
+import { Route as AuthenticatedReportsMutationsRouteImport } from './routes/_authenticated/reports.mutations'
+import { Route as AuthenticatedReportsCashflowRouteImport } from './routes/_authenticated/reports.cashflow'
 import { Route as AuthenticatedPaymentsSupplierRouteImport } from './routes/_authenticated/payments.supplier'
 import { Route as AuthenticatedPaymentsCustomerRouteImport } from './routes/_authenticated/payments.customer'
 import { Route as AuthenticatedMasterWarehousesRouteImport } from './routes/_authenticated/master.warehouses'
@@ -100,6 +104,30 @@ const AuthenticatedSalaryAccrualRoute =
     path: '/salary/accrual',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedReportsReceivablesRoute =
+  AuthenticatedReportsReceivablesRouteImport.update({
+    id: '/reports/receivables',
+    path: '/reports/receivables',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReportsPayablesRoute =
+  AuthenticatedReportsPayablesRouteImport.update({
+    id: '/reports/payables',
+    path: '/reports/payables',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReportsMutationsRoute =
+  AuthenticatedReportsMutationsRouteImport.update({
+    id: '/reports/mutations',
+    path: '/reports/mutations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReportsCashflowRoute =
+  AuthenticatedReportsCashflowRouteImport.update({
+    id: '/reports/cashflow',
+    path: '/reports/cashflow',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPaymentsSupplierRoute =
   AuthenticatedPaymentsSupplierRouteImport.update({
     id: '/payments/supplier',
@@ -156,6 +184,10 @@ export interface FileRoutesByFullPath {
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
+  '/reports/mutations': typeof AuthenticatedReportsMutationsRoute
+  '/reports/payables': typeof AuthenticatedReportsPayablesRoute
+  '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
   '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
   '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
   '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
@@ -177,6 +209,10 @@ export interface FileRoutesByTo {
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
+  '/reports/mutations': typeof AuthenticatedReportsMutationsRoute
+  '/reports/payables': typeof AuthenticatedReportsPayablesRoute
+  '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
   '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
   '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
   '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
@@ -200,6 +236,10 @@ export interface FileRoutesById {
   '/_authenticated/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/_authenticated/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/_authenticated/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/_authenticated/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
+  '/_authenticated/reports/mutations': typeof AuthenticatedReportsMutationsRoute
+  '/_authenticated/reports/payables': typeof AuthenticatedReportsPayablesRoute
+  '/_authenticated/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
   '/_authenticated/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
   '/_authenticated/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
   '/_authenticated/salary/bonus': typeof AuthenticatedSalaryBonusRoute
@@ -223,6 +263,10 @@ export interface FileRouteTypes {
     | '/master/warehouses'
     | '/payments/customer'
     | '/payments/supplier'
+    | '/reports/cashflow'
+    | '/reports/mutations'
+    | '/reports/payables'
+    | '/reports/receivables'
     | '/salary/accrual'
     | '/salary/advance'
     | '/salary/bonus'
@@ -244,6 +288,10 @@ export interface FileRouteTypes {
     | '/master/warehouses'
     | '/payments/customer'
     | '/payments/supplier'
+    | '/reports/cashflow'
+    | '/reports/mutations'
+    | '/reports/payables'
+    | '/reports/receivables'
     | '/salary/accrual'
     | '/salary/advance'
     | '/salary/bonus'
@@ -266,6 +314,10 @@ export interface FileRouteTypes {
     | '/_authenticated/master/warehouses'
     | '/_authenticated/payments/customer'
     | '/_authenticated/payments/supplier'
+    | '/_authenticated/reports/cashflow'
+    | '/_authenticated/reports/mutations'
+    | '/_authenticated/reports/payables'
+    | '/_authenticated/reports/receivables'
     | '/_authenticated/salary/accrual'
     | '/_authenticated/salary/advance'
     | '/_authenticated/salary/bonus'
@@ -374,6 +426,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSalaryAccrualRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reports/receivables': {
+      id: '/_authenticated/reports/receivables'
+      path: '/reports/receivables'
+      fullPath: '/reports/receivables'
+      preLoaderRoute: typeof AuthenticatedReportsReceivablesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports/payables': {
+      id: '/_authenticated/reports/payables'
+      path: '/reports/payables'
+      fullPath: '/reports/payables'
+      preLoaderRoute: typeof AuthenticatedReportsPayablesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports/mutations': {
+      id: '/_authenticated/reports/mutations'
+      path: '/reports/mutations'
+      fullPath: '/reports/mutations'
+      preLoaderRoute: typeof AuthenticatedReportsMutationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports/cashflow': {
+      id: '/_authenticated/reports/cashflow'
+      path: '/reports/cashflow'
+      fullPath: '/reports/cashflow'
+      preLoaderRoute: typeof AuthenticatedReportsCashflowRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/payments/supplier': {
       id: '/_authenticated/payments/supplier'
       path: '/payments/supplier'
@@ -437,6 +517,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMasterWarehousesRoute: typeof AuthenticatedMasterWarehousesRoute
   AuthenticatedPaymentsCustomerRoute: typeof AuthenticatedPaymentsCustomerRoute
   AuthenticatedPaymentsSupplierRoute: typeof AuthenticatedPaymentsSupplierRoute
+  AuthenticatedReportsCashflowRoute: typeof AuthenticatedReportsCashflowRoute
+  AuthenticatedReportsMutationsRoute: typeof AuthenticatedReportsMutationsRoute
+  AuthenticatedReportsPayablesRoute: typeof AuthenticatedReportsPayablesRoute
+  AuthenticatedReportsReceivablesRoute: typeof AuthenticatedReportsReceivablesRoute
   AuthenticatedSalaryAccrualRoute: typeof AuthenticatedSalaryAccrualRoute
   AuthenticatedSalaryAdvanceRoute: typeof AuthenticatedSalaryAdvanceRoute
   AuthenticatedSalaryBonusRoute: typeof AuthenticatedSalaryBonusRoute
@@ -457,6 +541,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMasterWarehousesRoute: AuthenticatedMasterWarehousesRoute,
   AuthenticatedPaymentsCustomerRoute: AuthenticatedPaymentsCustomerRoute,
   AuthenticatedPaymentsSupplierRoute: AuthenticatedPaymentsSupplierRoute,
+  AuthenticatedReportsCashflowRoute: AuthenticatedReportsCashflowRoute,
+  AuthenticatedReportsMutationsRoute: AuthenticatedReportsMutationsRoute,
+  AuthenticatedReportsPayablesRoute: AuthenticatedReportsPayablesRoute,
+  AuthenticatedReportsReceivablesRoute: AuthenticatedReportsReceivablesRoute,
   AuthenticatedSalaryAccrualRoute: AuthenticatedSalaryAccrualRoute,
   AuthenticatedSalaryAdvanceRoute: AuthenticatedSalaryAdvanceRoute,
   AuthenticatedSalaryBonusRoute: AuthenticatedSalaryBonusRoute,

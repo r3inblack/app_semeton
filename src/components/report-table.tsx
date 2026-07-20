@@ -22,7 +22,7 @@ export function ReportTable<T>({
   const q = useQuery({
     queryKey: [queryKey, from, to],
     queryFn: async () => {
-      let query = supabase.from(table).select(select).order(orderCol, { ascending: false }).limit(500);
+      let query: any = (supabase as any).from(table).select(select).order(orderCol, { ascending: false }).limit(500);
       if (from) query = query.gte(dateCol, from);
       if (to) query = query.lte(dateCol, `${to}T23:59:59`);
       const { data } = await query;
