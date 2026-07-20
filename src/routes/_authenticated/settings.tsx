@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/page-header";
-import { useAppSettings } from "@/hooks/use-app-settings";
+import { useAppSettings, useAppSettingsAdmin } from "@/hooks/use-app-settings";
 import { useList } from "@/lib/list-hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -72,7 +72,7 @@ function GeneralTab() {
 }
 
 function TelegramTab() {
-  const { data } = useAppSettings();
+  const { data } = useAppSettingsAdmin();
   const qc = useQueryClient();
   const [form, setForm] = useState({ telegram_enabled: false, telegram_bot_token: "", telegram_chat_id: "" });
   useEffect(() => {
