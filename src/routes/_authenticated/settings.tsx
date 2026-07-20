@@ -18,11 +18,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
+import { UsersManager } from "@/components/users-manager";
+import { useRole } from "@/hooks/use-role";
+
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
 });
 
 function SettingsPage() {
+  const { isAdmin } = useRole();
   return (
     <AppShell title="Pengaturan">
       <PageHeader title="Pengaturan Aplikasi" />
@@ -30,11 +34,13 @@ function SettingsPage() {
         <TabsList className="mb-4 flex-wrap">
           <TabsTrigger value="general">Nama Aplikasi</TabsTrigger>
           <TabsTrigger value="telegram">Notifikasi Telegram</TabsTrigger>
+          {isAdmin && <TabsTrigger value="users">Manajemen User</TabsTrigger>}
           <TabsTrigger value="initial">Setup Data Awal</TabsTrigger>
           <TabsTrigger value="danger">Danger Zone</TabsTrigger>
         </TabsList>
         <TabsContent value="general"><GeneralTab /></TabsContent>
         <TabsContent value="telegram"><TelegramTab /></TabsContent>
+        {isAdmin && <TabsContent value="users"><UsersManager /></TabsContent>}
         <TabsContent value="initial"><InitialTab /></TabsContent>
         <TabsContent value="danger"><DangerTab /></TabsContent>
       </Tabs>
