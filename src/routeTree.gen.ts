@@ -13,6 +13,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedMasterWarehousesRouteImport } from './routes/_authenticated/master.warehouses'
+import { Route as AuthenticatedMasterSuppliersRouteImport } from './routes/_authenticated/master.suppliers'
+import { Route as AuthenticatedMasterProductsRouteImport } from './routes/_authenticated/master.products'
+import { Route as AuthenticatedMasterEmployeesRouteImport } from './routes/_authenticated/master.employees'
+import { Route as AuthenticatedMasterCustomersRouteImport } from './routes/_authenticated/master.customers'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -33,16 +38,56 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMasterWarehousesRoute =
+  AuthenticatedMasterWarehousesRouteImport.update({
+    id: '/master/warehouses',
+    path: '/master/warehouses',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMasterSuppliersRoute =
+  AuthenticatedMasterSuppliersRouteImport.update({
+    id: '/master/suppliers',
+    path: '/master/suppliers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMasterProductsRoute =
+  AuthenticatedMasterProductsRouteImport.update({
+    id: '/master/products',
+    path: '/master/products',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMasterEmployeesRoute =
+  AuthenticatedMasterEmployeesRouteImport.update({
+    id: '/master/employees',
+    path: '/master/employees',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMasterCustomersRoute =
+  AuthenticatedMasterCustomersRouteImport.update({
+    id: '/master/customers',
+    path: '/master/customers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/master/customers': typeof AuthenticatedMasterCustomersRoute
+  '/master/employees': typeof AuthenticatedMasterEmployeesRoute
+  '/master/products': typeof AuthenticatedMasterProductsRoute
+  '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
+  '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/master/customers': typeof AuthenticatedMasterCustomersRoute
+  '/master/employees': typeof AuthenticatedMasterEmployeesRoute
+  '/master/products': typeof AuthenticatedMasterProductsRoute
+  '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
+  '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,18 +95,44 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/master/customers': typeof AuthenticatedMasterCustomersRoute
+  '/_authenticated/master/employees': typeof AuthenticatedMasterEmployeesRoute
+  '/_authenticated/master/products': typeof AuthenticatedMasterProductsRoute
+  '/_authenticated/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
+  '/_authenticated/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/master/customers'
+    | '/master/employees'
+    | '/master/products'
+    | '/master/suppliers'
+    | '/master/warehouses'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/master/customers'
+    | '/master/employees'
+    | '/master/products'
+    | '/master/suppliers'
+    | '/master/warehouses'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/master/customers'
+    | '/_authenticated/master/employees'
+    | '/_authenticated/master/products'
+    | '/_authenticated/master/suppliers'
+    | '/_authenticated/master/warehouses'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,15 +171,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/master/warehouses': {
+      id: '/_authenticated/master/warehouses'
+      path: '/master/warehouses'
+      fullPath: '/master/warehouses'
+      preLoaderRoute: typeof AuthenticatedMasterWarehousesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/master/suppliers': {
+      id: '/_authenticated/master/suppliers'
+      path: '/master/suppliers'
+      fullPath: '/master/suppliers'
+      preLoaderRoute: typeof AuthenticatedMasterSuppliersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/master/products': {
+      id: '/_authenticated/master/products'
+      path: '/master/products'
+      fullPath: '/master/products'
+      preLoaderRoute: typeof AuthenticatedMasterProductsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/master/employees': {
+      id: '/_authenticated/master/employees'
+      path: '/master/employees'
+      fullPath: '/master/employees'
+      preLoaderRoute: typeof AuthenticatedMasterEmployeesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/master/customers': {
+      id: '/_authenticated/master/customers'
+      path: '/master/customers'
+      fullPath: '/master/customers'
+      preLoaderRoute: typeof AuthenticatedMasterCustomersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMasterCustomersRoute: typeof AuthenticatedMasterCustomersRoute
+  AuthenticatedMasterEmployeesRoute: typeof AuthenticatedMasterEmployeesRoute
+  AuthenticatedMasterProductsRoute: typeof AuthenticatedMasterProductsRoute
+  AuthenticatedMasterSuppliersRoute: typeof AuthenticatedMasterSuppliersRoute
+  AuthenticatedMasterWarehousesRoute: typeof AuthenticatedMasterWarehousesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMasterCustomersRoute: AuthenticatedMasterCustomersRoute,
+  AuthenticatedMasterEmployeesRoute: AuthenticatedMasterEmployeesRoute,
+  AuthenticatedMasterProductsRoute: AuthenticatedMasterProductsRoute,
+  AuthenticatedMasterSuppliersRoute: AuthenticatedMasterSuppliersRoute,
+  AuthenticatedMasterWarehousesRoute: AuthenticatedMasterWarehousesRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
