@@ -18,6 +18,10 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedStockMutationsRouteImport } from './routes/_authenticated/stock.mutations'
 import { Route as AuthenticatedStockLevelsRouteImport } from './routes/_authenticated/stock.levels'
 import { Route as AuthenticatedStockInRouteImport } from './routes/_authenticated/stock.in'
+import { Route as AuthenticatedSalaryPaymentRouteImport } from './routes/_authenticated/salary.payment'
+import { Route as AuthenticatedSalaryBonusRouteImport } from './routes/_authenticated/salary.bonus'
+import { Route as AuthenticatedSalaryAdvanceRouteImport } from './routes/_authenticated/salary.advance'
+import { Route as AuthenticatedSalaryAccrualRouteImport } from './routes/_authenticated/salary.accrual'
 import { Route as AuthenticatedPaymentsSupplierRouteImport } from './routes/_authenticated/payments.supplier'
 import { Route as AuthenticatedPaymentsCustomerRouteImport } from './routes/_authenticated/payments.customer'
 import { Route as AuthenticatedMasterWarehousesRouteImport } from './routes/_authenticated/master.warehouses'
@@ -72,6 +76,30 @@ const AuthenticatedStockInRoute = AuthenticatedStockInRouteImport.update({
   path: '/stock/in',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSalaryPaymentRoute =
+  AuthenticatedSalaryPaymentRouteImport.update({
+    id: '/salary/payment',
+    path: '/salary/payment',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSalaryBonusRoute =
+  AuthenticatedSalaryBonusRouteImport.update({
+    id: '/salary/bonus',
+    path: '/salary/bonus',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSalaryAdvanceRoute =
+  AuthenticatedSalaryAdvanceRouteImport.update({
+    id: '/salary/advance',
+    path: '/salary/advance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSalaryAccrualRoute =
+  AuthenticatedSalaryAccrualRouteImport.update({
+    id: '/salary/accrual',
+    path: '/salary/accrual',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPaymentsSupplierRoute =
   AuthenticatedPaymentsSupplierRouteImport.update({
     id: '/payments/supplier',
@@ -128,6 +156,10 @@ export interface FileRoutesByFullPath {
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
+  '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
+  '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
+  '/salary/payment': typeof AuthenticatedSalaryPaymentRoute
   '/stock/in': typeof AuthenticatedStockInRoute
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
@@ -145,6 +177,10 @@ export interface FileRoutesByTo {
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
+  '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
+  '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
+  '/salary/payment': typeof AuthenticatedSalaryPaymentRoute
   '/stock/in': typeof AuthenticatedStockInRoute
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
@@ -164,6 +200,10 @@ export interface FileRoutesById {
   '/_authenticated/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/_authenticated/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/_authenticated/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/_authenticated/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
+  '/_authenticated/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
+  '/_authenticated/salary/bonus': typeof AuthenticatedSalaryBonusRoute
+  '/_authenticated/salary/payment': typeof AuthenticatedSalaryPaymentRoute
   '/_authenticated/stock/in': typeof AuthenticatedStockInRoute
   '/_authenticated/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/_authenticated/stock/mutations': typeof AuthenticatedStockMutationsRoute
@@ -183,6 +223,10 @@ export interface FileRouteTypes {
     | '/master/warehouses'
     | '/payments/customer'
     | '/payments/supplier'
+    | '/salary/accrual'
+    | '/salary/advance'
+    | '/salary/bonus'
+    | '/salary/payment'
     | '/stock/in'
     | '/stock/levels'
     | '/stock/mutations'
@@ -200,6 +244,10 @@ export interface FileRouteTypes {
     | '/master/warehouses'
     | '/payments/customer'
     | '/payments/supplier'
+    | '/salary/accrual'
+    | '/salary/advance'
+    | '/salary/bonus'
+    | '/salary/payment'
     | '/stock/in'
     | '/stock/levels'
     | '/stock/mutations'
@@ -218,6 +266,10 @@ export interface FileRouteTypes {
     | '/_authenticated/master/warehouses'
     | '/_authenticated/payments/customer'
     | '/_authenticated/payments/supplier'
+    | '/_authenticated/salary/accrual'
+    | '/_authenticated/salary/advance'
+    | '/_authenticated/salary/bonus'
+    | '/_authenticated/salary/payment'
     | '/_authenticated/stock/in'
     | '/_authenticated/stock/levels'
     | '/_authenticated/stock/mutations'
@@ -294,6 +346,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStockInRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/salary/payment': {
+      id: '/_authenticated/salary/payment'
+      path: '/salary/payment'
+      fullPath: '/salary/payment'
+      preLoaderRoute: typeof AuthenticatedSalaryPaymentRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/salary/bonus': {
+      id: '/_authenticated/salary/bonus'
+      path: '/salary/bonus'
+      fullPath: '/salary/bonus'
+      preLoaderRoute: typeof AuthenticatedSalaryBonusRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/salary/advance': {
+      id: '/_authenticated/salary/advance'
+      path: '/salary/advance'
+      fullPath: '/salary/advance'
+      preLoaderRoute: typeof AuthenticatedSalaryAdvanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/salary/accrual': {
+      id: '/_authenticated/salary/accrual'
+      path: '/salary/accrual'
+      fullPath: '/salary/accrual'
+      preLoaderRoute: typeof AuthenticatedSalaryAccrualRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/payments/supplier': {
       id: '/_authenticated/payments/supplier'
       path: '/payments/supplier'
@@ -357,6 +437,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMasterWarehousesRoute: typeof AuthenticatedMasterWarehousesRoute
   AuthenticatedPaymentsCustomerRoute: typeof AuthenticatedPaymentsCustomerRoute
   AuthenticatedPaymentsSupplierRoute: typeof AuthenticatedPaymentsSupplierRoute
+  AuthenticatedSalaryAccrualRoute: typeof AuthenticatedSalaryAccrualRoute
+  AuthenticatedSalaryAdvanceRoute: typeof AuthenticatedSalaryAdvanceRoute
+  AuthenticatedSalaryBonusRoute: typeof AuthenticatedSalaryBonusRoute
+  AuthenticatedSalaryPaymentRoute: typeof AuthenticatedSalaryPaymentRoute
   AuthenticatedStockInRoute: typeof AuthenticatedStockInRoute
   AuthenticatedStockLevelsRoute: typeof AuthenticatedStockLevelsRoute
   AuthenticatedStockMutationsRoute: typeof AuthenticatedStockMutationsRoute
@@ -373,6 +457,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMasterWarehousesRoute: AuthenticatedMasterWarehousesRoute,
   AuthenticatedPaymentsCustomerRoute: AuthenticatedPaymentsCustomerRoute,
   AuthenticatedPaymentsSupplierRoute: AuthenticatedPaymentsSupplierRoute,
+  AuthenticatedSalaryAccrualRoute: AuthenticatedSalaryAccrualRoute,
+  AuthenticatedSalaryAdvanceRoute: AuthenticatedSalaryAdvanceRoute,
+  AuthenticatedSalaryBonusRoute: AuthenticatedSalaryBonusRoute,
+  AuthenticatedSalaryPaymentRoute: AuthenticatedSalaryPaymentRoute,
   AuthenticatedStockInRoute: AuthenticatedStockInRoute,
   AuthenticatedStockLevelsRoute: AuthenticatedStockLevelsRoute,
   AuthenticatedStockMutationsRoute: AuthenticatedStockMutationsRoute,
