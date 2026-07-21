@@ -171,7 +171,7 @@ function InitialTab() {
       <Card><CardContent className="pt-6 space-y-3">
         <h3 className="font-semibold">Piutang Awal Pelanggan</h3>
         <Select value={rec.customer_id} onChange={(v) => setRec({ ...rec, customer_id: v })} label="Pelanggan" options={customers.data?.map((c: any) => ({ value: c.id, label: c.name })) ?? []} />
-        <Input type="number" placeholder="Nominal" value={rec.amount} onChange={(e) => setRec({ ...rec, amount: e.target.value })} />
+        <NumberInput placeholder="Nominal" value={rec.amount} onChange={(e) => setRec({ ...rec, amount: e.target.value })} />
         <Button onClick={() => call("set_initial_receivable", { p_customer_id: rec.customer_id, p_amount: Number(rec.amount) }, "Piutang awal disimpan")}>Simpan</Button>
       </CardContent></Card>
 
