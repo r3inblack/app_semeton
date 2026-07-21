@@ -162,15 +162,15 @@ function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
-        <div className="flex items-center gap-2">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-bold">
+        <div className="flex items-center gap-2.5">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-[oklch(0.48_0.20_258)] text-primary-foreground font-bold shadow-sm shadow-primary/30">
             S
           </div>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-sidebar-foreground">
               {settings?.app_name ?? "Aplikasi Semeton"}
             </div>
-            <div className="truncate text-xs text-sidebar-foreground/60">
+            <div className="truncate text-[11px] uppercase tracking-wider text-sidebar-foreground/50 font-medium">
               {role ? ROLE_LABELS[role] : "—"}
             </div>
           </div>
@@ -271,10 +271,10 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-10 h-14 flex items-center gap-3 border-b bg-background/95 backdrop-blur px-4">
-            <SidebarTrigger />
+          <header className="sticky top-0 z-10 h-16 flex items-center gap-3 border-b bg-card/90 backdrop-blur-md px-4 md:px-6 shadow-sm">
+            <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-semibold">
+              <div className="truncate text-base font-semibold tracking-tight">
                 {title ?? settings?.app_name ?? "Aplikasi Semeton"}
               </div>
             </div>
