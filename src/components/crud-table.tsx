@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -98,9 +99,14 @@ export function CrudTable<T extends { id: string; [k: string]: any }>({
                         <option value="">— pilih —</option>
                         {f.options?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                       </select>
+                    ) : f.type === "number" ? (
+                      <NumberInput
+                        value={form[f.name] ?? ""}
+                        onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
+                      />
                     ) : (
                       <Input
-                        type={f.type === "number" ? "number" : "text"}
+                        type="text"
                         value={form[f.name] ?? ""}
                         onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
                       />

@@ -2,6 +2,7 @@ import { ReactNode, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -55,9 +56,14 @@ export function TxForm({
                 </select>
               ) : f.type === "textarea" ? (
                 <Textarea value={form[f.name] ?? ""} onChange={(e) => set(f.name, e.target.value)} />
+              ) : f.type === "number" ? (
+                <NumberInput
+                  value={form[f.name] ?? ""}
+                  onChange={(e) => set(f.name, e.target.value)}
+                />
               ) : (
                 <Input
-                  type={f.type === "number" ? "number" : "text"}
+                  type="text"
                   value={form[f.name] ?? ""}
                   onChange={(e) => set(f.name, e.target.value)}
                 />
