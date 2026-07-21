@@ -164,7 +164,7 @@ function InitialTab() {
         <h3 className="font-semibold">Stok Awal Gudang</h3>
         <Select value={stock.product_id} onChange={(v) => setStock({ ...stock, product_id: v })} label="Produk" options={products.data?.map((p: any) => ({ value: p.id, label: p.name })) ?? []} />
         <Select value={stock.warehouse_id} onChange={(v) => setStock({ ...stock, warehouse_id: v })} label="Gudang" options={warehouses.data?.map((w: any) => ({ value: w.id, label: w.name })) ?? []} />
-        <Input type="number" placeholder="Qty" value={stock.qty} onChange={(e) => setStock({ ...stock, qty: e.target.value })} />
+        <NumberInput placeholder="Qty" value={stock.qty} onChange={(e) => setStock({ ...stock, qty: e.target.value })} />
         <Button onClick={() => call("set_initial_stock", { p_product_id: stock.product_id, p_warehouse_id: stock.warehouse_id, p_qty: Number(stock.qty) }, "Stok awal disimpan")}>Simpan</Button>
       </CardContent></Card>
 
