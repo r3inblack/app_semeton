@@ -56,9 +56,14 @@ export function TxForm({
                 </select>
               ) : f.type === "textarea" ? (
                 <Textarea value={form[f.name] ?? ""} onChange={(e) => set(f.name, e.target.value)} />
+              ) : f.type === "number" ? (
+                <NumberInput
+                  value={form[f.name] ?? ""}
+                  onChange={(e) => set(f.name, e.target.value)}
+                />
               ) : (
                 <Input
-                  type={f.type === "number" ? "number" : "text"}
+                  type="text"
                   value={form[f.name] ?? ""}
                   onChange={(e) => set(f.name, e.target.value)}
                 />
