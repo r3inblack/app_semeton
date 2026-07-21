@@ -156,7 +156,7 @@ function InitialTab() {
     <div className="grid gap-4 md:grid-cols-2">
       <Card><CardContent className="pt-6 space-y-3">
         <h3 className="font-semibold">Saldo Awal Kas</h3>
-        <Input type="number" placeholder="Nominal" value={cash} onChange={(e) => setCash(e.target.value)} />
+        <NumberInput placeholder="Nominal" value={cash} onChange={(e) => setCash(e.target.value)} />
         <Button onClick={() => call("set_initial_cash", { p_amount: Number(cash) }, "Saldo kas awal disimpan")}>Simpan</Button>
       </CardContent></Card>
 
