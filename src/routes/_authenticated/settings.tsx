@@ -178,7 +178,7 @@ function InitialTab() {
       <Card><CardContent className="pt-6 space-y-3">
         <h3 className="font-semibold">Hutang Awal Supplier</h3>
         <Select value={pay.supplier_id} onChange={(v) => setPay({ ...pay, supplier_id: v })} label="Supplier" options={suppliers.data?.map((s: any) => ({ value: s.id, label: s.name })) ?? []} />
-        <Input type="number" placeholder="Nominal" value={pay.amount} onChange={(e) => setPay({ ...pay, amount: e.target.value })} />
+        <NumberInput placeholder="Nominal" value={pay.amount} onChange={(e) => setPay({ ...pay, amount: e.target.value })} />
         <Button onClick={() => call("set_initial_payable", { p_supplier_id: pay.supplier_id, p_amount: Number(pay.amount) }, "Hutang awal disimpan")}>Simpan</Button>
       </CardContent></Card>
 
