@@ -99,9 +99,14 @@ export function CrudTable<T extends { id: string; [k: string]: any }>({
                         <option value="">— pilih —</option>
                         {f.options?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                       </select>
+                    ) : f.type === "number" ? (
+                      <NumberInput
+                        value={form[f.name] ?? ""}
+                        onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
+                      />
                     ) : (
                       <Input
-                        type={f.type === "number" ? "number" : "text"}
+                        type="text"
                         value={form[f.name] ?? ""}
                         onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
                       />
