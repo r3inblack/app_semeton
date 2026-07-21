@@ -45,44 +45,51 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen grid place-items-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Aplikasi Semeton</CardTitle>
-          <CardDescription>
-            Sistem manajemen stok & keuangan internal
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={signIn} className="space-y-3">
-            <div className="space-y-1">
-              <Label>Username</Label>
-              <Input
-                autoFocus
-                autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label>Password</Label>
-              <Input
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Memproses..." : "Masuk"}
-            </Button>
-            <p className="text-xs text-muted-foreground text-center pt-2">
-              Akun baru hanya dapat dibuat oleh Super Admin dari menu Karyawan.
-            </p>
-          </form>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen grid place-items-center bg-gradient-to-br from-[oklch(0.97_0.02_255)] via-background to-[oklch(0.94_0.04_255)] p-4">
+      <div className="w-full max-w-md">
+        <div className="flex flex-col items-center mb-6">
+          <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-primary to-[oklch(0.48_0.20_258)] text-primary-foreground font-bold text-xl shadow-lg shadow-primary/30 mb-3">
+            S
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight">Aplikasi Semeton</h1>
+          <p className="text-sm text-muted-foreground mt-1">Sistem manajemen stok & keuangan</p>
+        </div>
+        <Card className="border-border/60 shadow-xl shadow-primary/5">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Masuk ke akun Anda</CardTitle>
+            <CardDescription>Gunakan username & password yang diberikan admin</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={signIn} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label>Username</Label>
+                <Input
+                  autoFocus
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="admin"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Password</Label>
+                <Input
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <Button type="submit" className="w-full h-10 font-medium" disabled={loading}>
+                {loading ? "Memproses..." : "Masuk"}
+              </Button>
+              <p className="text-xs text-muted-foreground text-center pt-1">
+                Akun baru hanya dapat dibuat oleh Super Admin.
+              </p>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
