@@ -100,7 +100,7 @@ function AdminDashboard() {
     <>
       <PageHeader title="Dashboard Super Admin" description="Ringkasan keuangan & operasional" />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard label="Saldo Kas" value={fmtIDR(cash.data?.amount)} icon={<Wallet className="h-4 w-4 text-muted-foreground" />} />
+        <MetricCard label="SISA SALDO" value={fmtIDR(cash.data?.amount)} icon={<Wallet className="h-4 w-4 text-muted-foreground" />} />
         <MetricCard label="Total Piutang" value={fmtIDR(rec.data)} icon={<TrendingUp className="h-4 w-4 text-emerald-500" />} />
         <MetricCard label="Total Hutang Supplier" value={fmtIDR(pay.data)} icon={<TrendingDown className="h-4 w-4 text-rose-500" />} />
         <MetricCard label="Sisa Hutang Gaji" value={fmtIDR(sal.data)} icon={<HandCoins className="h-4 w-4 text-amber-500" />} />
