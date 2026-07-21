@@ -162,15 +162,15 @@ function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
-        <div className="flex items-center gap-2">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-bold">
+        <div className="flex items-center gap-2.5">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-[oklch(0.48_0.20_258)] text-primary-foreground font-bold shadow-sm shadow-primary/30">
             S
           </div>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-sidebar-foreground">
               {settings?.app_name ?? "Aplikasi Semeton"}
             </div>
-            <div className="truncate text-xs text-sidebar-foreground/60">
+            <div className="truncate text-[11px] uppercase tracking-wider text-sidebar-foreground/50 font-medium">
               {role ? ROLE_LABELS[role] : "—"}
             </div>
           </div>
