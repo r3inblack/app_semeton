@@ -6,13 +6,9 @@ import { PageHeader, MetricCard } from "@/components/page-header";
 import { useRole } from "@/hooks/use-role";
 import { fmtIDR, fmtDate, fmtNum } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Wallet, TrendingUp, TrendingDown, HandCoins } from "lucide-react";
-import {
-  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Aplikasi Semeton" }] }),
@@ -21,7 +17,12 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const { isAdmin, isStaf, profile, loading } = useRole();
-  if (loading) return <AppShell title="Dashboard"><div>Memuat…</div></AppShell>;
+  if (loading)
+    return (
+      <AppShell title="Dashboard">
+        <div>Memuat…</div>
+      </AppShell>
+    );
   return (
     <AppShell title="Dashboard">
       {isAdmin ? <AdminDashboard /> : isStaf ? <StafDashboard warehouseId={profile?.warehouse_id} /> : null}
@@ -32,8 +33,7 @@ function Dashboard() {
 function AdminDashboard() {
   const cash = useQuery({
     queryKey: ["cash_balance"],
-    queryFn: async () =>
-      (await supabase.from("cash_balance").select("amount").eq("id", 1).maybeSingle()).data,
+    queryFn: async () => (await supabase.from("cash_balance").select("amount").eq("id", 1).maybeSingle()).data,
   });
   const rec = useQuery({
     queryKey: ["cust_bal_sum"],
@@ -100,19 +100,42 @@ function AdminDashboard() {
     <>
       <PageHeader title="Dashboard Super Admin" description="Ringkasan keuangan & operasional" />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard label="SISA SALDO" value={fmtIDR(cash.data?.amount)} icon={<Wallet className="h-4 w-4 text-muted-foreground" />} />
-        <MetricCard label="Total Piutang" value={fmtIDR(rec.data)} icon={<TrendingUp className="h-4 w-4 text-emerald-500" />} />
-        <MetricCard label="Total Hutang Supplier" value={fmtIDR(pay.data)} icon={<TrendingDown className="h-4 w-4 text-rose-500" />} />
-        <MetricCard label="Sisa Hutang Gaji" value={fmtIDR(sal.data)} icon={<HandCoins className="h-4 w-4 text-amber-500" />} />
+        <MetricCard
+          label="SISA SALDO"
+          value={fmtIDR(cash.data?.amount)}
+          icon={<Wallet className="h-4 w-4 text-muted-foreground" />}
+        />
+        <MetricCard
+          label="TOTAL PIUTANG"
+          value={fmtIDR(rec.data)}
+          icon={<TrendingUp className="h-4 w-4 text-emerald-500" />}
+        />
+        <MetricCard
+          label="Total Hutang Supplier"
+          value={fmtIDR(pay.data)}
+          icon={<TrendingDown className="h-4 w-4 text-rose-500" />}
+        />
+        <MetricCard
+          label="Sisa Hutang Gaji"
+          value={fmtIDR(sal.data)}
+          icon={<HandCoins className="h-4 w-4 text-amber-500" />}
+        />
       </div>
 
       <div className="grid gap-4 mt-6 lg:grid-cols-2">
         <Card>
-          <CardHeader><CardTitle>Sisa Piutang per Pelanggan</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Sisa Piutang per Pelanggan</CardTitle>
+          </CardHeader>
           <CardContent>
             <div className="max-h-80 overflow-auto">
               <Table>
-                <TableHeader><TableRow><TableHead>Pelanggan</TableHead><TableHead className="text-right">Piutang</TableHead></TableRow></TableHeader>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Pelanggan</TableHead>
+                    <TableHead className="text-right">Piutang</TableHead>
+                  </TableRow>
+                </TableHeader>
                 <TableBody>
                   {(custList.data ?? []).map((r: any, i) => (
                     <TableRow key={i}>
@@ -120,18 +143,32 @@ function AdminDashboard() {
                       <TableCell className="text-right font-medium">{fmtIDR(r.receivable)}</TableCell>
                     </TableRow>
                   ))}
-                  {!custList.data?.length && <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Belum ada data</TableCell></TableRow>}
+                  {!custList.data?.length && (
+                    <TableRow>
+                      <TableCell colSpan={2} className="text-center text-muted-foreground">
+                        Belum ada data
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Sisa Hak Gaji per Karyawan</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Sisa Hak Gaji per Karyawan</CardTitle>
+          </CardHeader>
           <CardContent>
             <div className="max-h-80 overflow-auto">
               <Table>
-                <TableHeader><TableRow><TableHead>Karyawan</TableHead><TableHead>Kategori</TableHead><TableHead className="text-right">Sisa</TableHead></TableRow></TableHeader>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Karyawan</TableHead>
+                    <TableHead>Kategori</TableHead>
+                    <TableHead className="text-right">Sisa</TableHead>
+                  </TableRow>
+                </TableHeader>
                 <TableBody>
                   {(empList.data ?? []).map((r: any, i) => (
                     <TableRow key={i}>
@@ -140,7 +177,13 @@ function AdminDashboard() {
                       <TableCell className="text-right font-medium">{fmtIDR(r.balance)}</TableCell>
                     </TableRow>
                   ))}
-                  {!empList.data?.length && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">Belum ada data</TableCell></TableRow>}
+                  {!empList.data?.length && (
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center text-muted-foreground">
+                        Belum ada data
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </div>
@@ -149,7 +192,9 @@ function AdminDashboard() {
       </div>
 
       <Card className="mt-6">
-        <CardHeader><CardTitle>Pergerakan Kas 30 Hari Terakhir</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Pergerakan Kas 30 Hari Terakhir</CardTitle>
+        </CardHeader>
         <CardContent>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -198,9 +243,11 @@ function StafDashboard({ warehouseId }: { warehouseId?: string | null }) {
     return (
       <>
         <PageHeader title="Dashboard Staf Gudang" />
-        <Card><CardContent className="pt-6 text-muted-foreground">
-          Akun Anda belum dikaitkan dengan gudang. Hubungi Super Admin.
-        </CardContent></Card>
+        <Card>
+          <CardContent className="pt-6 text-muted-foreground">
+            Akun Anda belum dikaitkan dengan gudang. Hubungi Super Admin.
+          </CardContent>
+        </Card>
       </>
     );
   }
@@ -209,10 +256,17 @@ function StafDashboard({ warehouseId }: { warehouseId?: string | null }) {
     <>
       <PageHeader title="Dashboard Staf Gudang" />
       <Card>
-        <CardHeader><CardTitle>Sisa Stok di Gudang Anda</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Sisa Stok di Gudang Anda</CardTitle>
+        </CardHeader>
         <CardContent>
           <Table>
-            <TableHeader><TableRow><TableHead>Produk</TableHead><TableHead className="text-right">Qty</TableHead></TableRow></TableHeader>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Produk</TableHead>
+                <TableHead className="text-right">Qty</TableHead>
+              </TableRow>
+            </TableHeader>
             <TableBody>
               {(stock.data ?? []).map((r: any, i) => (
                 <TableRow key={i}>
@@ -220,19 +274,32 @@ function StafDashboard({ warehouseId }: { warehouseId?: string | null }) {
                   <TableCell className="text-right font-medium">{fmtNum(r.qty)}</TableCell>
                 </TableRow>
               ))}
-              {!stock.data?.length && <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Belum ada stok</TableCell></TableRow>}
+              {!stock.data?.length && (
+                <TableRow>
+                  <TableCell colSpan={2} className="text-center text-muted-foreground">
+                    Belum ada stok
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
       <Card className="mt-4">
-        <CardHeader><CardTitle>3 Transaksi Terakhir</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>3 Transaksi Terakhir</CardTitle>
+        </CardHeader>
         <CardContent>
           <Table>
-            <TableHeader><TableRow>
-              <TableHead>Waktu</TableHead><TableHead>Pelanggan</TableHead><TableHead>Produk</TableHead>
-              <TableHead className="text-right">Qty</TableHead><TableHead className="text-right">Total</TableHead>
-            </TableRow></TableHeader>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Waktu</TableHead>
+                <TableHead>Pelanggan</TableHead>
+                <TableHead>Produk</TableHead>
+                <TableHead className="text-right">Qty</TableHead>
+                <TableHead className="text-right">Total</TableHead>
+              </TableRow>
+            </TableHeader>
             <TableBody>
               {(last.data ?? []).map((r: any, i) => (
                 <TableRow key={i}>
@@ -243,7 +310,13 @@ function StafDashboard({ warehouseId }: { warehouseId?: string | null }) {
                   <TableCell className="text-right">{fmtIDR(r.total)}</TableCell>
                 </TableRow>
               ))}
-              {!last.data?.length && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Belum ada transaksi</TableCell></TableRow>}
+              {!last.data?.length && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                    Belum ada transaksi
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
