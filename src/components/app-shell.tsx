@@ -271,10 +271,10 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-10 h-14 flex items-center gap-3 border-b bg-background/95 backdrop-blur px-4">
-            <SidebarTrigger />
+          <header className="sticky top-0 z-10 h-16 flex items-center gap-3 border-b bg-card/90 backdrop-blur-md px-4 md:px-6 shadow-sm">
+            <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-semibold">
+              <div className="truncate text-base font-semibold tracking-tight">
                 {title ?? settings?.app_name ?? "Aplikasi Semeton"}
               </div>
             </div>
