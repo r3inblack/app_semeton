@@ -193,6 +193,61 @@ function TelegramTab() {
           <Switch checked={form.telegram_enabled} onCheckedChange={(v) => setForm({ ...form, telegram_enabled: v })} />
           <Label>Aktifkan notifikasi Telegram</Label>
         </div>
+        <p className="text-xs text-muted-foreground">
+          Master switch untuk semua notifikasi Telegram (transaksi & pengajuan barang masuk).
+        </p>
+        <div className="flex">
+          <Button onClick={save}>Simpan</Button>
+        </div>
+      </CardContent></Card>
+
+      <Card><CardContent className="pt-6 space-y-4 max-w-lg">
+        <div>
+          <h3 className="font-semibold">Notifikasi Transaksi (Grup)</h3>
+          <p className="text-sm text-muted-foreground">
+            Bot & chat_id grup Telegram tujuan notifikasi transaksi kas masuk/keluar
+            (setoran pelanggan, bayar supplier, pengeluaran, dsb).
+          </p>
+        </div>
+        <div className="space-y-1">
+          <Label>Bot API Token (Grup)</Label>
+          <Input
+            value={form.telegram_group_bot_token}
+            onChange={(e) => setForm({ ...form, telegram_group_bot_token: e.target.value })}
+            placeholder="123456:ABCDEF..."
+          />
+          <p className="text-xs text-muted-foreground">
+            Kosongkan untuk memakai Bot Token yang sama dengan menu pengajuan di bawah.
+          </p>
+        </div>
+        <div className="space-y-1">
+          <Label>Chat ID Grup</Label>
+          <Input
+            value={form.telegram_group_chat_id}
+            onChange={(e) => setForm({ ...form, telegram_group_chat_id: e.target.value })}
+            placeholder="-1001234567890"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={save}>Simpan</Button>
+          <Button
+            variant="outline"
+            onClick={testGroup}
+            disabled={!form.telegram_group_chat_id || !(form.telegram_group_bot_token || form.telegram_bot_token)}
+          >
+            Kirim Test ke Grup
+          </Button>
+        </div>
+      </CardContent></Card>
+
+      <Card><CardContent className="pt-6 space-y-4 max-w-lg">
+        <div>
+          <h3 className="font-semibold">Notifikasi Pengajuan Barang Masuk & Harga</h3>
+          <p className="text-sm text-muted-foreground">
+            Bot khusus untuk pengajuan barang masuk oleh Staf Gudang. Owner yang berwenang
+            akan menerima notifikasi & dapat menentukan harga beli/jual via balasan Telegram.
+          </p>
+        </div>
         <div className="space-y-1"><Label>Bot API Token</Label>
           <Input value={form.telegram_bot_token} onChange={(e) => setForm({ ...form, telegram_bot_token: e.target.value })} placeholder="123456:ABCDEF..." />
         </div>
