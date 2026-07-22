@@ -16,6 +16,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedStockPendingRouteImport } from './routes/_authenticated/stock.pending'
 import { Route as AuthenticatedStockMutationsRouteImport } from './routes/_authenticated/stock.mutations'
 import { Route as AuthenticatedStockLevelsRouteImport } from './routes/_authenticated/stock.levels'
 import { Route as AuthenticatedStockInRouteImport } from './routes/_authenticated/stock.in'
@@ -70,6 +71,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedStockPendingRoute =
+  AuthenticatedStockPendingRouteImport.update({
+    id: '/stock/pending',
+    path: '/stock/pending',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedStockMutationsRoute =
   AuthenticatedStockMutationsRouteImport.update({
     id: '/stock/mutations',
@@ -210,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/stock/in': typeof AuthenticatedStockInRoute
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
+  '/stock/pending': typeof AuthenticatedStockPendingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -237,6 +245,7 @@ export interface FileRoutesByTo {
   '/stock/in': typeof AuthenticatedStockInRoute
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
+  '/stock/pending': typeof AuthenticatedStockPendingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -266,6 +275,7 @@ export interface FileRoutesById {
   '/_authenticated/stock/in': typeof AuthenticatedStockInRoute
   '/_authenticated/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/_authenticated/stock/mutations': typeof AuthenticatedStockMutationsRoute
+  '/_authenticated/stock/pending': typeof AuthenticatedStockPendingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -295,6 +305,7 @@ export interface FileRouteTypes {
     | '/stock/in'
     | '/stock/levels'
     | '/stock/mutations'
+    | '/stock/pending'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -322,6 +333,7 @@ export interface FileRouteTypes {
     | '/stock/in'
     | '/stock/levels'
     | '/stock/mutations'
+    | '/stock/pending'
   id:
     | '__root__'
     | '/'
@@ -350,6 +362,7 @@ export interface FileRouteTypes {
     | '/_authenticated/stock/in'
     | '/_authenticated/stock/levels'
     | '/_authenticated/stock/mutations'
+    | '/_authenticated/stock/pending'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -407,6 +420,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stock/pending': {
+      id: '/_authenticated/stock/pending'
+      path: '/stock/pending'
+      fullPath: '/stock/pending'
+      preLoaderRoute: typeof AuthenticatedStockPendingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/stock/mutations': {
@@ -569,6 +589,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedStockInRoute: typeof AuthenticatedStockInRoute
   AuthenticatedStockLevelsRoute: typeof AuthenticatedStockLevelsRoute
   AuthenticatedStockMutationsRoute: typeof AuthenticatedStockMutationsRoute
+  AuthenticatedStockPendingRoute: typeof AuthenticatedStockPendingRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -595,6 +616,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedStockInRoute: AuthenticatedStockInRoute,
   AuthenticatedStockLevelsRoute: AuthenticatedStockLevelsRoute,
   AuthenticatedStockMutationsRoute: AuthenticatedStockMutationsRoute,
+  AuthenticatedStockPendingRoute: AuthenticatedStockPendingRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

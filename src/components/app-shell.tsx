@@ -78,6 +78,7 @@ const NAV: NavItem[] = [
     children: [
       { title: "Stok Gudang", url: "/stock/levels", module: "stock_levels" },
       { title: "Barang Masuk", url: "/stock/in", module: "stock_in" },
+      { title: "Persetujuan Barang Masuk", url: "/stock/pending", module: "stock_pending" },
       { title: "Mutasi Stok", url: "/stock/mutations", module: "stock_mutations" },
     ],
   },
