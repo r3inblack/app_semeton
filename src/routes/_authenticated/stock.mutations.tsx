@@ -43,10 +43,17 @@ function MutationPage() {
           { name: "note", label: "Catatan", type: "textarea" },
         ]}
         onSubmit={async (v) => {
+          const qty = Number(v.qty);
           const { error } = await supabase.rpc("record_mutation", {
-            p_from: v.from, p_to: v.to, p_product_id: v.product_id, p_qty: Number(v.qty), p_note: v.note || null,
+            p_from: v.from, p_to: v.to, p_product_id: v.product_id, p_qty: qty, p_note: v.note || null,
           });
           if (error) throw error;
+          const from = warehouses.data?.find((w) => w.id === v.from)?.name ?? "-";
+          const to = warehouses.data?.find((w) => w.id === v.to)?.name ?? "-";
+          const prod = products.data?.find((p) => p.id === v.product_id)?.name ?? "-";
+          sendTransactionNotification(
+            `🔄 <b>Mutasi Stok</b>\nDari: ${from}\nKe: ${to}\nProduk: ${prod}\nQty: ${fmtNum(qty)}`,
+          );
           qc.invalidateQueries();
         }}
       />
