@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   listUsers, createUser, updateUser, deleteUser,
   getUserPermissions, setUserPermissions,
-  listCustomRoles, upsertCustomRole, deleteCustomRole,
+  listCustomRoles,
 } from "@/lib/users.functions";
 import { useList } from "@/lib/list-hooks";
 import { ALL_MODULES, ROLE_LABELS, type AppRole } from "@/hooks/use-role";
@@ -24,7 +24,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Plus, Pencil, Trash2, KeyRound, ShieldCheck, Shield } from "lucide-react";
+import { Plus, Pencil, Trash2, KeyRound, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 type UserRow = {
@@ -65,8 +65,6 @@ export function UsersManager() {
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [pwUser, setPwUser] = useState<UserRow | null>(null);
   const [permsUser, setPermsUser] = useState<UserRow | null>(null);
-  const [openRoles, setOpenRoles] = useState(false);
-  const [editingRole, setEditingRole] = useState<CustomRole | null>(null);
 
   const [form, setForm] = useState({
     username: "", password: "", full_name: "",
@@ -196,9 +194,7 @@ export function UsersManager() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => { setEditingRole(null); setOpenRoles(true); }}>
-            <Shield className="h-4 w-4 mr-1" /> Tambah Role
-          </Button>
+
           <Dialog open={openNew} onOpenChange={setOpenNew}>
             <DialogTrigger asChild>
               <Button><Plus className="h-4 w-4 mr-1" /> Tambah User</Button>
@@ -247,7 +243,7 @@ export function UsersManager() {
                     </select>
                     {!customRoles.length && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        Belum ada role custom. Klik <b>Tambah Role</b> di kanan atas terlebih dulu.
+                        Belum ada role custom. Buka tab <b>Role & Hak Akses</b> untuk membuatnya.
                       </p>
                     )}
                   </Field>
@@ -272,27 +268,8 @@ export function UsersManager() {
         </div>
       </div>
 
-      {/* Custom roles quick list */}
-      {!!customRoles.length && (
-        <div className="rounded border bg-muted/30 p-3">
-          <div className="text-xs font-semibold uppercase text-muted-foreground mb-2">Role Custom</div>
-          <div className="flex flex-wrap gap-2">
-            {customRoles.map((r) => (
-              <div key={r.id} className="flex items-center gap-1 rounded-full border bg-background px-3 py-1 text-sm">
-                <Shield className="h-3.5 w-3.5 text-primary" />
-                <span>{r.name}</span>
-                <button
-                  className="ml-1 text-muted-foreground hover:text-foreground"
-                  title="Edit role"
-                  onClick={() => { setEditingRole(r); setOpenRoles(true); }}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+
+
 
 
       <div className="overflow-auto">
@@ -432,166 +409,7 @@ export function UsersManager() {
         <PermissionsDialog user={permsUser} onClose={() => setPermsUser(null)} />
       )}
 
-      {/* Custom Role dialog */}
-      {openRoles && (
-        <CustomRoleDialog
-          initial={editingRole}
-          onClose={() => { setOpenRoles(false); setEditingRole(null); }}
-          onSaved={() => {
-            qc.invalidateQueries({ queryKey: ["custom-roles"] });
-            qc.invalidateQueries({ queryKey: ["role-perms"] });
-          }}
-        />
-      )}
     </CardContent></Card>
-  );
-}
-
-function CustomRoleDialog({
-  initial, onClose, onSaved,
-}: { initial: CustomRole | null; onClose: () => void; onSaved: () => void }) {
-  const upsert = useServerFn(upsertCustomRole);
-  const del = useServerFn(deleteCustomRole);
-  const [name, setName] = useState(initial?.name ?? "");
-  const [search, setSearch] = useState("");
-  type Row = { view: boolean; create: boolean; update: boolean; delete: boolean };
-  const emptyRow = (): Row => ({ view: false, create: false, update: false, delete: false });
-  const [perms, setPerms] = useState<Record<string, Row>>(() => {
-    const map: Record<string, Row> = {};
-    for (const m of ALL_MODULES) map[m.key] = emptyRow();
-    for (const p of initial?.permissions ?? []) {
-      if (!map[p.module]) map[p.module] = emptyRow();
-      if (p.action === "view") map[p.module].view = !!p.allowed;
-      if (p.action === "create") map[p.module].create = !!p.allowed;
-      if (p.action === "update") map[p.module].update = !!p.allowed;
-      if (p.action === "delete") map[p.module].delete = !!p.allowed;
-      // legacy "manage" → grants create/update/delete
-      if (p.action === "manage" && p.allowed) {
-        map[p.module].create = true; map[p.module].update = true; map[p.module].delete = true;
-      }
-    }
-    return map;
-  });
-
-  const groups = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    const filtered = q ? ALL_MODULES.filter((m) => m.label.toLowerCase().includes(q) || m.group.toLowerCase().includes(q)) : ALL_MODULES;
-    return filtered.reduce<Record<string, typeof ALL_MODULES>>((acc, m) => {
-      (acc[m.group] ??= []).push(m); return acc;
-    }, {});
-  }, [search]);
-
-  const toggle = (key: string, action: keyof Row, value: boolean) => {
-    setPerms((p) => {
-      const cur = p[key] ?? emptyRow();
-      const next = { ...cur, [action]: value };
-      if (action !== "view" && value) next.view = true;
-      if (action === "view" && !value) { next.create = false; next.update = false; next.delete = false; }
-      return { ...p, [key]: next };
-    });
-  };
-
-  const activateAllGroup = (mods: typeof ALL_MODULES) => {
-    setPerms((p) => {
-      const next = { ...p };
-      for (const m of mods) next[m.key] = { view: true, create: true, update: true, delete: true };
-      return next;
-    });
-  };
-
-  const save = async () => {
-    if (!name.trim()) { toast.error("Nama role wajib diisi"); return; }
-    const rows: { module: string; action: string; allowed: boolean }[] = [];
-    for (const [module, v] of Object.entries(perms)) {
-      (["view","create","update","delete"] as (keyof Row)[]).forEach((a) => {
-        if (v[a]) rows.push({ module, action: a, allowed: true });
-      });
-    }
-    try {
-      await upsert({ data: { id: initial?.id, name: name.trim(), permissions: rows } });
-      toast.success("Role disimpan");
-      onSaved(); onClose();
-    } catch (e: any) { toast.error(e.message); }
-  };
-
-  const remove = async () => {
-    if (!initial) return;
-    if (!confirm(`Hapus role "${initial.name}"?`)) return;
-    try {
-      await del({ data: { id: initial.id } });
-      toast.success("Role dihapus"); onSaved(); onClose();
-    } catch (e: any) { toast.error(e.message); }
-  };
-
-  return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle>{initial ? "Edit Role" : "Tambah Role"}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3 flex-1 overflow-hidden flex flex-col">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Nama Role">
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="misal: Kepala Cabang" />
-            </Field>
-            <Field label="Cari nama hak akses">
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Ketik untuk mencari…" />
-            </Field>
-          </div>
-          <div className="flex-1 overflow-auto rounded border">
-            {Object.entries(groups).map(([group, mods]) => (
-              <div key={group} className="border-b last:border-b-0">
-                <div className="flex items-center justify-between bg-muted/50 px-3 py-2">
-                  <div className="text-xs font-semibold uppercase text-muted-foreground">{group}</div>
-                  <button
-                    type="button"
-                    onClick={() => activateAllGroup(mods)}
-                    className="text-xs text-primary hover:underline"
-                  >
-                    Aktifkan Semua
-                  </button>
-                </div>
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-xs text-muted-foreground">
-                      <th className="text-left px-3 py-1.5">Modul</th>
-                      <th className="w-16 text-center">Lihat</th>
-                      <th className="w-16 text-center">Buat</th>
-                      <th className="w-16 text-center">Ubah</th>
-                      <th className="w-16 text-center">Hapus</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {mods.map((m) => (
-                      <tr key={m.key} className="border-t">
-                        <td className="px-3 py-1.5">{m.label}</td>
-                        {(["view","create","update","delete"] as (keyof Row)[]).map((a) => (
-                          <td key={a} className="text-center">
-                            <Checkbox
-                              checked={!!perms[m.key]?.[a]}
-                              onCheckedChange={(v) => toggle(m.key, a, !!v)}
-                            />
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
-          </div>
-        </div>
-        <DialogFooter className="gap-2">
-          {initial && (
-            <Button variant="destructive" onClick={remove} className="mr-auto">
-              <Trash2 className="h-4 w-4 mr-1" /> Hapus Role
-            </Button>
-          )}
-          <Button variant="outline" onClick={onClose}>Batal</Button>
-          <Button onClick={save}>Simpan</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
 

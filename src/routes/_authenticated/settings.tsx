@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 
 import { UsersManager } from "@/components/users-manager";
+import { RolesManager } from "@/components/roles-manager";
 import { TelegramTemplatesManager } from "@/components/telegram-templates";
 import { TelegramWebhookDiagnostics } from "@/components/telegram-webhook-diagnostics";
 import { ApiKeysManager } from "@/components/api-keys-manager";
@@ -59,6 +60,7 @@ function SettingsPage() {
           {canTelegram && <TabsTrigger value="templates">Template Pesan</TabsTrigger>}
           {canTelegram && <TabsTrigger value="webhook">Diagnostik Webhook</TabsTrigger>}
           {canUsers && <TabsTrigger value="users">Pengguna & Hak Akses</TabsTrigger>}
+          {canUsers && <TabsTrigger value="roles">Role & Hak Akses</TabsTrigger>}
           {canDanger && <TabsTrigger value="api">API Eksternal</TabsTrigger>}
           {canInitial && <TabsTrigger value="initial">Setup Data Awal</TabsTrigger>}
           {canDanger && <TabsTrigger value="danger">Danger Zone</TabsTrigger>}
@@ -68,6 +70,7 @@ function SettingsPage() {
         {canTelegram && <TabsContent value="templates"><TelegramTemplatesManager /></TabsContent>}
         {canTelegram && <TabsContent value="webhook"><TelegramWebhookDiagnostics /></TabsContent>}
         {canUsers && <TabsContent value="users"><UsersManager /></TabsContent>}
+        {canUsers && <TabsContent value="roles"><RolesManager /></TabsContent>}
         {canDanger && <TabsContent value="api"><ApiKeysManager /></TabsContent>}
         {canInitial && <TabsContent value="initial"><InitialTab /></TabsContent>}
         {canDanger && <TabsContent value="danger"><DangerTab /></TabsContent>}
