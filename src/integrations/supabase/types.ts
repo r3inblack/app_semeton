@@ -427,6 +427,64 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_employee_bonus: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          employee_id: string
+          id: string
+          note: string | null
+          product_id: string
+          qty: number
+          status: string
+          warehouse_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          employee_id: string
+          id?: string
+          note?: string | null
+          product_id: string
+          qty: number
+          status?: string
+          warehouse_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          employee_id?: string
+          id?: string
+          note?: string | null
+          product_id?: string
+          qty?: number
+          status?: string
+          warehouse_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_employee_bonus_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_employee_bonus_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_employee_bonus_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pending_stock_in: {
         Row: {
           created_at: string
@@ -960,6 +1018,67 @@ export type Database = {
           },
         ]
       }
+      supplier_returns: {
+        Row: {
+          created_by: string | null
+          id: string
+          note: string | null
+          occurred_at: string
+          product_id: string
+          qty: number
+          supplier_id: string
+          total: number
+          unit_price: number
+          warehouse_id: string
+        }
+        Insert: {
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          occurred_at?: string
+          product_id: string
+          qty: number
+          supplier_id: string
+          total: number
+          unit_price: number
+          warehouse_id: string
+        }
+        Update: {
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          occurred_at?: string
+          product_id?: string
+          qty?: number
+          supplier_id?: string
+          total?: number
+          unit_price?: number
+          warehouse_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_returns_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_returns_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_returns_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           address: string | null
@@ -1217,6 +1336,14 @@ export type Database = {
         }
         Returns: string
       }
+      approve_pending_employee_bonus: {
+        Args: { p_id: string }
+        Returns: string
+      }
+      approve_pending_employee_bonus_via_telegram: {
+        Args: { p_id: string }
+        Returns: string
+      }
       approve_pending_stock_in: {
         Args: { p_buy_price: number; p_id: string; p_sell_price: number }
         Returns: string
@@ -1314,6 +1441,20 @@ export type Database = {
         Args: { p_amount: number; p_note: string; p_supplier_id: string }
         Returns: string
       }
+      record_supplier_return: {
+        Args: {
+          p_note: string
+          p_product_id: string
+          p_qty: number
+          p_supplier_id: string
+          p_warehouse_id: string
+        }
+        Returns: string
+      }
+      reject_pending_employee_bonus: {
+        Args: { p_id: string; p_reason: string }
+        Returns: undefined
+      }
       reject_pending_stock_in: {
         Args: { p_id: string; p_reason: string }
         Returns: undefined
@@ -1335,6 +1476,16 @@ export type Database = {
       set_initial_stock: {
         Args: { p_product_id: string; p_qty: number; p_warehouse_id: string }
         Returns: undefined
+      }
+      submit_pending_employee_bonus: {
+        Args: {
+          p_employee_id: string
+          p_note: string
+          p_product_id: string
+          p_qty: number
+          p_warehouse_id: string
+        }
+        Returns: string
       }
       submit_pending_stock_in: {
         Args: {
