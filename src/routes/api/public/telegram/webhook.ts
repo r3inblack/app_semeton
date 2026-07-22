@@ -107,6 +107,39 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
         const combined = replied + "\n" + text;
 
+        // Setoran mandiri approval: #SETORAN:<uuid> — reply "ok" / "tolak"
+        const setoranMatch = combined.match(
+          /#SETORAN[:\s]*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i,
+        );
+        if (setoranMatch) {
+          const setId = setoranMatch[1];
+          const approveWord = /\b(ok|oke|okay|setuju|approve|y|ya|yes|valid)\b/i.test(text);
+          const rejectWord = /\b(tolak|reject|no|tidak|batal|invalid)\b/i.test(text);
+          if (rejectWord) {
+            const { error } = await admin.rpc("reject_pending_customer_payment", {
+              p_id: setId, p_reason: "via Telegram",
+            });
+            if (error) { await tgSend(botToken, chatId, `❌ Gagal: ${error.message}`, messageId); await log("rpc_error", error.message); }
+            else { await tgSend(botToken, chatId, "🚫 Setoran ditolak.", messageId); await log("setoran_rejected", `id=${setId}`); }
+            return Response.json({ ok: true });
+          }
+          if (!approveWord) {
+            await tgSend(botToken, chatId, "Balas dengan <code>ok</code> untuk menyetujui atau <code>tolak</code> untuk menolak.", messageId);
+            await log("setoran_no_action", `id=${setId}`);
+            return Response.json({ ok: true });
+          }
+          const { error } = await admin.rpc("approve_pending_customer_payment_via_telegram", { p_id: setId });
+          if (error) {
+            await tgSend(botToken, chatId, `❌ Gagal: ${error.message}`, messageId);
+            await log("rpc_error", error.message);
+            return Response.json({ ok: true });
+          }
+          await tgSend(botToken, chatId, "✅ Setoran disetujui. Kas bertambah & piutang berkurang.", messageId);
+          await log("setoran_approved", `id=${setId}`);
+          return Response.json({ ok: true });
+        }
+
+
         // Bonus approval: #BONUS:<uuid> — just reply "ok" / "setuju" / "y"
         const bonusMatch = combined.match(
           /#BONUS[:\s]*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i,
