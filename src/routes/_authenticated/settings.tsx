@@ -59,6 +59,7 @@ function SettingsPage() {
           {canTelegram && <TabsTrigger value="templates">Template Pesan</TabsTrigger>}
           {canTelegram && <TabsTrigger value="webhook">Diagnostik Webhook</TabsTrigger>}
           {canUsers && <TabsTrigger value="users">Pengguna & Hak Akses</TabsTrigger>}
+          {canDanger && <TabsTrigger value="api">API Eksternal</TabsTrigger>}
           {canInitial && <TabsTrigger value="initial">Setup Data Awal</TabsTrigger>}
           {canDanger && <TabsTrigger value="danger">Danger Zone</TabsTrigger>}
         </TabsList>
@@ -67,6 +68,7 @@ function SettingsPage() {
         {canTelegram && <TabsContent value="templates"><TelegramTemplatesManager /></TabsContent>}
         {canTelegram && <TabsContent value="webhook"><TelegramWebhookDiagnostics /></TabsContent>}
         {canUsers && <TabsContent value="users"><UsersManager /></TabsContent>}
+        {canDanger && <TabsContent value="api"><ApiKeysManager /></TabsContent>}
         {canInitial && <TabsContent value="initial"><InitialTab /></TabsContent>}
         {canDanger && <TabsContent value="danger"><DangerTab /></TabsContent>}
       </Tabs>
