@@ -11,6 +11,7 @@ export const Route = createFileRoute("/_authenticated/master/customers")({
         table="customers"
         title="Pelanggan"
         fields={[
+          { name: "code", label: "Nomor ID", hideInTable: false, render: (v) => v ?? "-", disabledWhen: () => true },
           { name: "name", label: "Nama" },
           { name: "phone", label: "Telepon" },
           { name: "address", label: "Alamat" },
