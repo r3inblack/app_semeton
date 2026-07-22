@@ -237,7 +237,7 @@ function TelegramRecipientsCard({ botToken }: { botToken: string }) {
             </tr>
           </thead>
           <tbody>
-            {(q.data ?? []).map((r) => (
+            {(q.data ?? []).map((r: any) => (
               <tr key={r.id} className="border-t">
                 <td className="px-3 py-2">{r.label}</td>
                 <td className="px-3 py-2 font-mono">{r.chat_id}</td>
