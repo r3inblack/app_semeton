@@ -28,6 +28,7 @@ import { Route as AuthenticatedSalaryAccrualRouteImport } from './routes/_authen
 import { Route as AuthenticatedReportsReceivablesRouteImport } from './routes/_authenticated/reports.receivables'
 import { Route as AuthenticatedReportsPayablesRouteImport } from './routes/_authenticated/reports.payables'
 import { Route as AuthenticatedReportsMutationsRouteImport } from './routes/_authenticated/reports.mutations'
+import { Route as AuthenticatedReportsExpensesRouteImport } from './routes/_authenticated/reports.expenses'
 import { Route as AuthenticatedReportsCashflowRouteImport } from './routes/_authenticated/reports.cashflow'
 import { Route as AuthenticatedPaymentsSupplierRouteImport } from './routes/_authenticated/payments.supplier'
 import { Route as AuthenticatedPaymentsCustomerRouteImport } from './routes/_authenticated/payments.customer'
@@ -144,6 +145,12 @@ const AuthenticatedReportsMutationsRoute =
     path: '/reports/mutations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedReportsExpensesRoute =
+  AuthenticatedReportsExpensesRouteImport.update({
+    id: '/reports/expenses',
+    path: '/reports/expenses',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedReportsCashflowRoute =
   AuthenticatedReportsCashflowRouteImport.update({
     id: '/reports/cashflow',
@@ -219,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
   '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
+  '/reports/expenses': typeof AuthenticatedReportsExpensesRoute
   '/reports/mutations': typeof AuthenticatedReportsMutationsRoute
   '/reports/payables': typeof AuthenticatedReportsPayablesRoute
   '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
@@ -249,6 +257,7 @@ export interface FileRoutesByTo {
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
   '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
+  '/reports/expenses': typeof AuthenticatedReportsExpensesRoute
   '/reports/mutations': typeof AuthenticatedReportsMutationsRoute
   '/reports/payables': typeof AuthenticatedReportsPayablesRoute
   '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
@@ -281,6 +290,7 @@ export interface FileRoutesById {
   '/_authenticated/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/_authenticated/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
   '/_authenticated/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
+  '/_authenticated/reports/expenses': typeof AuthenticatedReportsExpensesRoute
   '/_authenticated/reports/mutations': typeof AuthenticatedReportsMutationsRoute
   '/_authenticated/reports/payables': typeof AuthenticatedReportsPayablesRoute
   '/_authenticated/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/payments/customer'
     | '/payments/supplier'
     | '/reports/cashflow'
+    | '/reports/expenses'
     | '/reports/mutations'
     | '/reports/payables'
     | '/reports/receivables'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/payments/customer'
     | '/payments/supplier'
     | '/reports/cashflow'
+    | '/reports/expenses'
     | '/reports/mutations'
     | '/reports/payables'
     | '/reports/receivables'
@@ -374,6 +386,7 @@ export interface FileRouteTypes {
     | '/_authenticated/payments/customer'
     | '/_authenticated/payments/supplier'
     | '/_authenticated/reports/cashflow'
+    | '/_authenticated/reports/expenses'
     | '/_authenticated/reports/mutations'
     | '/_authenticated/reports/payables'
     | '/_authenticated/reports/receivables'
@@ -533,6 +546,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportsMutationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reports/expenses': {
+      id: '/_authenticated/reports/expenses'
+      path: '/reports/expenses'
+      fullPath: '/reports/expenses'
+      preLoaderRoute: typeof AuthenticatedReportsExpensesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/reports/cashflow': {
       id: '/_authenticated/reports/cashflow'
       path: '/reports/cashflow'
@@ -619,6 +639,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPaymentsCustomerRoute: typeof AuthenticatedPaymentsCustomerRoute
   AuthenticatedPaymentsSupplierRoute: typeof AuthenticatedPaymentsSupplierRoute
   AuthenticatedReportsCashflowRoute: typeof AuthenticatedReportsCashflowRoute
+  AuthenticatedReportsExpensesRoute: typeof AuthenticatedReportsExpensesRoute
   AuthenticatedReportsMutationsRoute: typeof AuthenticatedReportsMutationsRoute
   AuthenticatedReportsPayablesRoute: typeof AuthenticatedReportsPayablesRoute
   AuthenticatedReportsReceivablesRoute: typeof AuthenticatedReportsReceivablesRoute
@@ -646,6 +667,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPaymentsCustomerRoute: AuthenticatedPaymentsCustomerRoute,
   AuthenticatedPaymentsSupplierRoute: AuthenticatedPaymentsSupplierRoute,
   AuthenticatedReportsCashflowRoute: AuthenticatedReportsCashflowRoute,
+  AuthenticatedReportsExpensesRoute: AuthenticatedReportsExpensesRoute,
   AuthenticatedReportsMutationsRoute: AuthenticatedReportsMutationsRoute,
   AuthenticatedReportsPayablesRoute: AuthenticatedReportsPayablesRoute,
   AuthenticatedReportsReceivablesRoute: AuthenticatedReportsReceivablesRoute,
