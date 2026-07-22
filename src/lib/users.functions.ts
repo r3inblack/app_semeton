@@ -126,6 +126,7 @@ export const updateUser = createServerFn({ method: "POST" })
       full_name?: string;
       role?: AppRole;
       warehouse_id?: string | null;
+      employee_id?: string | null;
       password?: string;
     }) => d,
   )
@@ -146,9 +147,16 @@ export const updateUser = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
     }
 
-    const profileUpdate: { full_name?: string; warehouse_id?: string | null } = {};
+    if (data.employee_id) {
+      const { data: taken } = await supabaseAdmin
+        .from("profiles").select("id").eq("employee_id", data.employee_id).neq("id", data.id).maybeSingle();
+      if (taken) throw new Error("Karyawan ini sudah dikaitkan ke user lain");
+    }
+
+    const profileUpdate: { full_name?: string; warehouse_id?: string | null; employee_id?: string | null } = {};
     if (data.full_name !== undefined) profileUpdate.full_name = data.full_name;
     if (data.warehouse_id !== undefined) profileUpdate.warehouse_id = data.warehouse_id;
+    if (data.employee_id !== undefined) profileUpdate.employee_id = data.employee_id;
     if (Object.keys(profileUpdate).length) {
       await supabaseAdmin.from("profiles").update(profileUpdate).eq("id", data.id);
     }
