@@ -24,8 +24,11 @@ function EmployeesPage() {
             label: "Kategori",
             type: "select",
             options: [
-              { value: "gudang", label: "Gudang" },
+              { value: "gudang", label: "Staf Gudang" },
               { value: "kurir", label: "Kurir" },
+              { value: "kasir", label: "Kasir" },
+              { value: "staff_keuangan", label: "Staff Keuangan" },
+              { value: "manager", label: "Manager/Owner" },
             ],
           },
           {
@@ -34,6 +37,7 @@ function EmployeesPage() {
             type: "select",
             options: (warehouses.data ?? []).map((w) => ({ value: w.id, label: w.name })),
             render: (v) => warehouses.data?.find((w) => w.id === v)?.name ?? "-",
+            disabledWhen: (f) => f.category !== "gudang",
           },
         ]}
       />
