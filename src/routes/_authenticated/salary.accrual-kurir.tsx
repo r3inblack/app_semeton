@@ -53,7 +53,11 @@ function Page() {
           });
           if (error) throw error;
           const emp = kurirEmployees.find((e) => e.id === v.employee_id);
-          sendTransactionNotification(`➕ <b>Tambah Hak Gaji (Kurir)</b>\nKurir: ${emp?.name ?? "-"}\nJumlah: ${fmtIDR(amount)}`);
+          sendTransactionNotification(
+            "salary_accrual_kurir",
+            { employee: emp?.name ?? "-", amount: fmtIDR(amount), note: v.note || "" },
+            `➕ <b>Tambah Hak Gaji (Kurir)</b>\nKurir: ${emp?.name ?? "-"}\nJumlah: ${fmtIDR(amount)}`,
+          );
           qc.invalidateQueries();
         }}
       />

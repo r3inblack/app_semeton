@@ -7,7 +7,7 @@ import { TxForm } from "@/components/tx-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR } from "@/lib/format";
-import { sendTelegramNotification } from "@/lib/telegram";
+import { sendTransactionNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
   component: Page,
@@ -42,7 +42,11 @@ function Page() {
             p_category: v.category, p_amount: Number(v.amount), p_note: v.note || null,
           });
           if (error) throw error;
-          sendTelegramNotification(`🧾 <b>Pengeluaran</b>\n${v.category}: ${fmtIDR(v.amount)}`);
+          sendTransactionNotification(
+            "expense",
+            { category: v.category, amount: fmtIDR(v.amount), note: v.note || "" },
+            `🧾 <b>Pengeluaran</b>\n${v.category}: ${fmtIDR(v.amount)}`,
+          );
           qc.invalidateQueries();
         }}
       />

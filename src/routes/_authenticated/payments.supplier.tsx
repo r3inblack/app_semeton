@@ -8,7 +8,7 @@ import { useList } from "@/lib/list-hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR } from "@/lib/format";
-import { sendTelegramNotification } from "@/lib/telegram";
+import { sendTransactionNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/payments/supplier")({
   component: Page,
@@ -45,7 +45,11 @@ function Page() {
           });
           if (error) throw error;
           const sup = suppliers.data?.find((s) => s.id === v.supplier_id);
-          sendTelegramNotification(`🏭 <b>Bayar Supplier</b>\n${sup?.name ?? ""}: ${fmtIDR(v.amount)}`);
+          sendTransactionNotification(
+            "supplier_payment",
+            { supplier: sup?.name ?? "-", amount: fmtIDR(v.amount), note: v.note || "" },
+            `🏭 <b>Bayar Supplier</b>\n${sup?.name ?? ""}: ${fmtIDR(v.amount)}`,
+          );
           qc.invalidateQueries();
         }}
       />

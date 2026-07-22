@@ -62,6 +62,15 @@ function PendingStockInPage() {
     toast.success("Disetujui dan stok ditambahkan");
     const qty = Number(selected.qty);
     sendTransactionNotification(
+      "stock_in_approved",
+      {
+        supplier: selected.suppliers?.name ?? "-",
+        warehouse: selected.warehouses?.name ?? "-",
+        product: selected.products?.name ?? "-",
+        qty: fmtNum(qty),
+        unit_price: fmtIDR(b),
+        total: fmtIDR(qty * b),
+      },
       `✅ <b>Barang Masuk Disetujui</b>\nSupplier: ${selected.suppliers?.name ?? "-"}\nGudang: ${selected.warehouses?.name ?? "-"}\nProduk: ${selected.products?.name ?? "-"}\nQty: ${qty}\nHarga Beli: ${fmtIDR(b)}\nTotal: ${fmtIDR(qty * b)}`,
     );
     setSelected(null); setBuy(""); setSell("");

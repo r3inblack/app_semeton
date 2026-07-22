@@ -46,7 +46,11 @@ function Page() {
           });
           if (error) throw error;
           const emp = employees.data?.find((e) => e.id === v.employee_id);
-          sendTransactionNotification(`💸 <b>Kasbon/Uang Jalan</b>\nKaryawan: ${emp?.name ?? "-"}\nNominal: ${fmtIDR(amount)}`);
+          sendTransactionNotification(
+            "salary_advance",
+            { employee: emp?.name ?? "-", amount: fmtIDR(amount), note: v.note || "" },
+            `💸 <b>Kasbon/Uang Jalan</b>\nKaryawan: ${emp?.name ?? "-"}\nNominal: ${fmtIDR(amount)}`,
+          );
           qc.invalidateQueries();
         }}
       />

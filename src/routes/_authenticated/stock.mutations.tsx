@@ -52,6 +52,8 @@ function MutationPage() {
           const to = warehouses.data?.find((w) => w.id === v.to)?.name ?? "-";
           const prod = products.data?.find((p) => p.id === v.product_id)?.name ?? "-";
           sendTransactionNotification(
+            "stock_mutation",
+            { from, to, product: prod, qty: fmtNum(qty), note: v.note || "" },
             `🔄 <b>Mutasi Stok</b>\nDari: ${from}\nKe: ${to}\nProduk: ${prod}\nQty: ${fmtNum(qty)}`,
           );
           qc.invalidateQueries();
