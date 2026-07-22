@@ -10,14 +10,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { NumberInput } from "@/components/ui/number-input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import { fmtDate, fmtIDR } from "@/lib/format";
 import { toast } from "sonner";
 import {
   portalGetSummary,
-  portalListBankAccounts,
   portalLookupCustomer,
   portalSubmitPayment,
   portalUploadProof,
@@ -121,13 +117,9 @@ function CustomerPortal({ customer, onExit }: { customer: Verified; onExit: () =
     queryFn: () => portalGetSummary({ data: { code: customer.code } }),
     refetchInterval: 8000,
   });
-  const banks = useQuery({
-    queryKey: ["portal_banks"],
-    queryFn: () => portalListBankAccounts(),
-  });
 
   const [amount, setAmount] = useState("");
-  const [bankId, setBankId] = useState<string>("");
+  const [bankInfo, setBankInfo] = useState("");
   const [note, setNote] = useState("");
   const [submitter, setSubmitter] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -162,13 +154,15 @@ function CustomerPortal({ customer, onExit }: { customer: Verified; onExit: () =
         if (!up.ok) throw new Error("reason" in up ? String(up.reason) : "upload gagal");
         proofPath = up.path;
       }
+      const bankLine = bankInfo.trim() ? `Rekening tujuan: ${bankInfo.trim()}` : "";
+      const combinedNote = [bankLine, note.trim()].filter(Boolean).join("\n") || null;
       const res = await portalSubmitPayment({
         data: {
           code: customer.code,
           amount: amt,
-          bank_account_id: bankId || null,
+          bank_account_id: null,
           proof_path: proofPath,
-          note: note || null,
+          note: combinedNote,
           submitter_name: submitter || null,
         },
       });
@@ -227,18 +221,11 @@ function CustomerPortal({ customer, onExit }: { customer: Verified; onExit: () =
             </div>
             <div className="space-y-1">
               <Label>Rekening Tujuan</Label>
-              <Select value={bankId} onValueChange={setBankId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih rekening" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(banks.data ?? []).map((b: any) => (
-                    <SelectItem key={b.id} value={b.id}>
-                      {b.bank_name} — {b.account_number} ({b.account_holder})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                value={bankInfo}
+                onChange={(e) => setBankInfo(e.target.value)}
+                placeholder="Contoh: BCA 1234567890 a/n Budi"
+              />
             </div>
           </div>
           <div className="space-y-1">
