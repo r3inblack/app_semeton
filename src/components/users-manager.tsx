@@ -97,13 +97,17 @@ export function UsersManager() {
   });
 
   const mPassword = useMutation({
-    mutationFn: () => update({ data: { id: pwUser!.id, password: newPw } }),
+    mutationFn: async () => {
+      if (!newPw || newPw.length < 6) throw new Error("Password minimal 6 karakter");
+      return update({ data: { id: pwUser!.id, password: newPw } });
+    },
     onSuccess: () => {
       toast.success("Password diganti");
       setPwUser(null); setNewPw("");
     },
     onError: (e: any) => toast.error(e.message),
   });
+
 
   const mDelete = useMutation({
     mutationFn: (id: string) => remove({ data: { id } }),
