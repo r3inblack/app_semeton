@@ -861,6 +861,36 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_recipients: {
+        Row: {
+          can_price: boolean
+          chat_id: string
+          created_at: string
+          id: string
+          label: string
+          notify_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          can_price?: boolean
+          chat_id: string
+          created_at?: string
+          id?: string
+          label: string
+          notify_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          can_price?: boolean
+          chat_id?: string
+          created_at?: string
+          id?: string
+          label?: string
+          notify_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_permissions: {
         Row: {
           action: string
