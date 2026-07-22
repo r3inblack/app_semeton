@@ -359,24 +359,28 @@ export function UsersManager() {
             </Field>
             <Field label="Role / Level">
               <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as AppRole, custom_role_id: "" })}>
-                {availableRoles.map((r) => (
+                value={editForm.role === "custom" && editForm.custom_role_id ? `custom:${editForm.custom_role_id}` : editForm.role}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v.startsWith("custom:")) {
+                    setEditForm({ ...editForm, role: "custom", custom_role_id: v.slice(7) });
+                  } else {
+                    setEditForm({ ...editForm, role: v as AppRole, custom_role_id: "" });
+                  }
+                }}>
+                {availableRoles.filter((r) => r !== "custom").map((r) => (
                   <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                 ))}
+                {customRoles.length > 0 && (
+                  <optgroup label="Role Custom">
+                    {customRoles.map((r) => (
+                      <option key={r.id} value={`custom:${r.id}`}>{r.name}</option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
             </Field>
-            {editForm.role === "custom" && (
-              <Field label="Pilih Role Custom">
-                <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                  value={editForm.custom_role_id}
-                  onChange={(e) => setEditForm({ ...editForm, custom_role_id: e.target.value })}>
-                  <option value="">— pilih role —</option>
-                  {customRoles.map((r) => (
-                    <option key={r.id} value={r.id}>{r.name}</option>
-                  ))}
-                </select>
-              </Field>
-            )}
+
             {editForm.role === "staf_gudang" && (
               <Field label="Gudang">
                 <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
