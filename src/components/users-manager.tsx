@@ -64,10 +64,15 @@ export function UsersManager() {
   const availableRoles = ROLE_OPTIONS.filter((r) => isSuperAdmin || r !== "super_admin");
 
   const mCreate = useMutation({
-    mutationFn: () => create({ data: {
-      username: form.username, password: form.password, full_name: form.full_name,
-      role: form.role, warehouse_id: form.warehouse_id || null,
-    } }),
+    mutationFn: async () => {
+      if (!form.username.trim()) throw new Error("Username wajib diisi");
+      if (!form.password || form.password.length < 6)
+        throw new Error("Password minimal 6 karakter");
+      return create({ data: {
+        username: form.username, password: form.password, full_name: form.full_name,
+        role: form.role, warehouse_id: form.warehouse_id || null,
+      } });
+    },
     onSuccess: () => {
       toast.success("User dibuat");
       setOpenNew(false);
@@ -76,6 +81,7 @@ export function UsersManager() {
     },
     onError: (e: any) => toast.error(e.message),
   });
+
 
   const mUpdate = useMutation({
     mutationFn: () => update({ data: {
