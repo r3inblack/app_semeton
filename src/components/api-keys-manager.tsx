@@ -18,6 +18,7 @@ const ALL_PERMS = [
   { id: "stock_in", label: "Barang Masuk" },
   { id: "salary_payment", label: "Bayar Gaji" },
   { id: "salary_advance", label: "Kasbon" },
+  { id: "mcp", label: "Agent Integration (MCP)" },
 ];
 
 function randomKey() {
