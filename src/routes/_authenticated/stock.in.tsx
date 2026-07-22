@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR, fmtNum } from "@/lib/format";
 import { useRole } from "@/hooks/use-role";
-import { sendTelegramNotification } from "@/lib/telegram";
+import { sendPricingNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/stock/in")({
   component: StockInPage,
@@ -76,7 +76,7 @@ function StockInPage() {
             const supplier = (suppliers.data ?? []).find((x: any) => x.id === v.supplier_id)?.name ?? "-";
             const warehouse = (warehouses.data ?? []).find((x: any) => x.id === v.warehouse_id)?.name ?? "-";
             const product = (products.data ?? []).find((x: any) => x.id === v.product_id)?.name ?? "-";
-            await sendTelegramNotification(
+            await sendPricingNotification(
               `<b>📦 Pengajuan Barang Masuk</b>\n` +
                 `Supplier: ${supplier}\n` +
                 `Gudang: ${warehouse}\n` +

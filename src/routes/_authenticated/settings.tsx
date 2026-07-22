@@ -83,12 +83,20 @@ function GeneralTab() {
 function TelegramTab() {
   const { data } = useAppSettingsAdmin();
   const qc = useQueryClient();
-  const [form, setForm] = useState({ telegram_enabled: false, telegram_bot_token: "", telegram_chat_id: "" });
+  const [form, setForm] = useState({
+    telegram_enabled: false,
+    telegram_bot_token: "",
+    telegram_chat_id: "",
+    telegram_group_bot_token: "",
+    telegram_group_chat_id: "",
+  });
   useEffect(() => {
     if (data) setForm({
       telegram_enabled: data.telegram_enabled ?? false,
       telegram_bot_token: data.telegram_bot_token ?? "",
       telegram_chat_id: data.telegram_chat_id ?? "",
+      telegram_group_bot_token: (data as any).telegram_group_bot_token ?? "",
+      telegram_group_chat_id: (data as any).telegram_group_chat_id ?? "",
     });
   }, [data]);
 
@@ -107,6 +115,20 @@ function TelegramTab() {
       });
       const j = await r.json();
       if (j.ok) toast.success("Pesan terkirim");
+      else toast.error(j.description || "Gagal");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const testGroup = async () => {
+    const token = form.telegram_group_bot_token || form.telegram_bot_token;
+    if (!token || !form.telegram_group_chat_id) return toast.error("Bot Token & Chat ID grup wajib diisi");
+    try {
+      const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: form.telegram_group_chat_id, text: "✅ Test notifikasi transaksi grup" }),
+      });
+      const j = await r.json();
+      if (j.ok) toast.success("Pesan terkirim ke grup");
       else toast.error(j.description || "Gagal");
     } catch (e: any) { toast.error(e.message); }
   };
@@ -170,6 +192,61 @@ function TelegramTab() {
         <div className="flex items-center gap-3">
           <Switch checked={form.telegram_enabled} onCheckedChange={(v) => setForm({ ...form, telegram_enabled: v })} />
           <Label>Aktifkan notifikasi Telegram</Label>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Master switch untuk semua notifikasi Telegram (transaksi & pengajuan barang masuk).
+        </p>
+        <div className="flex">
+          <Button onClick={save}>Simpan</Button>
+        </div>
+      </CardContent></Card>
+
+      <Card><CardContent className="pt-6 space-y-4 max-w-lg">
+        <div>
+          <h3 className="font-semibold">Notifikasi Transaksi (Grup)</h3>
+          <p className="text-sm text-muted-foreground">
+            Bot & chat_id grup Telegram tujuan notifikasi transaksi kas masuk/keluar
+            (setoran pelanggan, bayar supplier, pengeluaran, dsb).
+          </p>
+        </div>
+        <div className="space-y-1">
+          <Label>Bot API Token (Grup)</Label>
+          <Input
+            value={form.telegram_group_bot_token}
+            onChange={(e) => setForm({ ...form, telegram_group_bot_token: e.target.value })}
+            placeholder="123456:ABCDEF..."
+          />
+          <p className="text-xs text-muted-foreground">
+            Kosongkan untuk memakai Bot Token yang sama dengan menu pengajuan di bawah.
+          </p>
+        </div>
+        <div className="space-y-1">
+          <Label>Chat ID Grup</Label>
+          <Input
+            value={form.telegram_group_chat_id}
+            onChange={(e) => setForm({ ...form, telegram_group_chat_id: e.target.value })}
+            placeholder="-1001234567890"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={save}>Simpan</Button>
+          <Button
+            variant="outline"
+            onClick={testGroup}
+            disabled={!form.telegram_group_chat_id || !(form.telegram_group_bot_token || form.telegram_bot_token)}
+          >
+            Kirim Test ke Grup
+          </Button>
+        </div>
+      </CardContent></Card>
+
+      <Card><CardContent className="pt-6 space-y-4 max-w-lg">
+        <div>
+          <h3 className="font-semibold">Notifikasi Pengajuan Barang Masuk & Harga</h3>
+          <p className="text-sm text-muted-foreground">
+            Bot khusus untuk pengajuan barang masuk oleh Staf Gudang. Owner yang berwenang
+            akan menerima notifikasi & dapat menentukan harga beli/jual via balasan Telegram.
+          </p>
         </div>
         <div className="space-y-1"><Label>Bot API Token</Label>
           <Input value={form.telegram_bot_token} onChange={(e) => setForm({ ...form, telegram_bot_token: e.target.value })} placeholder="123456:ABCDEF..." />
