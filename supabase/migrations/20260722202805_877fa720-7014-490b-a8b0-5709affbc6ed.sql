@@ -1,0 +1,30 @@
+
+-- Seed default dashboard widget permissions per role, so existing users keep seeing them.
+INSERT INTO public.role_default_permissions (role, module, action, allowed) VALUES
+  ('staf_gudang','dashboard_my_salary','view',true),
+  ('staf_gudang','dashboard_salary_history','view',true),
+  ('staf_gudang','dashboard_warehouse_stock','view',true),
+  ('staf_gudang','dashboard_recent_sales','view',true),
+  ('admin','dashboard_cash','view',true),
+  ('admin','dashboard_receivables','view',true),
+  ('admin','dashboard_payables','view',true),
+  ('admin','dashboard_salary_debt','view',true),
+  ('admin','dashboard_cash_chart','view',true),
+  ('manager','dashboard_cash','view',true),
+  ('manager','dashboard_receivables','view',true),
+  ('manager','dashboard_payables','view',true),
+  ('manager','dashboard_salary_debt','view',true),
+  ('manager','dashboard_cash_chart','view',true),
+  ('staff_keuangan','dashboard_cash','view',true),
+  ('staff_keuangan','dashboard_receivables','view',true),
+  ('staff_keuangan','dashboard_payables','view',true),
+  ('staff_keuangan','dashboard_salary_debt','view',true),
+  ('staff_keuangan','dashboard_cash_chart','view',true),
+  ('kasir','dashboard_cash','view',true),
+  ('kasir','dashboard_receivables','view',true),
+  ('viewer','dashboard_cash','view',true),
+  ('viewer','dashboard_receivables','view',true),
+  ('viewer','dashboard_payables','view',true),
+  ('viewer','dashboard_salary_debt','view',true),
+  ('viewer','dashboard_cash_chart','view',true)
+ON CONFLICT (role, module, action) DO UPDATE SET allowed = EXCLUDED.allowed;
