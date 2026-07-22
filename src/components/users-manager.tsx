@@ -31,6 +31,12 @@ type UserRow = {
   id: string; email: string | undefined; full_name: string | null;
   is_master: boolean; warehouse_id: string | null; role: AppRole;
   employee_id: string | null; employee_name: string | null;
+  custom_role_id: string | null;
+};
+
+type CustomRole = {
+  id: string; name: string; created_at: string;
+  permissions: { module: string; action: string; allowed: boolean }[];
 };
 
 type Employee = { id: string; name: string; category: string | null; warehouse_id: string | null };
@@ -47,22 +53,27 @@ export function UsersManager() {
   const create = useServerFn(createUser);
   const update = useServerFn(updateUser);
   const remove = useServerFn(deleteUser);
+  const listRoles = useServerFn(listCustomRoles);
 
   const warehouses = useList<{ id: string; name: string }>("warehouses");
   const employees = useList<Employee>("employees");
   const q = useQuery({ queryKey: ["admin-users"], queryFn: () => list() });
+  const rolesQ = useQuery({ queryKey: ["custom-roles"], queryFn: () => listRoles() });
+  const customRoles: CustomRole[] = (rolesQ.data ?? []) as any;
 
   const [openNew, setOpenNew] = useState(false);
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [pwUser, setPwUser] = useState<UserRow | null>(null);
   const [permsUser, setPermsUser] = useState<UserRow | null>(null);
+  const [openRoles, setOpenRoles] = useState(false);
+  const [editingRole, setEditingRole] = useState<CustomRole | null>(null);
 
   const [form, setForm] = useState({
     username: "", password: "", full_name: "",
-    role: "viewer" as AppRole, warehouse_id: "", employee_id: "",
+    role: "viewer" as AppRole, warehouse_id: "", employee_id: "", custom_role_id: "",
   });
   const [editForm, setEditForm] = useState({
-    full_name: "", role: "viewer" as AppRole, warehouse_id: "", employee_id: "",
+    full_name: "", role: "viewer" as AppRole, warehouse_id: "", employee_id: "", custom_role_id: "",
   });
   const [newPw, setNewPw] = useState("");
 
