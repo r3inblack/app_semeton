@@ -20,6 +20,10 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  Bell,
+  User as UserIcon,
+  ClipboardCheck,
+  Tags,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import {
@@ -40,6 +44,15 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole, ROLE_LABELS } from "@/hooks/use-role";
 import { useAppSettings } from "@/hooks/use-app-settings";
@@ -124,24 +137,29 @@ const ICONS: Record<string, typeof LayoutDashboard> = {
   Karyawan: UserCog,
   Gudang: Warehouse,
   Produk: Package,
+  "Kategori Pengeluaran": Tags,
   "Stok Gudang": Boxes,
   "Barang Masuk": PackagePlus,
+  "Persetujuan Barang Masuk": ClipboardCheck,
   "Mutasi Stok": ArrowRightLeft,
   "Setoran Pelanggan": Banknote,
   "Bayar Supplier": CreditCard,
   Pengeluaran: Receipt,
   "Tambah Hak Gaji": HandCoins,
+  "Tambah Hak Gaji Kurir": HandCoins,
   "Kasbon / Uang Jalan": Wallet,
   "Bayar Cicilan Gaji": Banknote,
   "Bonus Barang": Gift,
+  "Arus Kas": FileBarChart,
+  "Piutang / Setoran": FileBarChart,
+  "Hutang Supplier": FileBarChart,
+  "Mutasi Barang": FileBarChart,
 };
 
 function AppSidebar() {
   const { role, can, isSuperAdmin } = useRole();
   const { data: settings } = useAppSettings();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const navigate = useNavigate();
-  const { user } = useSession();
 
   const settingsVisible =
     isSuperAdmin ||
@@ -164,40 +182,53 @@ function AppSidebar() {
   }).filter(Boolean) as NavItem[];
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="border-r-0">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
         <div className="flex items-center gap-2.5">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-[oklch(0.48_0.20_258)] text-primary-foreground font-bold shadow-sm shadow-primary/30">
-            S
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[image:var(--gradient-primary)] text-primary-foreground font-bold shadow-[var(--shadow-glow)]">
+            {(settings?.app_name ?? "S").charAt(0).toUpperCase()}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 group-data-[collapsible=icon]:hidden">
             <div className="truncate text-sm font-semibold text-sidebar-foreground">
               {settings?.app_name ?? "Aplikasi Semeton"}
             </div>
-            <div className="truncate text-[11px] uppercase tracking-wider text-sidebar-foreground/50 font-medium">
+            <div className="truncate text-[10px] uppercase tracking-[0.12em] text-sidebar-foreground/50 font-medium">
               {role ? ROLE_LABELS[role] : "—"}
             </div>
           </div>
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="scrollbar-thin px-2 py-3">
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupLabel className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-foreground/45">
+            Navigasi
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-0.5">
               {filtered.map((item) => {
                 if (item.children) {
                   const openDefault = item.children.some((c) => pathname.startsWith(c.url));
-                  return <NavGroup key={item.title} item={item} defaultOpen={openDefault} pathname={pathname} />;
+                  return (
+                    <NavGroup
+                      key={item.title}
+                      item={item}
+                      defaultOpen={openDefault}
+                      pathname={pathname}
+                    />
+                  );
                 }
                 const active = pathname === item.url;
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={active}>
-                      <Link to={item.url!} className="flex items-center gap-2">
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      className="h-10 rounded-lg text-sidebar-foreground/85 transition-colors hover:bg-sidebar-accent hover:text-white data-[active=true]:bg-[image:var(--gradient-primary)] data-[active=true]:text-white data-[active=true]:shadow-[var(--shadow-glow)]"
+                    >
+                      <Link to={item.url!} className="flex items-center gap-3">
                         <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                        <span className="text-sm font-medium">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -208,20 +239,11 @@ function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border">
-        <div className="px-3 py-2 text-xs text-sidebar-foreground/60 truncate">
-          {/* Email hidden per request */}
+      <SidebarFooter className="border-t border-sidebar-border px-2 py-3">
+        <div className="rounded-lg bg-sidebar-accent/40 px-3 py-2.5 text-[11px] text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
+          <div className="font-medium text-sidebar-foreground/80">v1.0</div>
+          <div>{settings?.app_name ?? "Aplikasi Semeton"}</div>
         </div>
-        <Button
-          variant="ghost"
-          className="justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          onClick={async () => {
-            await supabase.auth.signOut();
-            navigate({ to: "/auth" });
-          }}
-        >
-          <LogOut className="mr-2 h-4 w-4" /> Keluar
-        </Button>
       </SidebarFooter>
     </Sidebar>
   );
@@ -237,27 +259,40 @@ function NavGroup({
   pathname: string;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const hasActiveChild = item.children!.some((c) => pathname === c.url);
   return (
     <SidebarMenuItem>
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton className="w-full">
+          <SidebarMenuButton
+            className={`h-10 w-full rounded-lg transition-colors hover:bg-sidebar-accent hover:text-white ${
+              hasActiveChild
+                ? "text-white bg-sidebar-accent/60"
+                : "text-sidebar-foreground/85"
+            }`}
+          >
             <item.icon className="h-4 w-4" />
-            <span className="flex-1 text-left">{item.title}</span>
-            <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+            <span className="flex-1 text-left text-sm font-medium">{item.title}</span>
+            <ChevronDown
+              className={`h-4 w-4 shrink-0 opacity-70 transition-transform ${open ? "rotate-180" : ""}`}
+            />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <SidebarMenuSub>
+          <SidebarMenuSub className="ml-4 mt-1 gap-0.5 border-l border-sidebar-border/60 pl-2">
             {item.children!.map((c) => {
               const Icon = ICONS[c.title] ?? Boxes;
               const active = pathname === c.url;
               return (
                 <SidebarMenuSubItem key={c.url}>
-                  <SidebarMenuSubButton asChild isActive={active}>
-                    <Link to={c.url} className="flex items-center gap-2">
-                      <Icon className="h-4 w-4" />
-                      <span>{c.title}</span>
+                  <SidebarMenuSubButton
+                    asChild
+                    isActive={active}
+                    className="h-8 rounded-md text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-white data-[active=true]:bg-primary/90 data-[active=true]:text-white"
+                  >
+                    <Link to={c.url} className="flex items-center gap-2.5">
+                      <Icon className="h-3.5 w-3.5" />
+                      <span className="text-[13px]">{c.title}</span>
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
@@ -270,22 +305,100 @@ function NavGroup({
   );
 }
 
-export function AppShell({ children, title }: { children: ReactNode; title?: string }) {
+function HeaderBar({ title }: { title?: string }) {
   const { data: settings } = useAppSettings();
+  const { user } = useSession();
+  const { role } = useRole();
+  const navigate = useNavigate();
+
+  const rawName = (user?.email ?? "").split("@")[0] || "User";
+  const initials = rawName.slice(0, 2).toUpperCase();
+
+  return (
+    <header className="sticky top-0 z-20 h-16 border-b border-border bg-card/95 backdrop-blur-md shadow-[var(--shadow-xs)]">
+      <div className="flex h-full items-center gap-3 px-4 md:px-6">
+        <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+        <div className="hidden h-6 w-px bg-border sm:block" />
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-base font-semibold tracking-tight text-foreground">
+            {title ?? settings?.app_name ?? "Aplikasi Semeton"}
+          </div>
+          <div className="hidden truncate text-xs text-muted-foreground sm:block">
+            {settings?.app_name ?? "Aplikasi Semeton"}
+          </div>
+        </div>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative rounded-full text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          aria-label="Notifikasi"
+        >
+          <Bell className="h-4 w-4" />
+          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-destructive" />
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-2.5 rounded-full border border-border bg-background/60 py-1 pl-1 pr-2.5 transition-colors hover:bg-accent">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="bg-[image:var(--gradient-primary)] text-xs font-semibold text-white">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="hidden text-left sm:block">
+                <div className="text-xs font-semibold leading-tight text-foreground">
+                  {rawName}
+                </div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {role ? ROLE_LABELS[role] : "—"}
+                </div>
+              </div>
+              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>
+              <div className="text-sm font-semibold">{rawName}</div>
+              <div className="text-xs font-normal text-muted-foreground">
+                {role ? ROLE_LABELS[role] : "—"}
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
+              <Settings className="mr-2 h-4 w-4" />
+              Pengaturan
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate({ to: "/dashboard" })}>
+              <UserIcon className="mr-2 h-4 w-4" />
+              Dashboard
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate({ to: "/auth" });
+              }}
+              className="text-destructive focus:text-destructive"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Keluar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </header>
+  );
+}
+
+export function AppShell({ children, title }: { children: ReactNode; title?: string }) {
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="flex min-h-screen w-full bg-background">
         <AppSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-10 h-16 flex items-center gap-3 border-b bg-card/90 backdrop-blur-md px-4 md:px-6 shadow-sm">
-            <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-base font-semibold tracking-tight">
-                {title ?? settings?.app_name ?? "Aplikasi Semeton"}
-              </div>
-            </div>
-          </header>
-          <main className="flex-1 p-4 md:p-6 max-w-full">{children}</main>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <HeaderBar title={title} />
+          <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-full">{children}</main>
         </div>
       </div>
     </SidebarProvider>
