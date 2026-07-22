@@ -76,7 +76,7 @@ function StockInPage() {
             const supplier = (suppliers.data ?? []).find((x: any) => x.id === v.supplier_id)?.name ?? "-";
             const warehouse = (warehouses.data ?? []).find((x: any) => x.id === v.warehouse_id)?.name ?? "-";
             const product = (products.data ?? []).find((x: any) => x.id === v.product_id)?.name ?? "-";
-            await sendTelegramNotification(
+            await sendPricingNotification(
               `<b>📦 Pengajuan Barang Masuk</b>\n` +
                 `Supplier: ${supplier}\n` +
                 `Gudang: ${warehouse}\n` +

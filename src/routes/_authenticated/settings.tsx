@@ -83,12 +83,20 @@ function GeneralTab() {
 function TelegramTab() {
   const { data } = useAppSettingsAdmin();
   const qc = useQueryClient();
-  const [form, setForm] = useState({ telegram_enabled: false, telegram_bot_token: "", telegram_chat_id: "" });
+  const [form, setForm] = useState({
+    telegram_enabled: false,
+    telegram_bot_token: "",
+    telegram_chat_id: "",
+    telegram_group_bot_token: "",
+    telegram_group_chat_id: "",
+  });
   useEffect(() => {
     if (data) setForm({
       telegram_enabled: data.telegram_enabled ?? false,
       telegram_bot_token: data.telegram_bot_token ?? "",
       telegram_chat_id: data.telegram_chat_id ?? "",
+      telegram_group_bot_token: (data as any).telegram_group_bot_token ?? "",
+      telegram_group_chat_id: (data as any).telegram_group_chat_id ?? "",
     });
   }, [data]);
 
