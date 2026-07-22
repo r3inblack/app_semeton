@@ -179,6 +179,18 @@ export function UsersManager() {
           <DialogContent>
             <DialogHeader><DialogTitle>Tambah User Baru</DialogTitle></DialogHeader>
             <div className="space-y-3">
+              <Field label="Ambil Data Karyawan (opsional)">
+                <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                  value={form.employee_id} onChange={(e) => onPickEmployeeNew(e.target.value)}>
+                  <option value="">— tidak dikaitkan —</option>
+                  {availableEmployeesNew.map((e) => (
+                    <option key={e.id} value={e.id}>{e.name}{e.category ? ` (${e.category})` : ""}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Pilih karyawan agar nominal gaji tampil pada dashboard user tersebut.
+                </p>
+              </Field>
               <Field label="Username">
                 <Input value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="misal: budi" />
               </Field>
