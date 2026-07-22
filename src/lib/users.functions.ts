@@ -327,3 +327,37 @@ export const deleteCustomRole = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ============ FACTORY RESET ============
+
+export const factoryReset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    // Must be super_admin
+    const role = await getCallerRole(context.supabase, context.userId);
+    if (role !== "super_admin") throw new Error("Hanya Super Admin");
+
+    // Run SQL wipe as the caller (assert_admin inside function)
+    const { error } = await context.supabase.rpc("factory_reset" as any);
+    if (error) throw new Error(error.message);
+
+    // Delete every auth user except the master
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: masterProf } = await supabaseAdmin
+      .from("profiles").select("id").eq("is_master", true).maybeSingle();
+    const masterId = masterProf?.id;
+    let page = 1;
+    while (true) {
+      const { data, error: listErr } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 200 });
+      if (listErr) throw new Error(listErr.message);
+      const users = data.users ?? [];
+      if (!users.length) break;
+      for (const u of users) {
+        if (u.id === masterId) continue;
+        await supabaseAdmin.auth.admin.deleteUser(u.id);
+      }
+      if (users.length < 200) break;
+      page += 1;
+    }
+    return { ok: true };
+  });

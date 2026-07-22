@@ -1516,6 +1516,7 @@ export type Database = {
         Returns: undefined
       }
       current_warehouse_id: { Args: never; Returns: string }
+      factory_reset: { Args: never; Returns: undefined }
       get_app_name: { Args: never; Returns: string }
       has_permission: {
         Args: { _action: string; _module: string; _user: string }

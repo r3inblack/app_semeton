@@ -517,36 +517,91 @@ function Select({ value, onChange, label, options }: { value: string; onChange: 
 
 function DangerTab() {
   const qc = useQueryClient();
+  const [loading, setLoading] = useState<"tx" | "factory" | null>(null);
+
   const reset = async () => {
+    setLoading("tx");
     const { error } = await supabase.rpc("reset_transactions");
+    setLoading(null);
     if (error) return toast.error(error.message);
     toast.success("Semua data transaksi direset");
     qc.invalidateQueries();
   };
+
+  const factory = async () => {
+    setLoading("factory");
+    try {
+      const { factoryReset } = await import("@/lib/users.functions");
+      await factoryReset();
+      toast.success("Factory reset selesai. Hanya akun admin master yang tersisa.");
+      qc.invalidateQueries();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Gagal menjalankan factory reset");
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
-    <Card className="border-destructive"><CardContent className="pt-6 space-y-4 max-w-lg">
-      <h3 className="font-semibold text-destructive">Reset Database Transaksi</h3>
-      <p className="text-sm text-muted-foreground">
-        Menghapus semua riwayat transaksi (penjualan, stok masuk, mutasi, setoran, pembayaran, pengeluaran, gaji, kasbon, bonus)
-        beserta saldo terkait. Master data (user, produk, pelanggan, supplier, karyawan, gudang) tetap ada.
-      </p>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive">Reset Sekarang</Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Yakin ingin reset?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Aksi ini tidak dapat dibatalkan. Semua data transaksi akan hilang permanen.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={reset} className="bg-destructive text-destructive-foreground">Ya, Reset</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </CardContent></Card>
+    <div className="space-y-4 max-w-lg">
+      <Card className="border-destructive"><CardContent className="pt-6 space-y-4">
+        <h3 className="font-semibold text-destructive">Reset Database Transaksi</h3>
+        <p className="text-sm text-muted-foreground">
+          Menghapus semua riwayat transaksi (penjualan, stok masuk, mutasi, setoran, pembayaran, pengeluaran, gaji, kasbon, bonus)
+          beserta saldo terkait. Master data (user, produk, pelanggan, supplier, karyawan, gudang) tetap ada.
+        </p>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" disabled={loading !== null}>
+              {loading === "tx" ? "Memproses..." : "Reset Sekarang"}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Yakin ingin reset transaksi?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Aksi ini tidak dapat dibatalkan. Semua data transaksi akan hilang permanen.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Batal</AlertDialogCancel>
+              <AlertDialogAction onClick={reset} className="bg-destructive text-destructive-foreground">Ya, Reset</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent></Card>
+
+      <Card className="border-destructive"><CardContent className="pt-6 space-y-4">
+        <h3 className="font-semibold text-destructive">Factory Reset (Setup Ulang)</h3>
+        <p className="text-sm text-muted-foreground">
+          Menghapus <b>SEMUA</b> data: transaksi, saldo, master data (produk, pelanggan, supplier, karyawan, gudang,
+          kategori pengeluaran, rekening, API keys, penerima Telegram), custom role, serta seluruh user kecuali
+          <b> akun admin master</b>. Aplikasi kembali seperti baru di-setup.
+        </p>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" disabled={loading !== null}>
+              {loading === "factory" ? "Memproses..." : "Factory Reset"}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Yakin factory reset?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Aksi ini tidak dapat dibatalkan. Hanya akun admin master (username <b>admin</b>) yang tersisa.
+                Semua user lain dan seluruh data akan hilang permanen.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Batal</AlertDialogCancel>
+              <AlertDialogAction onClick={factory} className="bg-destructive text-destructive-foreground">
+                Ya, Factory Reset
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent></Card>
+    </div>
   );
 }
+
