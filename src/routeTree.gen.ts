@@ -36,6 +36,7 @@ import { Route as AuthenticatedMasterSuppliersRouteImport } from './routes/_auth
 import { Route as AuthenticatedMasterProductsRouteImport } from './routes/_authenticated/master.products'
 import { Route as AuthenticatedMasterEmployeesRouteImport } from './routes/_authenticated/master.employees'
 import { Route as AuthenticatedMasterCustomersRouteImport } from './routes/_authenticated/master.customers'
+import { Route as ApiPublicV1SplatRouteImport } from './routes/api/public/v1/$'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 
 const AuthRoute = AuthRouteImport.update({
@@ -191,6 +192,11 @@ const AuthenticatedMasterCustomersRoute =
     path: '/master/customers',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicV1SplatRoute = ApiPublicV1SplatRouteImport.update({
+  id: '/api/public/v1/$',
+  path: '/api/public/v1/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTelegramWebhookRoute =
   ApiPublicTelegramWebhookRouteImport.update({
     id: '/api/public/telegram/webhook',
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
+  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -255,6 +262,7 @@ export interface FileRoutesByTo {
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
+  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -286,6 +294,7 @@ export interface FileRoutesById {
   '/_authenticated/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/_authenticated/stock/pending': typeof AuthenticatedStockPendingRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
+  '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/stock/mutations'
     | '/stock/pending'
     | '/api/public/telegram/webhook'
+    | '/api/public/v1/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -346,6 +356,7 @@ export interface FileRouteTypes {
     | '/stock/mutations'
     | '/stock/pending'
     | '/api/public/telegram/webhook'
+    | '/api/public/v1/$'
   id:
     | '__root__'
     | '/'
@@ -376,6 +387,7 @@ export interface FileRouteTypes {
     | '/_authenticated/stock/mutations'
     | '/_authenticated/stock/pending'
     | '/api/public/telegram/webhook'
+    | '/api/public/v1/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -383,6 +395,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
+  ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -576,6 +589,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMasterCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/v1/$': {
+      id: '/api/public/v1/$'
+      path: '/api/public/v1/$'
+      fullPath: '/api/public/v1/$'
+      preLoaderRoute: typeof ApiPublicV1SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/telegram/webhook': {
       id: '/api/public/telegram/webhook'
       path: '/api/public/telegram/webhook'
@@ -648,6 +668,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
+  ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

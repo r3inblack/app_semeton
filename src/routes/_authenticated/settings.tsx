@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { UsersManager } from "@/components/users-manager";
 import { TelegramTemplatesManager } from "@/components/telegram-templates";
 import { TelegramWebhookDiagnostics } from "@/components/telegram-webhook-diagnostics";
+import { ApiKeysManager } from "@/components/api-keys-manager";
 import { useRole } from "@/hooks/use-role";
 
 export const Route = createFileRoute("/_authenticated/settings")({
