@@ -237,7 +237,7 @@ export function UsersManager() {
           <TableHeader>
             <TableRow>
               <TableHead>Nama</TableHead>
-              <TableHead>Username / Email</TableHead>
+              <TableHead>Username</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Karyawan</TableHead>
               <TableHead>Gudang</TableHead>
@@ -251,7 +251,7 @@ export function UsersManager() {
                   {u.full_name ?? "-"}
                   {u.is_master && <span className="ml-2 text-xs rounded bg-primary/20 text-primary px-1.5 py-0.5">MASTER</span>}
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{u.email}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{u.email?.split("@")[0] ?? "-"}</TableCell>
                 <TableCell>{ROLE_LABELS[u.role] ?? u.role}</TableCell>
                 <TableCell>{u.employee_name ?? "-"}</TableCell>
                 <TableCell>{warehouses.data?.find((w) => w.id === u.warehouse_id)?.name ?? "-"}</TableCell>
