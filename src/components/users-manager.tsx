@@ -253,6 +253,7 @@ export function UsersManager() {
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{u.email}</TableCell>
                 <TableCell>{ROLE_LABELS[u.role] ?? u.role}</TableCell>
+                <TableCell>{u.employee_name ?? "-"}</TableCell>
                 <TableCell>{warehouses.data?.find((w) => w.id === u.warehouse_id)?.name ?? "-"}</TableCell>
                 <TableCell className="text-right">
                   {u.role === "custom" && (
