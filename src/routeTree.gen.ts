@@ -35,6 +35,7 @@ import { Route as AuthenticatedPaymentsCustomerRouteImport } from './routes/_aut
 import { Route as AuthenticatedMasterWarehousesRouteImport } from './routes/_authenticated/master.warehouses'
 import { Route as AuthenticatedMasterSuppliersRouteImport } from './routes/_authenticated/master.suppliers'
 import { Route as AuthenticatedMasterProductsRouteImport } from './routes/_authenticated/master.products'
+import { Route as AuthenticatedMasterExpenseCategoriesRouteImport } from './routes/_authenticated/master.expense-categories'
 import { Route as AuthenticatedMasterEmployeesRouteImport } from './routes/_authenticated/master.employees'
 import { Route as AuthenticatedMasterCustomersRouteImport } from './routes/_authenticated/master.customers'
 import { Route as ApiPublicV1SplatRouteImport } from './routes/api/public/v1/$'
@@ -187,6 +188,12 @@ const AuthenticatedMasterProductsRoute =
     path: '/master/products',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMasterExpenseCategoriesRoute =
+  AuthenticatedMasterExpenseCategoriesRouteImport.update({
+    id: '/master/expense-categories',
+    path: '/master/expense-categories',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMasterEmployeesRoute =
   AuthenticatedMasterEmployeesRouteImport.update({
     id: '/master/employees',
@@ -220,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/master/customers': typeof AuthenticatedMasterCustomersRoute
   '/master/employees': typeof AuthenticatedMasterEmployeesRoute
+  '/master/expense-categories': typeof AuthenticatedMasterExpenseCategoriesRoute
   '/master/products': typeof AuthenticatedMasterProductsRoute
   '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
@@ -251,6 +259,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/master/customers': typeof AuthenticatedMasterCustomersRoute
   '/master/employees': typeof AuthenticatedMasterEmployeesRoute
+  '/master/expense-categories': typeof AuthenticatedMasterExpenseCategoriesRoute
   '/master/products': typeof AuthenticatedMasterProductsRoute
   '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
@@ -284,6 +293,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/master/customers': typeof AuthenticatedMasterCustomersRoute
   '/_authenticated/master/employees': typeof AuthenticatedMasterEmployeesRoute
+  '/_authenticated/master/expense-categories': typeof AuthenticatedMasterExpenseCategoriesRoute
   '/_authenticated/master/products': typeof AuthenticatedMasterProductsRoute
   '/_authenticated/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
   '/_authenticated/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/master/customers'
     | '/master/employees'
+    | '/master/expense-categories'
     | '/master/products'
     | '/master/suppliers'
     | '/master/warehouses'
@@ -348,6 +359,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/master/customers'
     | '/master/employees'
+    | '/master/expense-categories'
     | '/master/products'
     | '/master/suppliers'
     | '/master/warehouses'
@@ -380,6 +392,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/master/customers'
     | '/_authenticated/master/employees'
+    | '/_authenticated/master/expense-categories'
     | '/_authenticated/master/products'
     | '/_authenticated/master/suppliers'
     | '/_authenticated/master/warehouses'
@@ -595,6 +608,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMasterProductsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/master/expense-categories': {
+      id: '/_authenticated/master/expense-categories'
+      path: '/master/expense-categories'
+      fullPath: '/master/expense-categories'
+      preLoaderRoute: typeof AuthenticatedMasterExpenseCategoriesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/master/employees': {
       id: '/_authenticated/master/employees'
       path: '/master/employees'
@@ -633,6 +653,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedMasterCustomersRoute: typeof AuthenticatedMasterCustomersRoute
   AuthenticatedMasterEmployeesRoute: typeof AuthenticatedMasterEmployeesRoute
+  AuthenticatedMasterExpenseCategoriesRoute: typeof AuthenticatedMasterExpenseCategoriesRoute
   AuthenticatedMasterProductsRoute: typeof AuthenticatedMasterProductsRoute
   AuthenticatedMasterSuppliersRoute: typeof AuthenticatedMasterSuppliersRoute
   AuthenticatedMasterWarehousesRoute: typeof AuthenticatedMasterWarehousesRoute
@@ -661,6 +682,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedMasterCustomersRoute: AuthenticatedMasterCustomersRoute,
   AuthenticatedMasterEmployeesRoute: AuthenticatedMasterEmployeesRoute,
+  AuthenticatedMasterExpenseCategoriesRoute:
+    AuthenticatedMasterExpenseCategoriesRoute,
   AuthenticatedMasterProductsRoute: AuthenticatedMasterProductsRoute,
   AuthenticatedMasterSuppliersRoute: AuthenticatedMasterSuppliersRoute,
   AuthenticatedMasterWarehousesRoute: AuthenticatedMasterWarehousesRoute,
