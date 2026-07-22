@@ -45,7 +45,7 @@ export const listUsers = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     const ids = usersData.users.map((u) => u.id);
     const [{ data: profiles }, { data: roles }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id, full_name, is_master, warehouse_id, employee_id").in("id", ids),
+      supabaseAdmin.from("profiles").select("id, full_name, is_master, warehouse_id, employee_id, custom_role_id").in("id", ids),
       supabaseAdmin.from("user_roles").select("user_id, role").in("user_id", ids),
     ]);
     const empIds = (profiles ?? []).map((p: any) => p.employee_id).filter(Boolean);
@@ -64,6 +64,7 @@ export const listUsers = createServerFn({ method: "GET" })
         warehouse_id: p?.warehouse_id ?? null,
         employee_id: p?.employee_id ?? null,
         employee_name: emp?.name ?? null,
+        custom_role_id: (p as any)?.custom_role_id ?? null,
         role: (r?.role ?? "viewer") as AppRole,
         created_at: u.created_at,
       };
@@ -80,6 +81,7 @@ export const createUser = createServerFn({ method: "POST" })
       role: AppRole;
       warehouse_id?: string | null;
       employee_id?: string | null;
+      custom_role_id?: string | null;
     }) => d,
   )
   .handler(async ({ data, context }) => {
@@ -111,6 +113,7 @@ export const createUser = createServerFn({ method: "POST" })
         full_name: data.full_name,
         warehouse_id: data.warehouse_id ?? null,
         employee_id: data.employee_id ?? null,
+        custom_role_id: data.role === "custom" ? (data.custom_role_id ?? null) : null,
       })
       .eq("id", uid);
     await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
@@ -127,6 +130,7 @@ export const updateUser = createServerFn({ method: "POST" })
       role?: AppRole;
       warehouse_id?: string | null;
       employee_id?: string | null;
+      custom_role_id?: string | null;
       password?: string;
     }) => d,
   )
@@ -153,13 +157,21 @@ export const updateUser = createServerFn({ method: "POST" })
       if (taken) throw new Error("Karyawan ini sudah dikaitkan ke user lain");
     }
 
-    const profileUpdate: { full_name?: string; warehouse_id?: string | null; employee_id?: string | null } = {};
+    const profileUpdate: {
+      full_name?: string;
+      warehouse_id?: string | null;
+      employee_id?: string | null;
+      custom_role_id?: string | null;
+    } = {};
     if (data.full_name !== undefined) profileUpdate.full_name = data.full_name;
     if (data.warehouse_id !== undefined) profileUpdate.warehouse_id = data.warehouse_id;
     if (data.employee_id !== undefined) profileUpdate.employee_id = data.employee_id;
+    if (data.custom_role_id !== undefined) profileUpdate.custom_role_id = data.custom_role_id;
+    if (data.role && data.role !== "custom") profileUpdate.custom_role_id = null;
     if (Object.keys(profileUpdate).length) {
       await supabaseAdmin.from("profiles").update(profileUpdate).eq("id", data.id);
     }
+
 
     if (data.role) {
       const { error: delErr } = await supabaseAdmin
@@ -174,6 +186,7 @@ export const updateUser = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
 
 export const deleteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -231,5 +244,86 @@ export const setUserPermissions = createServerFn({ method: "POST" })
       const { error: insErr } = await supabaseAdmin.from("user_permissions").insert(rows);
       if (insErr) throw new Error(insErr.message);
     }
+    return { ok: true };
+  });
+
+// ============ CUSTOM ROLES ============
+
+export const listCustomRoles = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: roles, error } = await context.supabase
+      .from("custom_roles")
+      .select("id, name, created_at")
+      .order("name");
+    if (error) throw new Error(error.message);
+    const ids = (roles ?? []).map((r: any) => r.id);
+    const { data: perms } = ids.length
+      ? await context.supabase
+          .from("custom_role_permissions")
+          .select("custom_role_id, module, action, allowed")
+          .in("custom_role_id", ids)
+      : { data: [] as any[] };
+    return (roles ?? []).map((r: any) => ({
+      ...r,
+      permissions: (perms ?? []).filter((p: any) => p.custom_role_id === r.id),
+    }));
+  });
+
+export const upsertCustomRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (d: {
+      id?: string;
+      name: string;
+      permissions: { module: string; action: string; allowed: boolean }[];
+    }) => d,
+  )
+  .handler(async ({ data, context }) => {
+    await assertCanManageUsers(context.supabase, context.userId);
+    if (!data.name.trim()) throw new Error("Nama role wajib diisi");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let roleId = data.id;
+    if (roleId) {
+      const { error } = await supabaseAdmin
+        .from("custom_roles")
+        .update({ name: data.name.trim() })
+        .eq("id", roleId);
+      if (error) throw new Error(error.message);
+    } else {
+      const { data: created, error } = await supabaseAdmin
+        .from("custom_roles")
+        .insert({ name: data.name.trim() })
+        .select("id")
+        .single();
+      if (error) throw new Error(error.message);
+      roleId = created.id;
+    }
+    await supabaseAdmin.from("custom_role_permissions").delete().eq("custom_role_id", roleId!);
+    const rows = data.permissions
+      .filter((p) => p.allowed)
+      .map((p) => ({
+        custom_role_id: roleId!,
+        module: p.module,
+        action: p.action,
+        allowed: true,
+      }));
+    if (rows.length) {
+      const { error } = await supabaseAdmin.from("custom_role_permissions").insert(rows);
+      if (error) throw new Error(error.message);
+    }
+    return { id: roleId };
+  });
+
+export const deleteCustomRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => d)
+  .handler(async ({ data, context }) => {
+    await assertCanManageUsers(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Detach any users using this role
+    await supabaseAdmin.from("profiles").update({ custom_role_id: null }).eq("custom_role_id", data.id);
+    const { error } = await supabaseAdmin.from("custom_roles").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
     return { ok: true };
   });

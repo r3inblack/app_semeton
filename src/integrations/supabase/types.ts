@@ -178,6 +178,56 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_role_permissions: {
+        Row: {
+          action: string
+          allowed: boolean
+          custom_role_id: string
+          module: string
+        }
+        Insert: {
+          action: string
+          allowed?: boolean
+          custom_role_id: string
+          module: string
+        }
+        Update: {
+          action?: string
+          allowed?: boolean
+          custom_role_id?: string
+          module?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_role_permissions_custom_role_id_fkey"
+            columns: ["custom_role_id"]
+            isOneToOne: false
+            referencedRelation: "custom_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_roles: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_balances: {
         Row: {
           customer_id: string
@@ -576,6 +626,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          custom_role_id: string | null
           employee_id: string | null
           full_name: string | null
           id: string
@@ -584,6 +635,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          custom_role_id?: string | null
           employee_id?: string | null
           full_name?: string | null
           id: string
@@ -592,6 +644,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          custom_role_id?: string | null
           employee_id?: string | null
           full_name?: string | null
           id?: string
@@ -599,6 +652,13 @@ export type Database = {
           warehouse_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_custom_role_id_fkey"
+            columns: ["custom_role_id"]
+            isOneToOne: false
+            referencedRelation: "custom_roles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_employee_id_fkey"
             columns: ["employee_id"]
