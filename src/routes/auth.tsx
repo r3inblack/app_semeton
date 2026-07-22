@@ -86,6 +86,11 @@ function AuthPage() {
               <p className="text-xs text-muted-foreground text-center pt-1">
                 Akun baru hanya dapat dibuat oleh Super Admin.
               </p>
+              <p className="text-xs text-center pt-1">
+                <a href="/portal" className="text-primary hover:underline font-medium">
+                  Pelanggan? Kirim setoran di sini →
+                </a>
+              </p>
             </form>
           </CardContent>
         </Card>
