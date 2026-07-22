@@ -20,6 +20,7 @@ import {
   portalListBankAccounts,
   portalLookupCustomer,
   portalSubmitPayment,
+  portalUploadProof,
 } from "@/lib/portal.functions";
 import { CheckCircle2, Clock, XCircle, Upload, LogOut } from "lucide-react";
 
