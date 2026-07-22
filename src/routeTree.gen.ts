@@ -36,6 +36,7 @@ import { Route as AuthenticatedMasterSuppliersRouteImport } from './routes/_auth
 import { Route as AuthenticatedMasterProductsRouteImport } from './routes/_authenticated/master.products'
 import { Route as AuthenticatedMasterEmployeesRouteImport } from './routes/_authenticated/master.employees'
 import { Route as AuthenticatedMasterCustomersRouteImport } from './routes/_authenticated/master.customers'
+import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -190,6 +191,12 @@ const AuthenticatedMasterCustomersRoute =
     path: '/master/customers',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicTelegramWebhookRoute =
+  ApiPublicTelegramWebhookRouteImport.update({
+    id: '/api/public/telegram/webhook',
+    path: '/api/public/telegram/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
+  '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -246,6 +254,7 @@ export interface FileRoutesByTo {
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
+  '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -276,6 +285,7 @@ export interface FileRoutesById {
   '/_authenticated/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/_authenticated/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/_authenticated/stock/pending': typeof AuthenticatedStockPendingRoute
+  '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
     | '/stock/levels'
     | '/stock/mutations'
     | '/stock/pending'
+    | '/api/public/telegram/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/stock/levels'
     | '/stock/mutations'
     | '/stock/pending'
+    | '/api/public/telegram/webhook'
   id:
     | '__root__'
     | '/'
@@ -363,12 +375,14 @@ export interface FileRouteTypes {
     | '/_authenticated/stock/levels'
     | '/_authenticated/stock/mutations'
     | '/_authenticated/stock/pending'
+    | '/api/public/telegram/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -562,6 +576,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMasterCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/telegram/webhook': {
+      id: '/api/public/telegram/webhook'
+      path: '/api/public/telegram/webhook'
+      fullPath: '/api/public/telegram/webhook'
+      preLoaderRoute: typeof ApiPublicTelegramWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -626,6 +647,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

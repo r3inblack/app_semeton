@@ -960,6 +960,10 @@ export type Database = {
         Args: { p_buy_price: number; p_id: string; p_sell_price: number }
         Returns: string
       }
+      approve_pending_stock_in_via_telegram: {
+        Args: { p_buy_price: number; p_id: string; p_sell_price: number }
+        Returns: string
+      }
       assert_admin: { Args: never; Returns: undefined }
       assert_permission: {
         Args: { _action: string; _module: string }
