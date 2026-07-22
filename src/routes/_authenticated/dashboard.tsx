@@ -87,26 +87,31 @@ function AdminDashboard() {
       <PageHeader title="Dashboard Super Admin" description="Ringkasan keuangan & operasional" />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
-          label="SISA SALDO"
+          variant="primary"
+          label="Sisa Saldo"
           value={fmtIDR(cash.data?.amount)}
-          icon={<Wallet className="h-4 w-4 text-muted-foreground" />}
+          icon={<Wallet className="h-5 w-5 text-white" />}
         />
         <MetricCard
-          label="TOTAL PIUTANG"
+          variant="success"
+          label="Total Piutang"
           value={fmtIDR(rec.data)}
-          icon={<TrendingUp className="h-4 w-4 text-emerald-500" />}
+          icon={<TrendingUp className="h-5 w-5 text-white" />}
         />
         <MetricCard
+          variant="warning"
           label="Total Hutang Supplier"
           value={fmtIDR(pay.data)}
-          icon={<TrendingDown className="h-4 w-4 text-rose-500" />}
+          icon={<TrendingDown className="h-5 w-5 text-white" />}
         />
         <MetricCard
+          variant="danger"
           label="Sisa Hutang Gaji"
           value={fmtIDR(sal.data)}
-          icon={<HandCoins className="h-4 w-4 text-amber-500" />}
+          icon={<HandCoins className="h-5 w-5 text-white" />}
         />
       </div>
+
 
       <div className="grid gap-4 mt-6 lg:grid-cols-2">
         <Card>
@@ -299,11 +304,13 @@ function StafDashboard({ warehouseId, employeeId }: { warehouseId?: string | nul
       <PageHeader title="Dashboard Staf Gudang" />
       <div className="grid gap-4 sm:grid-cols-2">
         <MetricCard
+          variant="warning"
           label="Total Sisa Hak Gaji"
           value={fmtIDR(totalSisaGaji)}
-          icon={<HandCoins className="h-4 w-4 text-amber-500" />}
+          icon={<HandCoins className="h-5 w-5 text-white" />}
         />
       </div>
+
       <Card className="mt-4">
         <CardHeader>
           <CardTitle>Sisa Hak Gaji per Karyawan</CardTitle>
