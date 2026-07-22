@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/page-header";
@@ -112,24 +112,164 @@ function TelegramTab() {
   };
 
   return (
-    <Card><CardContent className="pt-6 space-y-4 max-w-lg">
-      <div className="flex items-center gap-3">
-        <Switch checked={form.telegram_enabled} onCheckedChange={(v) => setForm({ ...form, telegram_enabled: v })} />
-        <Label>Aktifkan notifikasi Telegram</Label>
+    <div className="space-y-6">
+      <Card><CardContent className="pt-6 space-y-4 max-w-lg">
+        <div className="flex items-center gap-3">
+          <Switch checked={form.telegram_enabled} onCheckedChange={(v) => setForm({ ...form, telegram_enabled: v })} />
+          <Label>Aktifkan notifikasi Telegram</Label>
+        </div>
+        <div className="space-y-1"><Label>Bot API Token</Label>
+          <Input value={form.telegram_bot_token} onChange={(e) => setForm({ ...form, telegram_bot_token: e.target.value })} placeholder="123456:ABCDEF..." />
+        </div>
+        <div className="space-y-1">
+          <Label>Chat ID default (opsional)</Label>
+          <Input value={form.telegram_chat_id} onChange={(e) => setForm({ ...form, telegram_chat_id: e.target.value })} />
+          <p className="text-xs text-muted-foreground">
+            Kosongkan jika penerima notifikasi diatur pada daftar Owner di bawah.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={save}>Simpan</Button>
+          <Button variant="outline" onClick={test} disabled={!form.telegram_bot_token || !form.telegram_chat_id}>Kirim Test</Button>
+        </div>
+      </CardContent></Card>
+
+      <TelegramRecipientsCard botToken={form.telegram_bot_token} />
+    </div>
+  );
+}
+
+function TelegramRecipientsCard({ botToken }: { botToken: string }) {
+  const qc = useQueryClient();
+  const q = useQuery({
+    queryKey: ["telegram_recipients"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("telegram_recipients" as any)
+        .select("*")
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as any[];
+    },
+  });
+  const [newRow, setNewRow] = useState({ label: "", chat_id: "", can_price: false });
+
+  const add = async () => {
+    if (!newRow.label.trim() || !newRow.chat_id.trim()) {
+      return toast.error("Nama dan Chat ID wajib diisi");
+    }
+    const { error } = await supabase.from("telegram_recipients" as any).insert({
+      label: newRow.label.trim(),
+      chat_id: newRow.chat_id.trim(),
+      can_price: newRow.can_price,
+      notify_enabled: true,
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Owner ditambahkan");
+    setNewRow({ label: "", chat_id: "", can_price: false });
+    qc.invalidateQueries({ queryKey: ["telegram_recipients"] });
+  };
+
+  const update = async (id: string, patch: Record<string, any>) => {
+    const { error } = await supabase.from("telegram_recipients" as any).update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["telegram_recipients"] });
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("telegram_recipients" as any).delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Owner dihapus");
+    qc.invalidateQueries({ queryKey: ["telegram_recipients"] });
+  };
+
+  const testOne = async (chat_id: string) => {
+    if (!botToken) return toast.error("Bot Token belum diisi");
+    try {
+      const r = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id, text: "✅ Test notifikasi Aplikasi Semeton" }),
+      });
+      const j = await r.json();
+      if (j.ok) toast.success("Pesan terkirim");
+      else toast.error(j.description || "Gagal");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  return (
+    <Card><CardContent className="pt-6 space-y-4">
+      <div>
+        <h3 className="font-semibold">Daftar Owner Penerima Notifikasi</h3>
+        <p className="text-sm text-muted-foreground">
+          Semua nomor aktif akan menerima notifikasi transaksi. Centang <b>Boleh menentukan harga</b> untuk nomor yang berwenang menentukan harga beli & jual pada persetujuan barang masuk.
+        </p>
       </div>
-      <div className="space-y-1"><Label>Bot API Token</Label>
-        <Input value={form.telegram_bot_token} onChange={(e) => setForm({ ...form, telegram_bot_token: e.target.value })} placeholder="123456:ABCDEF..." />
+
+      <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto_auto] md:items-end">
+        <div className="space-y-1">
+          <Label>Nama / Label</Label>
+          <Input value={newRow.label} onChange={(e) => setNewRow({ ...newRow, label: e.target.value })} placeholder="Owner 1" />
+        </div>
+        <div className="space-y-1">
+          <Label>Chat ID Telegram</Label>
+          <Input value={newRow.chat_id} onChange={(e) => setNewRow({ ...newRow, chat_id: e.target.value })} placeholder="123456789" />
+        </div>
+        <label className="flex items-center gap-2 text-sm h-9">
+          <input
+            type="checkbox"
+            checked={newRow.can_price}
+            onChange={(e) => setNewRow({ ...newRow, can_price: e.target.checked })}
+          />
+          Boleh menentukan harga
+        </label>
+        <Button onClick={add}>Tambah</Button>
       </div>
-      <div className="space-y-1"><Label>Chat ID</Label>
-        <Input value={form.telegram_chat_id} onChange={(e) => setForm({ ...form, telegram_chat_id: e.target.value })} />
-      </div>
-      <div className="flex gap-2">
-        <Button onClick={save}>Simpan</Button>
-        <Button variant="outline" onClick={test} disabled={!form.telegram_bot_token || !form.telegram_chat_id}>Kirim Test</Button>
+
+      <div className="overflow-auto rounded-md border">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/50">
+            <tr>
+              <th className="text-left px-3 py-2">Nama</th>
+              <th className="text-left px-3 py-2">Chat ID</th>
+              <th className="text-center px-3 py-2">Notifikasi</th>
+              <th className="text-center px-3 py-2">Boleh menentukan harga</th>
+              <th className="text-right px-3 py-2">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(q.data ?? []).map((r: any) => (
+              <tr key={r.id} className="border-t">
+                <td className="px-3 py-2">{r.label}</td>
+                <td className="px-3 py-2 font-mono">{r.chat_id}</td>
+                <td className="px-3 py-2 text-center">
+                  <Switch
+                    checked={!!r.notify_enabled}
+                    onCheckedChange={(v) => update(r.id, { notify_enabled: v })}
+                  />
+                </td>
+                <td className="px-3 py-2 text-center">
+                  <input
+                    type="checkbox"
+                    checked={!!r.can_price}
+                    onChange={(e) => update(r.id, { can_price: e.target.checked })}
+                  />
+                </td>
+                <td className="px-3 py-2 text-right space-x-2">
+                  <Button size="sm" variant="outline" onClick={() => testOne(r.chat_id)}>Test</Button>
+                  <Button size="sm" variant="destructive" onClick={() => remove(r.id)}>Hapus</Button>
+                </td>
+              </tr>
+            ))}
+            {(q.data ?? []).length === 0 && (
+              <tr><td colSpan={5} className="px-3 py-6 text-center text-muted-foreground">Belum ada owner</td></tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </CardContent></Card>
   );
 }
+
 
 function InitialTab() {
   const qc = useQueryClient();
