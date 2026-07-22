@@ -31,10 +31,15 @@ function ExpensesReportPage() {
   const cats = useQuery({
     queryKey: ["rep_exp_cats"],
     queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from("expenses").select("category").limit(1000);
+      const [masterRes, usedRes] = await Promise.all([
+        (supabase as any).from("expense_categories").select("name"),
+        (supabase as any).from("expenses").select("category").limit(1000),
+      ]);
       const set = new Set<string>();
-      for (const r of (data ?? []) as { category: string }[]) {
+      for (const r of (masterRes.data ?? []) as { name: string }[]) {
+        if (r.name) set.add(r.name);
+      }
+      for (const r of (usedRes.data ?? []) as { category: string }[]) {
         if (r.category) set.add(r.category);
       }
       return Array.from(set).sort();

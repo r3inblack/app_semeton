@@ -15,6 +15,18 @@ export const Route = createFileRoute("/_authenticated/expenses")({
 
 function Page() {
   const qc = useQueryClient();
+
+  const cats = useQuery({
+    queryKey: ["expense_categories"],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from("expense_categories")
+        .select("id, name")
+        .order("name", { ascending: true });
+      return (data ?? []) as { id: string; name: string }[];
+    },
+  });
+
   const history = useQuery({
     queryKey: ["expenses_history"],
     queryFn: async () => {
@@ -27,17 +39,21 @@ function Page() {
     },
   });
 
+  const categoryOptions = (cats.data ?? []).map((c) => ({ value: c.name, label: c.name }));
+
   return (
     <AppShell title="Pengeluaran">
       <PageHeader title="Pengeluaran Operasional" description="Biaya listrik, bensin, dll → kas berkurang" />
       <TxForm
+        key={categoryOptions.length}
         title="Catat Pengeluaran"
         fields={[
-          { name: "category", label: "Kategori (mis. Listrik, Bensin)", type: "text" },
+          { name: "category", label: "Kategori", type: "select", options: categoryOptions },
           { name: "amount", label: "Nominal", type: "number" },
           { name: "note", label: "Catatan", type: "textarea" },
         ]}
         onSubmit={async (v) => {
+          if (!v.category) throw new Error("Pilih kategori terlebih dahulu");
           const { error } = await supabase.rpc("record_expense", {
             p_category: v.category, p_amount: Number(v.amount), p_note: v.note || null,
           });
