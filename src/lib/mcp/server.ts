@@ -5,7 +5,6 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { createClient } from "@supabase/supabase-js";
 
-// Use admin client for MCP to bypass RLS as it's an "agent" interface
 const getSupabaseAdmin = () => createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -75,7 +74,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { data, error } = await query;
       if (error) throw error;
       
-      let filtered = data || [];
+      let filtered = (data || []) as any[];
       if (args?.product_name) {
         filtered = filtered.filter((s: any) => s.products.name.toLowerCase().includes(String(args.product_name).toLowerCase()));
       }
@@ -89,7 +88,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
     if (name === "get_receivables") {
       const { data, error } = await supabaseAdmin.from("customer_balances").select("receivable, customers(name)").gt("receivable", 0);
       if (error) throw error;
-      const list = data.map((c: any) => `${c.customers.name}: Rp ${c.receivable.toLocaleString('id-ID')}`).join("\n");
+      const list = (data || []).map((c: any) => `${c.customers.name}: Rp ${c.receivable.toLocaleString('id-ID')}`).join("\n");
       return {
         content: [{ type: "text", text: list || "No receivables." }],
       };
@@ -103,5 +102,3 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
     };
   }
 });
-
-
