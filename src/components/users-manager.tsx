@@ -239,6 +239,7 @@ export function UsersManager() {
               <TableHead>Nama</TableHead>
               <TableHead>Username / Email</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Karyawan</TableHead>
               <TableHead>Gudang</TableHead>
               <TableHead className="w-48 text-right">Aksi</TableHead>
             </TableRow>
