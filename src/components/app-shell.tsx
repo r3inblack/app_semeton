@@ -111,6 +111,7 @@ const NAV: NavItem[] = [
       { title: "Piutang / Setoran", url: "/reports/receivables", module: "reports_receivables" },
       { title: "Hutang Supplier", url: "/reports/payables", module: "reports_payables" },
       { title: "Mutasi Barang", url: "/reports/mutations", module: "reports_mutations" },
+      { title: "Pengeluaran", url: "/reports/expenses", module: "reports_expenses" },
     ],
   },
   { title: "Pengaturan", url: "/settings", icon: Settings, module: "__settings__" },
