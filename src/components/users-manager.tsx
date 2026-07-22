@@ -270,27 +270,8 @@ export function UsersManager() {
         </div>
       </div>
 
-      {/* Custom roles quick list */}
-      {!!customRoles.length && (
-        <div className="rounded border bg-muted/30 p-3">
-          <div className="text-xs font-semibold uppercase text-muted-foreground mb-2">Role Custom</div>
-          <div className="flex flex-wrap gap-2">
-            {customRoles.map((r) => (
-              <div key={r.id} className="flex items-center gap-1 rounded-full border bg-background px-3 py-1 text-sm">
-                <Shield className="h-3.5 w-3.5 text-primary" />
-                <span>{r.name}</span>
-                <button
-                  className="ml-1 text-muted-foreground hover:text-foreground"
-                  title="Edit role"
-                  onClick={() => { setEditingRole(r); setOpenRoles(true); }}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+
+
 
 
       <div className="overflow-auto">
