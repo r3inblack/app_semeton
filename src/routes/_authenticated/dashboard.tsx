@@ -15,20 +15,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-function Dashboard() {
-  const { isAdmin, isStaf, profile, loading } = useRole();
-  if (loading)
-    return (
-      <AppShell title="Dashboard">
-        <div>Memuat…</div>
-      </AppShell>
-    );
-  return (
-    <AppShell title="Dashboard">
-      {isAdmin ? <AdminDashboard /> : isStaf ? <StafDashboard warehouseId={profile?.warehouse_id} /> : null}
-    </AppShell>
-  );
-}
 
 function AdminDashboard() {
   const cash = useQuery({
