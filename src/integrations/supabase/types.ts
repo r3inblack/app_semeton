@@ -937,6 +937,45 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_webhook_logs: {
+        Row: {
+          chat_id: string | null
+          detail: string | null
+          from_id: string | null
+          from_name: string | null
+          id: number
+          raw: Json | null
+          received_at: string
+          reply_to_text: string | null
+          status: string
+          text: string | null
+        }
+        Insert: {
+          chat_id?: string | null
+          detail?: string | null
+          from_id?: string | null
+          from_name?: string | null
+          id?: number
+          raw?: Json | null
+          received_at?: string
+          reply_to_text?: string | null
+          status: string
+          text?: string | null
+        }
+        Update: {
+          chat_id?: string | null
+          detail?: string | null
+          from_id?: string | null
+          from_name?: string | null
+          id?: number
+          raw?: Json | null
+          received_at?: string
+          reply_to_text?: string | null
+          status?: string
+          text?: string | null
+        }
+        Relationships: []
+      }
       user_permissions: {
         Row: {
           action: string
