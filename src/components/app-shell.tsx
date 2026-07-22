@@ -96,6 +96,7 @@ const NAV: NavItem[] = [
     icon: HandCoins,
     children: [
       { title: "Tambah Hak Gaji", url: "/salary/accrual", module: "salary_accrual" },
+      { title: "Tambah Hak Gaji Kurir", url: "/salary/accrual-kurir", module: "salary_accrual" },
       { title: "Kasbon / Uang Jalan", url: "/salary/advance", module: "salary_advance" },
       { title: "Bayar Cicilan Gaji", url: "/salary/payment", module: "salary_payment" },
       { title: "Bonus Barang", url: "/salary/bonus", module: "salary_bonus" },

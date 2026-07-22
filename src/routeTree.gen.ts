@@ -22,6 +22,7 @@ import { Route as AuthenticatedStockInRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSalaryPaymentRouteImport } from './routes/_authenticated/salary.payment'
 import { Route as AuthenticatedSalaryBonusRouteImport } from './routes/_authenticated/salary.bonus'
 import { Route as AuthenticatedSalaryAdvanceRouteImport } from './routes/_authenticated/salary.advance'
+import { Route as AuthenticatedSalaryAccrualKurirRouteImport } from './routes/_authenticated/salary.accrual-kurir'
 import { Route as AuthenticatedSalaryAccrualRouteImport } from './routes/_authenticated/salary.accrual'
 import { Route as AuthenticatedReportsReceivablesRouteImport } from './routes/_authenticated/reports.receivables'
 import { Route as AuthenticatedReportsPayablesRouteImport } from './routes/_authenticated/reports.payables'
@@ -102,6 +103,12 @@ const AuthenticatedSalaryAdvanceRoute =
   AuthenticatedSalaryAdvanceRouteImport.update({
     id: '/salary/advance',
     path: '/salary/advance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSalaryAccrualKurirRoute =
+  AuthenticatedSalaryAccrualKurirRouteImport.update({
+    id: '/salary/accrual-kurir',
+    path: '/salary/accrual-kurir',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSalaryAccrualRoute =
@@ -196,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/reports/payables': typeof AuthenticatedReportsPayablesRoute
   '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
   '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
+  '/salary/accrual-kurir': typeof AuthenticatedSalaryAccrualKurirRoute
   '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
   '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
   '/salary/payment': typeof AuthenticatedSalaryPaymentRoute
@@ -222,6 +230,7 @@ export interface FileRoutesByTo {
   '/reports/payables': typeof AuthenticatedReportsPayablesRoute
   '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
   '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
+  '/salary/accrual-kurir': typeof AuthenticatedSalaryAccrualKurirRoute
   '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
   '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
   '/salary/payment': typeof AuthenticatedSalaryPaymentRoute
@@ -250,6 +259,7 @@ export interface FileRoutesById {
   '/_authenticated/reports/payables': typeof AuthenticatedReportsPayablesRoute
   '/_authenticated/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
   '/_authenticated/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
+  '/_authenticated/salary/accrual-kurir': typeof AuthenticatedSalaryAccrualKurirRoute
   '/_authenticated/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
   '/_authenticated/salary/bonus': typeof AuthenticatedSalaryBonusRoute
   '/_authenticated/salary/payment': typeof AuthenticatedSalaryPaymentRoute
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/reports/payables'
     | '/reports/receivables'
     | '/salary/accrual'
+    | '/salary/accrual-kurir'
     | '/salary/advance'
     | '/salary/bonus'
     | '/salary/payment'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/reports/payables'
     | '/reports/receivables'
     | '/salary/accrual'
+    | '/salary/accrual-kurir'
     | '/salary/advance'
     | '/salary/bonus'
     | '/salary/payment'
@@ -331,6 +343,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reports/payables'
     | '/_authenticated/reports/receivables'
     | '/_authenticated/salary/accrual'
+    | '/_authenticated/salary/accrual-kurir'
     | '/_authenticated/salary/advance'
     | '/_authenticated/salary/bonus'
     | '/_authenticated/salary/payment'
@@ -438,6 +451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSalaryAdvanceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/salary/accrual-kurir': {
+      id: '/_authenticated/salary/accrual-kurir'
+      path: '/salary/accrual-kurir'
+      fullPath: '/salary/accrual-kurir'
+      preLoaderRoute: typeof AuthenticatedSalaryAccrualKurirRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/salary/accrual': {
       id: '/_authenticated/salary/accrual'
       path: '/salary/accrual'
@@ -542,6 +562,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReportsPayablesRoute: typeof AuthenticatedReportsPayablesRoute
   AuthenticatedReportsReceivablesRoute: typeof AuthenticatedReportsReceivablesRoute
   AuthenticatedSalaryAccrualRoute: typeof AuthenticatedSalaryAccrualRoute
+  AuthenticatedSalaryAccrualKurirRoute: typeof AuthenticatedSalaryAccrualKurirRoute
   AuthenticatedSalaryAdvanceRoute: typeof AuthenticatedSalaryAdvanceRoute
   AuthenticatedSalaryBonusRoute: typeof AuthenticatedSalaryBonusRoute
   AuthenticatedSalaryPaymentRoute: typeof AuthenticatedSalaryPaymentRoute
@@ -567,6 +588,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReportsPayablesRoute: AuthenticatedReportsPayablesRoute,
   AuthenticatedReportsReceivablesRoute: AuthenticatedReportsReceivablesRoute,
   AuthenticatedSalaryAccrualRoute: AuthenticatedSalaryAccrualRoute,
+  AuthenticatedSalaryAccrualKurirRoute: AuthenticatedSalaryAccrualKurirRoute,
   AuthenticatedSalaryAdvanceRoute: AuthenticatedSalaryAdvanceRoute,
   AuthenticatedSalaryBonusRoute: AuthenticatedSalaryBonusRoute,
   AuthenticatedSalaryPaymentRoute: AuthenticatedSalaryPaymentRoute,
