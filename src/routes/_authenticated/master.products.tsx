@@ -7,7 +7,7 @@ import { fmtIDR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/master/products")({
   component: () => (
     <AppShell title="Master — Produk">
-      <PageHeader title="Data Produk" description="Harga jual, harga beli & komisi per unit" />
+      <PageHeader title="Data Produk" description="Harga jual & harga beli" />
       <CrudTable
         table="products"
         title="Produk"
@@ -16,7 +16,6 @@ export const Route = createFileRoute("/_authenticated/master/products")({
           { name: "sku", label: "SKU" },
           { name: "sell_price", label: "Harga Jual", type: "number", render: (v) => fmtIDR(v) },
           { name: "buy_price", label: "Harga Beli", type: "number", render: (v) => fmtIDR(v) },
-          { name: "commission_per_unit", label: "Komisi/unit", type: "number", render: (v) => fmtIDR(v) },
         ]}
       />
     </AppShell>
