@@ -378,12 +378,24 @@ export function UsersManager() {
             </Field>
             <Field label="Role / Level">
               <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as AppRole })}>
+                value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as AppRole, custom_role_id: "" })}>
                 {availableRoles.map((r) => (
                   <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                 ))}
               </select>
             </Field>
+            {editForm.role === "custom" && (
+              <Field label="Pilih Role Custom">
+                <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                  value={editForm.custom_role_id}
+                  onChange={(e) => setEditForm({ ...editForm, custom_role_id: e.target.value })}>
+                  <option value="">— pilih role —</option>
+                  {customRoles.map((r) => (
+                    <option key={r.id} value={r.id}>{r.name}</option>
+                  ))}
+                </select>
+              </Field>
+            )}
             {editForm.role === "staf_gudang" && (
               <Field label="Gudang">
                 <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
