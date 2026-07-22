@@ -115,6 +115,14 @@ const NAV: NavItem[] = [
       { title: "Kasbon / Uang Jalan", url: "/salary/advance", module: "salary_advance" },
       { title: "Bayar Cicilan Gaji", url: "/salary/payment", module: "salary_payment" },
       { title: "Bonus Barang", url: "/salary/bonus", module: "salary_bonus" },
+      { title: "Persetujuan Bonus", url: "/salary/bonus-pending", module: "salary_bonus_pending" },
+    ],
+  },
+  {
+    title: "Supplier",
+    icon: Truck,
+    children: [
+      { title: "Retur ke Supplier", url: "/supplier/returns", module: "supplier_returns" },
     ],
   },
   {
@@ -126,6 +134,8 @@ const NAV: NavItem[] = [
       { title: "Hutang Supplier", url: "/reports/payables", module: "reports_payables" },
       { title: "Mutasi Barang", url: "/reports/mutations", module: "reports_mutations" },
       { title: "Pengeluaran", url: "/reports/expenses", module: "reports_expenses" },
+      { title: "Bonus Barang", url: "/reports/bonus", module: "reports_bonus" },
+      { title: "Retur Supplier", url: "/reports/returns", module: "reports_returns" },
     ],
   },
   { title: "Pengaturan", url: "/settings", icon: Settings, module: "__settings__" },
@@ -150,10 +160,13 @@ const ICONS: Record<string, typeof LayoutDashboard> = {
   "Kasbon / Uang Jalan": Wallet,
   "Bayar Cicilan Gaji": Banknote,
   "Bonus Barang": Gift,
+  "Persetujuan Bonus": ClipboardCheck,
+  "Retur ke Supplier": ArrowRightLeft,
   "Arus Kas": FileBarChart,
   "Piutang / Setoran": FileBarChart,
   "Hutang Supplier": FileBarChart,
   "Mutasi Barang": FileBarChart,
+  "Retur Supplier": FileBarChart,
 };
 
 function AppSidebar() {
