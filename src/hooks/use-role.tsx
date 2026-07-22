@@ -26,7 +26,16 @@ export const ROLE_LABELS: Record<AppRole, string> = {
 };
 
 export const ALL_MODULES: { key: string; label: string; group: string }[] = [
-  { key: "dashboard", label: "Dashboard", group: "Umum" },
+  { key: "dashboard", label: "Dashboard (Akses Halaman)", group: "Dashboard" },
+  { key: "dashboard_cash", label: "Widget: Sisa Saldo Kas", group: "Dashboard" },
+  { key: "dashboard_receivables", label: "Widget: Total Piutang & Rincian", group: "Dashboard" },
+  { key: "dashboard_payables", label: "Widget: Total Hutang Supplier", group: "Dashboard" },
+  { key: "dashboard_salary_debt", label: "Widget: Sisa Hutang Gaji & Rincian", group: "Dashboard" },
+  { key: "dashboard_cash_chart", label: "Widget: Grafik Pergerakan Kas 30 Hari", group: "Dashboard" },
+  { key: "dashboard_my_salary", label: "Widget: Sisa Hak Gaji (Staf)", group: "Dashboard" },
+  { key: "dashboard_salary_history", label: "Widget: Riwayat Penerimaan Gaji", group: "Dashboard" },
+  { key: "dashboard_warehouse_stock", label: "Widget: Sisa Stok Gudang", group: "Dashboard" },
+  { key: "dashboard_recent_sales", label: "Widget: 3 Transaksi Terakhir", group: "Dashboard" },
   { key: "master_customers", label: "Master Pelanggan", group: "Master Data" },
   { key: "master_suppliers", label: "Master Supplier", group: "Master Data" },
   { key: "master_employees", label: "Master Karyawan", group: "Master Data" },
