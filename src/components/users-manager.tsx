@@ -299,6 +299,15 @@ export function UsersManager() {
         <DialogContent>
           <DialogHeader><DialogTitle>Edit User</DialogTitle></DialogHeader>
           <div className="space-y-3">
+            <Field label="Karyawan">
+              <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                value={editForm.employee_id} onChange={(e) => onPickEmployeeEdit(e.target.value)}>
+                <option value="">— tidak dikaitkan —</option>
+                {availableEmployeesEdit.map((e) => (
+                  <option key={e.id} value={e.id}>{e.name}{e.category ? ` (${e.category})` : ""}</option>
+                ))}
+              </select>
+            </Field>
             <Field label="Nama Lengkap">
               <Input value={editForm.full_name} onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })} />
             </Field>
