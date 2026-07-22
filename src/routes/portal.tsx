@@ -140,14 +140,27 @@ function CustomerPortal({ customer, onExit }: { customer: Verified; onExit: () =
       let proofPath: string | null = null;
       if (file) {
         setUploading(true);
-        const ext = file.name.split(".").pop() || "jpg";
-        const key = `${customer.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("payment-proofs")
-          .upload(key, file, { contentType: file.type || "image/jpeg", upsert: false });
+        const b64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const s = String(reader.result || "");
+            const idx = s.indexOf(",");
+            resolve(idx >= 0 ? s.slice(idx + 1) : s);
+          };
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
+        const up = await portalUploadProof({
+          data: {
+            code: customer.code,
+            filename: file.name,
+            content_type: file.type || null,
+            data_base64: b64,
+          },
+        });
         setUploading(false);
-        if (upErr) throw upErr;
-        proofPath = key;
+        if (!up.ok) throw new Error("reason" in up ? String(up.reason) : "upload gagal");
+        proofPath = up.path;
       }
       const res = await portalSubmitPayment({
         data: {
