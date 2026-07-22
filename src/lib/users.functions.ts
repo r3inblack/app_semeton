@@ -45,18 +45,25 @@ export const listUsers = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     const ids = usersData.users.map((u) => u.id);
     const [{ data: profiles }, { data: roles }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id, full_name, is_master, warehouse_id").in("id", ids),
+      supabaseAdmin.from("profiles").select("id, full_name, is_master, warehouse_id, employee_id").in("id", ids),
       supabaseAdmin.from("user_roles").select("user_id, role").in("user_id", ids),
     ]);
+    const empIds = (profiles ?? []).map((p: any) => p.employee_id).filter(Boolean);
+    const { data: employees } = empIds.length
+      ? await supabaseAdmin.from("employees").select("id, name").in("id", empIds)
+      : { data: [] as any[] };
     return usersData.users.map((u) => {
       const p = profiles?.find((x: any) => x.id === u.id);
       const r = roles?.find((x: any) => x.user_id === u.id);
+      const emp = employees?.find((x: any) => x.id === p?.employee_id);
       return {
         id: u.id,
         email: u.email,
         full_name: p?.full_name ?? null,
         is_master: p?.is_master ?? false,
         warehouse_id: p?.warehouse_id ?? null,
+        employee_id: p?.employee_id ?? null,
+        employee_name: emp?.name ?? null,
         role: (r?.role ?? "viewer") as AppRole,
         created_at: u.created_at,
       };
@@ -72,6 +79,7 @@ export const createUser = createServerFn({ method: "POST" })
       full_name: string;
       role: AppRole;
       warehouse_id?: string | null;
+      employee_id?: string | null;
     }) => d,
   )
   .handler(async ({ data, context }) => {
@@ -84,6 +92,11 @@ export const createUser = createServerFn({ method: "POST" })
     if (data.password.length < 6) throw new Error("Password minimal 6 karakter");
     const email = data.username.includes("@") ? data.username : `${data.username}@semeton.app`;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (data.employee_id) {
+      const { data: taken } = await supabaseAdmin
+        .from("profiles").select("id").eq("employee_id", data.employee_id).maybeSingle();
+      if (taken) throw new Error("Karyawan ini sudah dikaitkan ke user lain");
+    }
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password: data.password,
@@ -94,7 +107,11 @@ export const createUser = createServerFn({ method: "POST" })
     const uid = created.user!.id;
     await supabaseAdmin
       .from("profiles")
-      .update({ full_name: data.full_name, warehouse_id: data.warehouse_id ?? null })
+      .update({
+        full_name: data.full_name,
+        warehouse_id: data.warehouse_id ?? null,
+        employee_id: data.employee_id ?? null,
+      })
       .eq("id", uid);
     await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
     await supabaseAdmin.from("user_roles").insert({ user_id: uid, role: data.role });
@@ -109,6 +126,7 @@ export const updateUser = createServerFn({ method: "POST" })
       full_name?: string;
       role?: AppRole;
       warehouse_id?: string | null;
+      employee_id?: string | null;
       password?: string;
     }) => d,
   )
@@ -129,9 +147,16 @@ export const updateUser = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
     }
 
-    const profileUpdate: { full_name?: string; warehouse_id?: string | null } = {};
+    if (data.employee_id) {
+      const { data: taken } = await supabaseAdmin
+        .from("profiles").select("id").eq("employee_id", data.employee_id).neq("id", data.id).maybeSingle();
+      if (taken) throw new Error("Karyawan ini sudah dikaitkan ke user lain");
+    }
+
+    const profileUpdate: { full_name?: string; warehouse_id?: string | null; employee_id?: string | null } = {};
     if (data.full_name !== undefined) profileUpdate.full_name = data.full_name;
     if (data.warehouse_id !== undefined) profileUpdate.warehouse_id = data.warehouse_id;
+    if (data.employee_id !== undefined) profileUpdate.employee_id = data.employee_id;
     if (Object.keys(profileUpdate).length) {
       await supabaseAdmin.from("profiles").update(profileUpdate).eq("id", data.id);
     }

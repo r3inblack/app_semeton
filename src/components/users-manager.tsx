@@ -29,7 +29,10 @@ import { toast } from "sonner";
 type UserRow = {
   id: string; email: string | undefined; full_name: string | null;
   is_master: boolean; warehouse_id: string | null; role: AppRole;
+  employee_id: string | null; employee_name: string | null;
 };
+
+type Employee = { id: string; name: string; category: string | null; warehouse_id: string | null };
 
 const ROLE_OPTIONS: AppRole[] = [
   "super_admin", "admin", "manager", "staff_keuangan",
@@ -45,6 +48,7 @@ export function UsersManager() {
   const remove = useServerFn(deleteUser);
 
   const warehouses = useList<{ id: string; name: string }>("warehouses");
+  const employees = useList<Employee>("employees");
   const q = useQuery({ queryKey: ["admin-users"], queryFn: () => list() });
 
   const [openNew, setOpenNew] = useState(false);
@@ -54,12 +58,19 @@ export function UsersManager() {
 
   const [form, setForm] = useState({
     username: "", password: "", full_name: "",
-    role: "viewer" as AppRole, warehouse_id: "",
+    role: "viewer" as AppRole, warehouse_id: "", employee_id: "",
   });
   const [editForm, setEditForm] = useState({
-    full_name: "", role: "viewer" as AppRole, warehouse_id: "",
+    full_name: "", role: "viewer" as AppRole, warehouse_id: "", employee_id: "",
   });
   const [newPw, setNewPw] = useState("");
+
+  // Employees not yet linked (for the "New user" dialog)
+  const linkedIds = new Set((q.data ?? []).map((u: UserRow) => u.employee_id).filter(Boolean) as string[]);
+  const availableEmployeesNew = (employees.data ?? []).filter((e) => !linkedIds.has(e.id));
+  const availableEmployeesEdit = (employees.data ?? []).filter(
+    (e) => !linkedIds.has(e.id) || e.id === editing?.employee_id,
+  );
 
   const availableRoles = ROLE_OPTIONS.filter((r) => isSuperAdmin || r !== "super_admin");
 
@@ -71,12 +82,13 @@ export function UsersManager() {
       return create({ data: {
         username: form.username, password: form.password, full_name: form.full_name,
         role: form.role, warehouse_id: form.warehouse_id || null,
+        employee_id: form.employee_id || null,
       } });
     },
     onSuccess: () => {
       toast.success("User dibuat");
       setOpenNew(false);
-      setForm({ username: "", password: "", full_name: "", role: "viewer", warehouse_id: "" });
+      setForm({ username: "", password: "", full_name: "", role: "viewer", warehouse_id: "", employee_id: "" });
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
     onError: (e: any) => toast.error(e.message),
@@ -87,6 +99,7 @@ export function UsersManager() {
     mutationFn: () => update({ data: {
       id: editing!.id, full_name: editForm.full_name, role: editForm.role,
       warehouse_id: editForm.warehouse_id || null,
+      employee_id: editForm.employee_id || null,
     } }),
     onSuccess: () => {
       toast.success("User diperbarui");
@@ -124,7 +137,29 @@ export function UsersManager() {
       full_name: u.full_name ?? "",
       role: u.role,
       warehouse_id: u.warehouse_id ?? "",
+      employee_id: u.employee_id ?? "",
     });
+  };
+
+  // When user picks an employee in New dialog, prefill name + warehouse
+  const onPickEmployeeNew = (empId: string) => {
+    const emp = (employees.data ?? []).find((e) => e.id === empId);
+    setForm((f) => ({
+      ...f,
+      employee_id: empId,
+      full_name: emp?.name && !f.full_name ? emp.name : f.full_name,
+      warehouse_id: emp?.warehouse_id ?? f.warehouse_id,
+      username: emp && !f.username ? emp.name.toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.|\.$/g, "") : f.username,
+    }));
+  };
+  const onPickEmployeeEdit = (empId: string) => {
+    const emp = (employees.data ?? []).find((e) => e.id === empId);
+    setEditForm((f) => ({
+      ...f,
+      employee_id: empId,
+      full_name: emp?.name && !f.full_name ? emp.name : f.full_name,
+      warehouse_id: emp?.warehouse_id ?? f.warehouse_id,
+    }));
   };
 
   return (
@@ -144,6 +179,18 @@ export function UsersManager() {
           <DialogContent>
             <DialogHeader><DialogTitle>Tambah User Baru</DialogTitle></DialogHeader>
             <div className="space-y-3">
+              <Field label="Ambil Data Karyawan (opsional)">
+                <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                  value={form.employee_id} onChange={(e) => onPickEmployeeNew(e.target.value)}>
+                  <option value="">— tidak dikaitkan —</option>
+                  {availableEmployeesNew.map((e) => (
+                    <option key={e.id} value={e.id}>{e.name}{e.category ? ` (${e.category})` : ""}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Pilih karyawan agar nominal gaji tampil pada dashboard user tersebut.
+                </p>
+              </Field>
               <Field label="Username">
                 <Input value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="misal: budi" />
               </Field>
@@ -192,6 +239,7 @@ export function UsersManager() {
               <TableHead>Nama</TableHead>
               <TableHead>Username / Email</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Karyawan</TableHead>
               <TableHead>Gudang</TableHead>
               <TableHead className="w-48 text-right">Aksi</TableHead>
             </TableRow>
@@ -205,6 +253,7 @@ export function UsersManager() {
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{u.email}</TableCell>
                 <TableCell>{ROLE_LABELS[u.role] ?? u.role}</TableCell>
+                <TableCell>{u.employee_name ?? "-"}</TableCell>
                 <TableCell>{warehouses.data?.find((w) => w.id === u.warehouse_id)?.name ?? "-"}</TableCell>
                 <TableCell className="text-right">
                   {u.role === "custom" && (
@@ -239,7 +288,7 @@ export function UsersManager() {
               </TableRow>
             ))}
             {!q.data?.length && (
-              <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">
+              <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">
                 {q.isLoading ? "Memuat..." : "Belum ada user"}
               </TableCell></TableRow>
             )}
@@ -252,6 +301,15 @@ export function UsersManager() {
         <DialogContent>
           <DialogHeader><DialogTitle>Edit User</DialogTitle></DialogHeader>
           <div className="space-y-3">
+            <Field label="Karyawan">
+              <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                value={editForm.employee_id} onChange={(e) => onPickEmployeeEdit(e.target.value)}>
+                <option value="">— tidak dikaitkan —</option>
+                {availableEmployeesEdit.map((e) => (
+                  <option key={e.id} value={e.id}>{e.name}{e.category ? ` (${e.category})` : ""}</option>
+                ))}
+              </select>
+            </Field>
             <Field label="Nama Lengkap">
               <Input value={editForm.full_name} onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })} />
             </Field>
