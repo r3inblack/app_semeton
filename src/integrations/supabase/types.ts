@@ -21,6 +21,8 @@ export type Database = {
           telegram_bot_token: string | null
           telegram_chat_id: string | null
           telegram_enabled: boolean
+          telegram_group_bot_token: string | null
+          telegram_group_chat_id: string | null
           updated_at: string
         }
         Insert: {
@@ -29,6 +31,8 @@ export type Database = {
           telegram_bot_token?: string | null
           telegram_chat_id?: string | null
           telegram_enabled?: boolean
+          telegram_group_bot_token?: string | null
+          telegram_group_chat_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -37,6 +41,8 @@ export type Database = {
           telegram_bot_token?: string | null
           telegram_chat_id?: string | null
           telegram_enabled?: boolean
+          telegram_group_bot_token?: string | null
+          telegram_group_chat_id?: string | null
           updated_at?: string
         }
         Relationships: []
