@@ -312,150 +312,141 @@ function StafDashboard({ warehouseId, employeeId, can }: { warehouseId?: string 
     0,
   );
 
+  const showMySal = can("dashboard_my_salary");
+  const showHist = can("dashboard_salary_history");
+  const showStock = can("dashboard_warehouse_stock");
+  const showRecent = can("dashboard_recent_sales");
+
   return (
     <>
       <PageHeader title="Dashboard Staf Gudang" />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <MetricCard
-          variant="warning"
-          label="Total Sisa Hak Gaji"
-          value={fmtIDR(totalSisaGaji)}
-          icon={<HandCoins className="h-5 w-5 text-white" />}
-        />
-      </div>
+      {showMySal && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <MetricCard
+            variant="warning"
+            label="Total Sisa Hak Gaji"
+            value={fmtIDR(totalSisaGaji)}
+            icon={<HandCoins className="h-5 w-5 text-white" />}
+          />
+        </div>
+      )}
 
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>Sisa Hak Gaji per Karyawan</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Karyawan</TableHead>
-                <TableHead>Kategori</TableHead>
-                <TableHead className="text-right">Sisa</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(salaryBalances.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
-                  <TableCell>{r.employees?.name ?? "-"}</TableCell>
-                  <TableCell className="capitalize">{r.employees?.category ?? "-"}</TableCell>
-                  <TableCell className="text-right font-medium">{fmtIDR(r.balance)}</TableCell>
-                </TableRow>
-              ))}
-              {!salaryBalances.data?.length && (
+      {showMySal && (
+        <Card className="mt-4">
+          <CardHeader><CardTitle>Sisa Hak Gaji per Karyawan</CardTitle></CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center text-muted-foreground">
-                    Belum ada data
-                  </TableCell>
+                  <TableHead>Karyawan</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead className="text-right">Sisa</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>Riwayat Penerimaan Gaji</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Waktu</TableHead>
-                <TableHead>Karyawan</TableHead>
-                <TableHead className="text-right">Nominal</TableHead>
-                <TableHead>Catatan</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(salaryPayments.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
-                  <TableCell>{fmtDate(r.occurred_at)}</TableCell>
-                  <TableCell>{r.employees?.name ?? "-"}</TableCell>
-                  <TableCell className="text-right font-medium">{fmtIDR(r.amount)}</TableCell>
-                  <TableCell>{r.note ?? "-"}</TableCell>
-                </TableRow>
-              ))}
-              {!salaryPayments.data?.length && (
+              </TableHeader>
+              <TableBody>
+                {(salaryBalances.data ?? []).map((r: any, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{r.employees?.name ?? "-"}</TableCell>
+                    <TableCell className="capitalize">{r.employees?.category ?? "-"}</TableCell>
+                    <TableCell className="text-right font-medium">{fmtIDR(r.balance)}</TableCell>
+                  </TableRow>
+                ))}
+                {!salaryBalances.data?.length && (
+                  <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">Belum ada data</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+      {showHist && (
+        <Card className="mt-4">
+          <CardHeader><CardTitle>Riwayat Penerimaan Gaji</CardTitle></CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
-                    Belum ada penerimaan gaji
-                  </TableCell>
+                  <TableHead>Waktu</TableHead>
+                  <TableHead>Karyawan</TableHead>
+                  <TableHead className="text-right">Nominal</TableHead>
+                  <TableHead>Catatan</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>Sisa Stok di Gudang Anda</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Produk</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(stock.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
-                  <TableCell>{r.products?.name ?? "-"}</TableCell>
-                  <TableCell className="text-right font-medium">{fmtNum(r.qty)}</TableCell>
-                </TableRow>
-              ))}
-              {!stock.data?.length && (
+              </TableHeader>
+              <TableBody>
+                {(salaryPayments.data ?? []).map((r: any, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{fmtDate(r.occurred_at)}</TableCell>
+                    <TableCell>{r.employees?.name ?? "-"}</TableCell>
+                    <TableCell className="text-right font-medium">{fmtIDR(r.amount)}</TableCell>
+                    <TableCell>{r.note ?? "-"}</TableCell>
+                  </TableRow>
+                ))}
+                {!salaryPayments.data?.length && (
+                  <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">Belum ada penerimaan gaji</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+      {showStock && (
+        <Card className="mt-4">
+          <CardHeader><CardTitle>Sisa Stok di Gudang Anda</CardTitle></CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={2} className="text-center text-muted-foreground">
-                    Belum ada stok
-                  </TableCell>
+                  <TableHead>Produk</TableHead>
+                  <TableHead className="text-right">Qty</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>3 Transaksi Terakhir</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Waktu</TableHead>
-                <TableHead>Pelanggan</TableHead>
-                <TableHead>Produk</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(last.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
-                  <TableCell>{fmtDate(r.occurred_at)}</TableCell>
-                  <TableCell>{r.customers?.name ?? "-"}</TableCell>
-                  <TableCell>{r.products?.name ?? "-"}</TableCell>
-                  <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
-                  <TableCell>{fmtIDR(r.total)}</TableCell>
-                </TableRow>
-              ))}
-              {!last.data?.length && (
+              </TableHeader>
+              <TableBody>
+                {(stock.data ?? []).map((r: any, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{r.products?.name ?? "-"}</TableCell>
+                    <TableCell className="text-right font-medium">{fmtNum(r.qty)}</TableCell>
+                  </TableRow>
+                ))}
+                {!stock.data?.length && (
+                  <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Belum ada stok</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+      {showRecent && (
+        <Card className="mt-4">
+          <CardHeader><CardTitle>3 Transaksi Terakhir</CardTitle></CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    Belum ada transaksi
-                  </TableCell>
+                  <TableHead>Waktu</TableHead>
+                  <TableHead>Pelanggan</TableHead>
+                  <TableHead>Produk</TableHead>
+                  <TableHead className="text-right">Qty</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {(last.data ?? []).map((r: any, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{fmtDate(r.occurred_at)}</TableCell>
+                    <TableCell>{r.customers?.name ?? "-"}</TableCell>
+                    <TableCell>{r.products?.name ?? "-"}</TableCell>
+                    <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
+                    <TableCell>{fmtIDR(r.total)}</TableCell>
+                  </TableRow>
+                ))}
+                {!last.data?.length && (
+                  <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Belum ada transaksi</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </>
   );
 }
