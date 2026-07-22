@@ -238,6 +238,31 @@ function StafDashboard({ warehouseId }: { warehouseId?: string | null }) {
       return data ?? [];
     },
   });
+  const salaryBalances = useQuery({
+    queryKey: ["staf_salary_balances", warehouseId],
+    enabled: !!warehouseId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("employee_salary_balances")
+        .select("balance, employees!inner(name, category, warehouse_id)")
+        .eq("employees.warehouse_id", warehouseId!)
+        .order("balance", { ascending: false });
+      return data ?? [];
+    },
+  });
+  const salaryPayments = useQuery({
+    queryKey: ["staf_salary_payments", warehouseId],
+    enabled: !!warehouseId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("salary_payments")
+        .select("occurred_at, amount, note, employees!inner(name, category, warehouse_id)")
+        .eq("employees.warehouse_id", warehouseId!)
+        .order("occurred_at", { ascending: false })
+        .limit(10);
+      return data ?? [];
+    },
+  });
 
   if (!warehouseId) {
     return (
@@ -252,10 +277,88 @@ function StafDashboard({ warehouseId }: { warehouseId?: string | null }) {
     );
   }
 
+  const totalSisaGaji = (salaryBalances.data ?? []).reduce(
+    (a: number, b: any) => a + Number(b.balance ?? 0),
+    0,
+  );
+
   return (
     <>
       <PageHeader title="Dashboard Staf Gudang" />
-      <Card>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <MetricCard
+          label="Total Sisa Hak Gaji"
+          value={fmtIDR(totalSisaGaji)}
+          icon={<HandCoins className="h-4 w-4 text-amber-500" />}
+        />
+      </div>
+      <Card className="mt-4">
+        <CardHeader>
+          <CardTitle>Sisa Hak Gaji per Karyawan</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Karyawan</TableHead>
+                <TableHead>Kategori</TableHead>
+                <TableHead className="text-right">Sisa</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(salaryBalances.data ?? []).map((r: any, i) => (
+                <TableRow key={i}>
+                  <TableCell>{r.employees?.name ?? "-"}</TableCell>
+                  <TableCell className="capitalize">{r.employees?.category ?? "-"}</TableCell>
+                  <TableCell className="text-right font-medium">{fmtIDR(r.balance)}</TableCell>
+                </TableRow>
+              ))}
+              {!salaryBalances.data?.length && (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center text-muted-foreground">
+                    Belum ada data
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <Card className="mt-4">
+        <CardHeader>
+          <CardTitle>Riwayat Penerimaan Gaji</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Waktu</TableHead>
+                <TableHead>Karyawan</TableHead>
+                <TableHead className="text-right">Nominal</TableHead>
+                <TableHead>Catatan</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(salaryPayments.data ?? []).map((r: any, i) => (
+                <TableRow key={i}>
+                  <TableCell>{fmtDate(r.occurred_at)}</TableCell>
+                  <TableCell>{r.employees?.name ?? "-"}</TableCell>
+                  <TableCell className="text-right font-medium">{fmtIDR(r.amount)}</TableCell>
+                  <TableCell>{r.note ?? "-"}</TableCell>
+                </TableRow>
+              ))}
+              {!salaryPayments.data?.length && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    Belum ada penerimaan gaji
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <Card className="mt-4">
         <CardHeader>
           <CardTitle>Sisa Stok di Gudang Anda</CardTitle>
         </CardHeader>
@@ -307,7 +410,7 @@ function StafDashboard({ warehouseId }: { warehouseId?: string | null }) {
                   <TableCell>{r.customers?.name ?? "-"}</TableCell>
                   <TableCell>{r.products?.name ?? "-"}</TableCell>
                   <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
-                  <TableCell className="text-right">{fmtIDR(r.total)}</TableCell>
+                  <TableCell>{fmtIDR(r.total)}</TableCell>
                 </TableRow>
               ))}
               {!last.data?.length && (
