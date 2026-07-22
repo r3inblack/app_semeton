@@ -84,7 +84,7 @@ function AuthPage() {
                 {loading ? "Memproses..." : "Masuk"}
               </Button>
               <p className="text-xs text-muted-foreground text-center pt-1">
-                Akun baru hanya dapat dibuat oleh Super Admin.
+                {"\n"}
               </p>
             </form>
           </CardContent>
