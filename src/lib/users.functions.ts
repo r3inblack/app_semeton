@@ -81,6 +81,7 @@ export const createUser = createServerFn({ method: "POST" })
       role: AppRole;
       warehouse_id?: string | null;
       employee_id?: string | null;
+      custom_role_id?: string | null;
     }) => d,
   )
   .handler(async ({ data, context }) => {
