@@ -1,6 +1,4 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -8,13 +6,13 @@ import {
 import { createClient } from "@supabase/supabase-js";
 
 // Use admin client for MCP to bypass RLS as it's an "agent" interface
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
   { auth: { persistSession: false, autoRefreshToken: false } }
 );
 
-const server = new Server(
+export const mcpServer = new Server(
   {
     name: "semeton-app-mcp",
     version: "1.0.0",
@@ -26,7 +24,7 @@ const server = new Server(
   }
 );
 
-server.setRequestHandler(ListToolsRequestSchema, async () => {
+mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
@@ -59,8 +57,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const supabaseAdmin = getSupabaseAdmin();
 
   try {
     if (name === "get_cash_balance") {
@@ -73,20 +72,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     if (name === "get_stock_levels") {
       let query = supabaseAdmin.from("stock_levels").select("qty, products(name), warehouses(name)");
-      if (args?.product_name) {
-        // Since we can't easily join and filter in one go with ilike on a nested field in a simple way without more complexity,
-        // we'll just fetch and filter for this example.
-        const { data: allStock, error } = await query;
-        if (error) throw error;
-        const filtered = allStock.filter((s: any) => s.products.name.toLowerCase().includes(String(args.product_name).toLowerCase()));
-        const stockList = filtered.map((s: any) => `${s.products.name} at ${s.warehouses.name}: ${s.qty}`).join("\n");
-        return {
-          content: [{ type: "text", text: stockList || "No stock found for this product." }],
-        };
-      }
       const { data, error } = await query;
       if (error) throw error;
-      const stockList = data.map((s: any) => `${s.products.name} at ${s.warehouses.name}: ${s.qty}`).join("\n");
+      
+      let filtered = data || [];
+      if (args?.product_name) {
+        filtered = filtered.filter((s: any) => s.products.name.toLowerCase().includes(String(args.product_name).toLowerCase()));
+      }
+      
+      const stockList = filtered.map((s: any) => `${s.products.name} at ${s.warehouses.name}: ${s.qty}`).join("\n");
       return {
         content: [{ type: "text", text: stockList || "No stock found." }],
       };
@@ -110,10 +104,4 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-export async function runMcpServerStdio() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-}
-
-export const mcpServer = server;
 
