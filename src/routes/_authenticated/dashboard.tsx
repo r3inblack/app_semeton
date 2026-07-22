@@ -16,13 +16,21 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 
-function AdminDashboard() {
+function AdminDashboard({ can }: { can: (m: string, a?: any) => boolean }) {
+  const showCash = can("dashboard_cash");
+  const showRec = can("dashboard_receivables");
+  const showPay = can("dashboard_payables");
+  const showSal = can("dashboard_salary_debt");
+  const showChart = can("dashboard_cash_chart");
+
   const cash = useQuery({
     queryKey: ["cash_balance"],
+    enabled: showCash,
     queryFn: async () => (await supabase.from("cash_balance").select("amount").eq("id", 1).maybeSingle()).data,
   });
   const rec = useQuery({
     queryKey: ["cust_bal_sum"],
+    enabled: showRec,
     queryFn: async () => {
       const { data } = await supabase.from("customer_balances").select("receivable");
       return (data ?? []).reduce((a, b) => a + Number(b.receivable), 0);
@@ -30,6 +38,7 @@ function AdminDashboard() {
   });
   const pay = useQuery({
     queryKey: ["sup_bal_sum"],
+    enabled: showPay,
     queryFn: async () => {
       const { data } = await supabase.from("supplier_balances").select("payable");
       return (data ?? []).reduce((a, b) => a + Number(b.payable), 0);
@@ -37,6 +46,7 @@ function AdminDashboard() {
   });
   const sal = useQuery({
     queryKey: ["emp_bal_sum"],
+    enabled: showSal,
     queryFn: async () => {
       const { data } = await supabase.from("employee_salary_balances").select("balance");
       return (data ?? []).reduce((a, b) => a + Number(b.balance), 0);
@@ -44,6 +54,7 @@ function AdminDashboard() {
   });
   const custList = useQuery({
     queryKey: ["cust_bal_list"],
+    enabled: showRec,
     queryFn: async () => {
       const { data } = await supabase
         .from("customer_balances")
@@ -54,6 +65,7 @@ function AdminDashboard() {
   });
   const empList = useQuery({
     queryKey: ["emp_bal_list"],
+    enabled: showSal,
     queryFn: async () => {
       const { data } = await supabase
         .from("employee_salary_balances")
@@ -64,6 +76,7 @@ function AdminDashboard() {
   });
   const chart = useQuery({
     queryKey: ["cash_chart"],
+    enabled: showChart,
     queryFn: async () => {
       const since = new Date();
       since.setDate(since.getDate() - 30);
@@ -82,141 +95,141 @@ function AdminDashboard() {
     },
   });
 
+  const anyMetric = showCash || showRec || showPay || showSal;
+
   return (
     <>
       <PageHeader title="Dashboard Super Admin" description="Ringkasan keuangan & operasional" />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          variant="primary"
-          label="Sisa Saldo"
-          value={fmtIDR(cash.data?.amount)}
-          icon={<Wallet className="h-5 w-5 text-white" />}
-        />
-        <MetricCard
-          variant="success"
-          label="Total Piutang"
-          value={fmtIDR(rec.data)}
-          icon={<TrendingUp className="h-5 w-5 text-white" />}
-        />
-        <MetricCard
-          variant="warning"
-          label="Total Hutang Supplier"
-          value={fmtIDR(pay.data)}
-          icon={<TrendingDown className="h-5 w-5 text-white" />}
-        />
-        <MetricCard
-          variant="danger"
-          label="Sisa Hutang Gaji"
-          value={fmtIDR(sal.data)}
-          icon={<HandCoins className="h-5 w-5 text-white" />}
-        />
-      </div>
+      {anyMetric && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {showCash && (
+            <MetricCard variant="primary" label="Sisa Saldo" value={fmtIDR(cash.data?.amount)}
+              icon={<Wallet className="h-5 w-5 text-white" />} />
+          )}
+          {showRec && (
+            <MetricCard variant="success" label="Total Piutang" value={fmtIDR(rec.data)}
+              icon={<TrendingUp className="h-5 w-5 text-white" />} />
+          )}
+          {showPay && (
+            <MetricCard variant="warning" label="Total Hutang Supplier" value={fmtIDR(pay.data)}
+              icon={<TrendingDown className="h-5 w-5 text-white" />} />
+          )}
+          {showSal && (
+            <MetricCard variant="danger" label="Sisa Hutang Gaji" value={fmtIDR(sal.data)}
+              icon={<HandCoins className="h-5 w-5 text-white" />} />
+          )}
+        </div>
+      )}
 
+      {(showRec || showSal) && (
+        <div className="grid gap-4 mt-6 lg:grid-cols-2">
+          {showRec && (
+            <Card>
+              <CardHeader><CardTitle>Sisa Piutang per Pelanggan</CardTitle></CardHeader>
+              <CardContent>
+                <div className="max-h-80 overflow-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Pelanggan</TableHead>
+                        <TableHead className="text-right">Piutang</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(custList.data ?? []).map((r: any, i) => (
+                        <TableRow key={i}>
+                          <TableCell>{r.customers?.name ?? "-"}</TableCell>
+                          <TableCell className="text-right font-medium">{fmtIDR(r.receivable)}</TableCell>
+                        </TableRow>
+                      ))}
+                      {!custList.data?.length && (
+                        <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Belum ada data</TableCell></TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {showSal && (
+            <Card>
+              <CardHeader><CardTitle>Sisa Hak Gaji per Karyawan</CardTitle></CardHeader>
+              <CardContent>
+                <div className="max-h-80 overflow-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Karyawan</TableHead>
+                        <TableHead>Kategori</TableHead>
+                        <TableHead className="text-right">Sisa</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(empList.data ?? []).map((r: any, i) => (
+                        <TableRow key={i}>
+                          <TableCell>{r.employees?.name ?? "-"}</TableCell>
+                          <TableCell className="capitalize">{r.employees?.category ?? "-"}</TableCell>
+                          <TableCell className="text-right font-medium">{fmtIDR(r.balance)}</TableCell>
+                        </TableRow>
+                      ))}
+                      {!empList.data?.length && (
+                        <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">Belum ada data</TableCell></TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
 
-      <div className="grid gap-4 mt-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Sisa Piutang per Pelanggan</CardTitle>
-          </CardHeader>
+      {showChart && (
+        <Card className="mt-6">
+          <CardHeader><CardTitle>Pergerakan Kas 30 Hari Terakhir</CardTitle></CardHeader>
           <CardContent>
-            <div className="max-h-80 overflow-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Pelanggan</TableHead>
-                    <TableHead className="text-right">Piutang</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {(custList.data ?? []).map((r: any, i) => (
-                    <TableRow key={i}>
-                      <TableCell>{r.customers?.name ?? "-"}</TableCell>
-                      <TableCell className="text-right font-medium">{fmtIDR(r.receivable)}</TableCell>
-                    </TableRow>
-                  ))}
-                  {!custList.data?.length && (
-                    <TableRow>
-                      <TableCell colSpan={2} className="text-center text-muted-foreground">
-                        Belum ada data
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chart.data ?? []}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis dataKey="date" fontSize={12} />
+                  <YAxis fontSize={12} tickFormatter={(v) => fmtNum(v)} width={80} />
+                  <Tooltip formatter={(v: any) => fmtIDR(v)} />
+                  <Line type="monotone" dataKey="delta" stroke="hsl(var(--primary))" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Sisa Hak Gaji per Karyawan</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="max-h-80 overflow-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Karyawan</TableHead>
-                    <TableHead>Kategori</TableHead>
-                    <TableHead className="text-right">Sisa</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {(empList.data ?? []).map((r: any, i) => (
-                    <TableRow key={i}>
-                      <TableCell>{r.employees?.name ?? "-"}</TableCell>
-                      <TableCell className="capitalize">{r.employees?.category ?? "-"}</TableCell>
-                      <TableCell className="text-right font-medium">{fmtIDR(r.balance)}</TableCell>
-                    </TableRow>
-                  ))}
-                  {!empList.data?.length && (
-                    <TableRow>
-                      <TableCell colSpan={3} className="text-center text-muted-foreground">
-                        Belum ada data
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Pergerakan Kas 30 Hari Terakhir</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chart.data ?? []}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis dataKey="date" fontSize={12} />
-                <YAxis fontSize={12} tickFormatter={(v) => fmtNum(v)} width={80} />
-                <Tooltip formatter={(v: any) => fmtIDR(v)} />
-                <Line type="monotone" dataKey="delta" stroke="hsl(var(--primary))" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      )}
     </>
   );
 }
 
 function Dashboard() {
-  const { isAdmin, isStaf, profile, loading } = useRole();
+  const { isAdmin, isStaf, role, profile, can, loading } = useRole();
   if (loading)
     return (
       <AppShell title="Dashboard">
         <div>Memuat…</div>
       </AppShell>
     );
+  // Super admin & custom roles use the granular widget dashboard.
+  // Staf gudang keeps its dedicated personal dashboard.
+  const useStaf = isStaf && !isAdmin;
   return (
     <AppShell title="Dashboard">
-      {isAdmin ? <AdminDashboard /> : isStaf ? (
-        <StafDashboard warehouseId={profile?.warehouse_id} employeeId={(profile as any)?.employee_id ?? null} />
-      ) : null}
+      {useStaf ? (
+        <StafDashboard
+          warehouseId={profile?.warehouse_id}
+          employeeId={(profile as any)?.employee_id ?? null}
+          can={can}
+        />
+      ) : (
+        <AdminDashboard can={can} />
+      )}
+      {/* silence unused */}
+      <span className="hidden">{role}</span>
     </AppShell>
   );
 }
