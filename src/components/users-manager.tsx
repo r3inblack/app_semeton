@@ -24,7 +24,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Plus, Pencil, Trash2, KeyRound, ShieldCheck, Shield } from "lucide-react";
+import { Plus, Pencil, Trash2, KeyRound, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 type UserRow = {
