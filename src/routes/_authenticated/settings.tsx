@@ -70,6 +70,7 @@ function SettingsPage() {
         {canTelegram && <TabsContent value="templates"><TelegramTemplatesManager /></TabsContent>}
         {canTelegram && <TabsContent value="webhook"><TelegramWebhookDiagnostics /></TabsContent>}
         {canUsers && <TabsContent value="users"><UsersManager /></TabsContent>}
+        {canUsers && <TabsContent value="roles"><RolesManager /></TabsContent>}
         {canDanger && <TabsContent value="api"><ApiKeysManager /></TabsContent>}
         {canInitial && <TabsContent value="initial"><InitialTab /></TabsContent>}
         {canDanger && <TabsContent value="danger"><DangerTab /></TabsContent>}
