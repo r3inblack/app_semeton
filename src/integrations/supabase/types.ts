@@ -314,6 +314,64 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_stock_in: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          product_id: string
+          qty: number
+          status: string
+          supplier_id: string
+          warehouse_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          product_id: string
+          qty: number
+          status?: string
+          supplier_id: string
+          warehouse_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          product_id?: string
+          qty?: number
+          status?: string
+          supplier_id?: string
+          warehouse_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_stock_in_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_stock_in_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_stock_in_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           buy_price: number
@@ -868,6 +926,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_pending_stock_in: {
+        Args: { p_buy_price: number; p_id: string; p_sell_price: number }
+        Returns: string
+      }
       assert_admin: { Args: never; Returns: undefined }
       assert_permission: {
         Args: { _action: string; _module: string }
@@ -957,6 +1019,10 @@ export type Database = {
         Args: { p_amount: number; p_note: string; p_supplier_id: string }
         Returns: string
       }
+      reject_pending_stock_in: {
+        Args: { p_id: string; p_reason: string }
+        Returns: undefined
+      }
       reset_transactions: { Args: never; Returns: undefined }
       set_initial_cash: { Args: { p_amount: number }; Returns: undefined }
       set_initial_payable: {
@@ -974,6 +1040,16 @@ export type Database = {
       set_initial_stock: {
         Args: { p_product_id: string; p_qty: number; p_warehouse_id: string }
         Returns: undefined
+      }
+      submit_pending_stock_in: {
+        Args: {
+          p_note: string
+          p_product_id: string
+          p_qty: number
+          p_supplier_id: string
+          p_warehouse_id: string
+        }
+        Returns: string
       }
     }
     Enums: {
