@@ -54,7 +54,17 @@ function SalesPage() {
           });
           if (error) throw error;
           const cust = customers.data?.find((c) => c.id === v.customer_id);
+          const wh = warehouses.data?.find((w) => w.id === v.warehouse_id);
           sendTransactionNotification(
+            "sale",
+            {
+              customer: cust?.name ?? "-",
+              warehouse: wh?.name ?? "-",
+              product: prod?.name ?? "-",
+              qty: fmtNum(qty),
+              unit_price: fmtIDR(price),
+              total: fmtIDR(qty * price),
+            },
             `🛒 <b>Penjualan Kredit</b>\nPelanggan: ${cust?.name ?? "-"}\nProduk: ${prod?.name ?? "-"}\nQty: ${fmtNum(qty)}\nTotal: ${fmtIDR(qty * price)}`,
           );
           qc.invalidateQueries();

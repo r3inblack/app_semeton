@@ -8,7 +8,7 @@ import { useList } from "@/lib/list-hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR } from "@/lib/format";
-import { sendTelegramNotification } from "@/lib/telegram";
+import { sendTransactionNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/payments/customer")({
   component: Page,
@@ -45,7 +45,11 @@ function Page() {
           });
           if (error) throw error;
           const cust = customers.data?.find((c) => c.id === v.customer_id);
-          sendTelegramNotification(`💰 <b>Setoran Pelanggan</b>\n${cust?.name ?? ""}: ${fmtIDR(v.amount)}`);
+          sendTransactionNotification(
+            "customer_payment",
+            { customer: cust?.name ?? "-", amount: fmtIDR(v.amount), note: v.note || "" },
+            `💰 <b>Setoran Pelanggan</b>\n${cust?.name ?? ""}: ${fmtIDR(v.amount)}`,
+          );
           qc.invalidateQueries();
         }}
       />

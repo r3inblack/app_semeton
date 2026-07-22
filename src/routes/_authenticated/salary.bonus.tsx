@@ -57,6 +57,8 @@ function Page() {
           const wh = warehouses.data?.find((w) => w.id === v.warehouse_id)?.name ?? "-";
           const prod = products.data?.find((p) => p.id === v.product_id)?.name ?? "-";
           sendTransactionNotification(
+            "employee_bonus",
+            { employee: emp, warehouse: wh, product: prod, qty: fmtNum(qty), note: v.note || "" },
             `🎁 <b>Bonus Barang Karyawan</b>\nKaryawan: ${emp}\nGudang: ${wh}\nProduk: ${prod}\nQty: ${fmtNum(qty)}`,
           );
           qc.invalidateQueries();

@@ -77,15 +77,16 @@ function StockInPage() {
             const warehouse = (warehouses.data ?? []).find((x: any) => x.id === v.warehouse_id)?.name ?? "-";
             const product = (products.data ?? []).find((x: any) => x.id === v.product_id)?.name ?? "-";
             await sendPricingNotification(
-              `<b>📦 Pengajuan Barang Masuk</b>\n` +
-                `Supplier: ${supplier}\n` +
-                `Gudang: ${warehouse}\n` +
-                `Produk: ${product}\n` +
-                `Qty: ${fmtNum(Number(v.qty))}\n` +
-                (v.note ? `Catatan: ${v.note}\n` : "") +
-                `\nBalas pesan ini dengan format:\n<code>&lt;harga_beli&gt; &lt;harga_jual&gt;</code>\n` +
-                `Contoh: <code>10000 12000</code>\n` +
-                `\n#ID:${pendingId}`,
+              "stock_in_pending",
+              {
+                supplier,
+                warehouse,
+                product,
+                qty: fmtNum(Number(v.qty)),
+                note: v.note || "",
+                pending_id: pendingId,
+              },
+              `<b>📦 Pengajuan Barang Masuk</b>\nSupplier: ${supplier}\nGudang: ${warehouse}\nProduk: ${product}\nQty: ${fmtNum(Number(v.qty))}\n\n#ID:${pendingId}`,
             );
           } else {
             const qty = Number(v.qty);
@@ -103,6 +104,16 @@ function StockInPage() {
             const warehouse = (warehouses.data ?? []).find((x: any) => x.id === v.warehouse_id)?.name ?? "-";
             const product = (products.data ?? []).find((x: any) => x.id === v.product_id)?.name ?? "-";
             sendTransactionNotification(
+              "stock_in",
+              {
+                supplier,
+                warehouse,
+                product,
+                qty: fmtNum(qty),
+                unit_price: fmtIDR(price),
+                total: fmtIDR(qty * price),
+                note: v.note || "",
+              },
               `📥 <b>Barang Masuk</b>\nSupplier: ${supplier}\nGudang: ${warehouse}\nProduk: ${product}\nQty: ${fmtNum(qty)}\nTotal: ${fmtIDR(qty * price)}`,
             );
           }

@@ -907,6 +907,36 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_templates: {
+        Row: {
+          enabled: boolean
+          key: string
+          label: string
+          module: string
+          template: string
+          updated_at: string
+          variables: string[]
+        }
+        Insert: {
+          enabled?: boolean
+          key: string
+          label: string
+          module: string
+          template: string
+          updated_at?: string
+          variables?: string[]
+        }
+        Update: {
+          enabled?: boolean
+          key?: string
+          label?: string
+          module?: string
+          template?: string
+          updated_at?: string
+          variables?: string[]
+        }
+        Relationships: []
+      }
       user_permissions: {
         Row: {
           action: string
