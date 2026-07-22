@@ -1,10 +1,18 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { supabase } from "@/integrations/supabase/client";
+import { createClient } from "@supabase/supabase-js";
+
+// Use admin client for MCP to bypass RLS as it's an "agent" interface
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { persistSession: false, autoRefreshToken: false } }
+);
 
 const server = new Server(
   {
@@ -39,6 +47,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: "get_receivables",
+        description: "Get list of customer receivables (piutang)",
+        inputSchema: {
+          type: "object",
+          properties: {},
+        },
+      },
     ],
   };
 });
@@ -48,7 +64,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   try {
     if (name === "get_cash_balance") {
-      const { data, error } = await supabase.from("cash_balance").select("amount").eq("id", 1).single();
+      const { data, error } = await supabaseAdmin.from("cash_balance").select("amount").eq("id", 1).single();
       if (error) throw error;
       return {
         content: [{ type: "text", text: `Current cash balance: Rp ${data.amount.toLocaleString('id-ID')}` }],
@@ -56,17 +72,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     if (name === "get_stock_levels") {
-      let query = supabase.from("stock_levels").select("qty, products(name), warehouses(name)");
+      let query = supabaseAdmin.from("stock_levels").select("qty, products(name), warehouses(name)");
       if (args?.product_name) {
-        // This is a simplified lookup for the example
-        query = query.ilike("products.name", `%${args.product_name}%`);
+        // Since we can't easily join and filter in one go with ilike on a nested field in a simple way without more complexity,
+        // we'll just fetch and filter for this example.
+        const { data: allStock, error } = await query;
+        if (error) throw error;
+        const filtered = allStock.filter((s: any) => s.products.name.toLowerCase().includes(String(args.product_name).toLowerCase()));
+        const stockList = filtered.map((s: any) => `${s.products.name} at ${s.warehouses.name}: ${s.qty}`).join("\n");
+        return {
+          content: [{ type: "text", text: stockList || "No stock found for this product." }],
+        };
       }
       const { data, error } = await query;
       if (error) throw error;
-      
       const stockList = data.map((s: any) => `${s.products.name} at ${s.warehouses.name}: ${s.qty}`).join("\n");
       return {
         content: [{ type: "text", text: stockList || "No stock found." }],
+      };
+    }
+
+    if (name === "get_receivables") {
+      const { data, error } = await supabaseAdmin.from("customer_balances").select("receivable, customers(name)").gt("receivable", 0);
+      if (error) throw error;
+      const list = data.map((c: any) => `${c.customers.name}: Rp ${c.receivable.toLocaleString('id-ID')}`).join("\n");
+      return {
+        content: [{ type: "text", text: list || "No receivables." }],
       };
     }
 
@@ -79,8 +110,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-export async function runMcpServer() {
+export async function runMcpServerStdio() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.log("Semeton MCP Server running on stdio");
 }
+
+export const mcpServer = server;
+
