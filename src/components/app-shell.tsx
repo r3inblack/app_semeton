@@ -102,6 +102,7 @@ const NAV: NavItem[] = [
     icon: Wallet,
     children: [
       { title: "Setoran Pelanggan", url: "/payments/customer", module: "payments_customer" },
+      { title: "Persetujuan Setoran", url: "/payments/pending", module: "setoran_pending" },
       { title: "Bayar Supplier", url: "/payments/supplier", module: "payments_supplier" },
       { title: "Pengeluaran", url: "/expenses", module: "expenses" },
     ],
