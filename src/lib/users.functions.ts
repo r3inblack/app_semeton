@@ -113,6 +113,7 @@ export const createUser = createServerFn({ method: "POST" })
         full_name: data.full_name,
         warehouse_id: data.warehouse_id ?? null,
         employee_id: data.employee_id ?? null,
+        custom_role_id: data.role === "custom" ? (data.custom_role_id ?? null) : null,
       })
       .eq("id", uid);
     await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
