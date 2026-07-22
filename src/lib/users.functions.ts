@@ -127,6 +127,7 @@ export const updateUser = createServerFn({ method: "POST" })
       role?: AppRole;
       warehouse_id?: string | null;
       employee_id?: string | null;
+      custom_role_id?: string | null;
       password?: string;
     }) => d,
   )
@@ -153,10 +154,13 @@ export const updateUser = createServerFn({ method: "POST" })
       if (taken) throw new Error("Karyawan ini sudah dikaitkan ke user lain");
     }
 
-    const profileUpdate: { full_name?: string; warehouse_id?: string | null; employee_id?: string | null } = {};
+    const profileUpdate: Record<string, any> = {};
     if (data.full_name !== undefined) profileUpdate.full_name = data.full_name;
     if (data.warehouse_id !== undefined) profileUpdate.warehouse_id = data.warehouse_id;
     if (data.employee_id !== undefined) profileUpdate.employee_id = data.employee_id;
+    if (data.custom_role_id !== undefined) profileUpdate.custom_role_id = data.custom_role_id;
+    // If role changes and is not "custom", clear custom_role_id
+    if (data.role && data.role !== "custom") profileUpdate.custom_role_id = null;
     if (Object.keys(profileUpdate).length) {
       await supabaseAdmin.from("profiles").update(profileUpdate).eq("id", data.id);
     }
@@ -174,6 +178,7 @@ export const updateUser = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
 
 export const deleteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
