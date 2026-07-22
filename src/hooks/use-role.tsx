@@ -32,6 +32,7 @@ export const ALL_MODULES: { key: string; label: string; group: string }[] = [
   { key: "master_employees", label: "Master Karyawan", group: "Master Data" },
   { key: "master_warehouses", label: "Master Gudang", group: "Master Data" },
   { key: "master_products", label: "Master Produk", group: "Master Data" },
+  { key: "master_expense_categories", label: "Master Kategori Pengeluaran", group: "Master Data" },
   { key: "stock_levels", label: "Stok Gudang", group: "Stok" },
   { key: "stock_in", label: "Barang Masuk", group: "Stok" },
   { key: "stock_pending", label: "Persetujuan Barang Masuk", group: "Stok" },

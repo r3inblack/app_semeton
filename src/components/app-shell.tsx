@@ -70,6 +70,7 @@ const NAV: NavItem[] = [
       { title: "Karyawan", url: "/master/employees", module: "master_employees" },
       { title: "Gudang", url: "/master/warehouses", module: "master_warehouses" },
       { title: "Produk", url: "/master/products", module: "master_products" },
+      { title: "Kategori Pengeluaran", url: "/master/expense-categories", module: "master_expense_categories" },
     ],
   },
   {
