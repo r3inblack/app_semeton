@@ -82,12 +82,13 @@ export function UsersManager() {
       return create({ data: {
         username: form.username, password: form.password, full_name: form.full_name,
         role: form.role, warehouse_id: form.warehouse_id || null,
+        employee_id: form.employee_id || null,
       } });
     },
     onSuccess: () => {
       toast.success("User dibuat");
       setOpenNew(false);
-      setForm({ username: "", password: "", full_name: "", role: "viewer", warehouse_id: "" });
+      setForm({ username: "", password: "", full_name: "", role: "viewer", warehouse_id: "", employee_id: "" });
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
     onError: (e: any) => toast.error(e.message),
@@ -98,6 +99,7 @@ export function UsersManager() {
     mutationFn: () => update({ data: {
       id: editing!.id, full_name: editForm.full_name, role: editForm.role,
       warehouse_id: editForm.warehouse_id || null,
+      employee_id: editForm.employee_id || null,
     } }),
     onSuccess: () => {
       toast.success("User diperbarui");
@@ -135,7 +137,29 @@ export function UsersManager() {
       full_name: u.full_name ?? "",
       role: u.role,
       warehouse_id: u.warehouse_id ?? "",
+      employee_id: u.employee_id ?? "",
     });
+  };
+
+  // When user picks an employee in New dialog, prefill name + warehouse
+  const onPickEmployeeNew = (empId: string) => {
+    const emp = (employees.data ?? []).find((e) => e.id === empId);
+    setForm((f) => ({
+      ...f,
+      employee_id: empId,
+      full_name: emp?.name && !f.full_name ? emp.name : f.full_name,
+      warehouse_id: emp?.warehouse_id ?? f.warehouse_id,
+      username: emp && !f.username ? emp.name.toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.|\.$/g, "") : f.username,
+    }));
+  };
+  const onPickEmployeeEdit = (empId: string) => {
+    const emp = (employees.data ?? []).find((e) => e.id === empId);
+    setEditForm((f) => ({
+      ...f,
+      employee_id: empId,
+      full_name: emp?.name && !f.full_name ? emp.name : f.full_name,
+      warehouse_id: emp?.warehouse_id ?? f.warehouse_id,
+    }));
   };
 
   return (
