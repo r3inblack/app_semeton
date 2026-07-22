@@ -244,27 +244,34 @@ function StafDashboard({ warehouseId, employeeId }: { warehouseId?: string | nul
     },
   });
   const salaryBalances = useQuery({
-    queryKey: ["staf_salary_balances", warehouseId],
-    enabled: !!warehouseId,
+    queryKey: ["staf_salary_balances", employeeId, warehouseId],
+    enabled: !!(employeeId || warehouseId),
     queryFn: async () => {
-      const { data } = await supabase
+      let query = supabase
         .from("employee_salary_balances")
-        .select("balance, employees!inner(name, category, warehouse_id)")
-        .eq("employees.warehouse_id", warehouseId!)
-        .order("balance", { ascending: false });
+        .select("balance, employees!inner(name, category, warehouse_id)");
+      if (employeeId) {
+        query = query.eq("employee_id", employeeId);
+      } else if (warehouseId) {
+        query = query.eq("employees.warehouse_id", warehouseId);
+      }
+      const { data } = await query.order("balance", { ascending: false });
       return data ?? [];
     },
   });
   const salaryPayments = useQuery({
-    queryKey: ["staf_salary_payments", warehouseId],
-    enabled: !!warehouseId,
+    queryKey: ["staf_salary_payments", employeeId, warehouseId],
+    enabled: !!(employeeId || warehouseId),
     queryFn: async () => {
-      const { data } = await supabase
+      let query = supabase
         .from("salary_payments")
-        .select("occurred_at, amount, note, employees!inner(name, category, warehouse_id)")
-        .eq("employees.warehouse_id", warehouseId!)
-        .order("occurred_at", { ascending: false })
-        .limit(10);
+        .select("occurred_at, amount, note, employees!inner(name, category, warehouse_id)");
+      if (employeeId) {
+        query = query.eq("employee_id", employeeId);
+      } else if (warehouseId) {
+        query = query.eq("employees.warehouse_id", warehouseId);
+      }
+      const { data } = await query.order("occurred_at", { ascending: false }).limit(10);
       return data ?? [];
     },
   });
