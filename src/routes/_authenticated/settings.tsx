@@ -60,6 +60,7 @@ function SettingsPage() {
           {canTelegram && <TabsTrigger value="templates">Template Pesan</TabsTrigger>}
           {canTelegram && <TabsTrigger value="webhook">Diagnostik Webhook</TabsTrigger>}
           {canUsers && <TabsTrigger value="users">Pengguna & Hak Akses</TabsTrigger>}
+          {canUsers && <TabsTrigger value="roles">Role & Hak Akses</TabsTrigger>}
           {canDanger && <TabsTrigger value="api">API Eksternal</TabsTrigger>}
           {canInitial && <TabsTrigger value="initial">Setup Data Awal</TabsTrigger>}
           {canDanger && <TabsTrigger value="danger">Danger Zone</TabsTrigger>}
