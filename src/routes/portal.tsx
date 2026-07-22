@@ -14,7 +14,6 @@ import { fmtDate, fmtIDR } from "@/lib/format";
 import { toast } from "sonner";
 import {
   portalGetSummary,
-  portalListBankAccounts,
   portalLookupCustomer,
   portalSubmitPayment,
   portalUploadProof,
