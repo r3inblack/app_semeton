@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   listUsers, createUser, updateUser, deleteUser,
   getUserPermissions, setUserPermissions,
-  listCustomRoles, upsertCustomRole, deleteCustomRole,
+  listCustomRoles,
 } from "@/lib/users.functions";
 import { useList } from "@/lib/list-hooks";
 import { ALL_MODULES, ROLE_LABELS, type AppRole } from "@/hooks/use-role";
