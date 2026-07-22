@@ -288,7 +288,7 @@ export function UsersManager() {
               </TableRow>
             ))}
             {!q.data?.length && (
-              <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">
+              <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">
                 {q.isLoading ? "Memuat..." : "Belum ada user"}
               </TableCell></TableRow>
             )}
