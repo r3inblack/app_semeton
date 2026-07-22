@@ -52,7 +52,7 @@ function AuthPage() {
             S
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Aplikasi Semeton</h1>
-          <p className="text-sm text-muted-foreground mt-1">{"\n"}</p>
+          <p className="text-sm text-muted-foreground mt-1">Sistem manajemen stok & keuangan</p>
         </div>
         <Card className="border-border/60 shadow-xl shadow-primary/5">
           <CardHeader className="pb-4">

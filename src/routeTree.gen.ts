@@ -16,7 +16,6 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as ApiPublicMcpRouteImport } from './routes/api/public/mcp'
 import { Route as AuthenticatedStockPendingRouteImport } from './routes/_authenticated/stock.pending'
 import { Route as AuthenticatedStockMutationsRouteImport } from './routes/_authenticated/stock.mutations'
 import { Route as AuthenticatedStockLevelsRouteImport } from './routes/_authenticated/stock.levels'
@@ -73,11 +72,6 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const ApiPublicMcpRoute = ApiPublicMcpRouteImport.update({
-  id: '/api/public/mcp',
-  path: '/api/public/mcp',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedStockPendingRoute =
   AuthenticatedStockPendingRouteImport.update({
@@ -237,7 +231,6 @@ export interface FileRoutesByFullPath {
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
-  '/api/public/mcp': typeof ApiPublicMcpRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
@@ -268,7 +261,6 @@ export interface FileRoutesByTo {
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
-  '/api/public/mcp': typeof ApiPublicMcpRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
@@ -301,7 +293,6 @@ export interface FileRoutesById {
   '/_authenticated/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/_authenticated/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/_authenticated/stock/pending': typeof AuthenticatedStockPendingRoute
-  '/api/public/mcp': typeof ApiPublicMcpRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
@@ -334,7 +325,6 @@ export interface FileRouteTypes {
     | '/stock/levels'
     | '/stock/mutations'
     | '/stock/pending'
-    | '/api/public/mcp'
     | '/api/public/telegram/webhook'
     | '/api/public/v1/$'
   fileRoutesByTo: FileRoutesByTo
@@ -365,7 +355,6 @@ export interface FileRouteTypes {
     | '/stock/levels'
     | '/stock/mutations'
     | '/stock/pending'
-    | '/api/public/mcp'
     | '/api/public/telegram/webhook'
     | '/api/public/v1/$'
   id:
@@ -397,7 +386,6 @@ export interface FileRouteTypes {
     | '/_authenticated/stock/levels'
     | '/_authenticated/stock/mutations'
     | '/_authenticated/stock/pending'
-    | '/api/public/mcp'
     | '/api/public/telegram/webhook'
     | '/api/public/v1/$'
   fileRoutesById: FileRoutesById
@@ -406,7 +394,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  ApiPublicMcpRoute: typeof ApiPublicMcpRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
 }
@@ -461,13 +448,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/api/public/mcp': {
-      id: '/api/public/mcp'
-      path: '/api/public/mcp'
-      fullPath: '/api/public/mcp'
-      preLoaderRoute: typeof ApiPublicMcpRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/stock/pending': {
       id: '/_authenticated/stock/pending'
@@ -687,7 +667,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  ApiPublicMcpRoute: ApiPublicMcpRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
 }

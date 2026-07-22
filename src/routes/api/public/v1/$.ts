@@ -171,7 +171,6 @@ export const Route = createFileRoute("/api/public/v1/$")({
           "stock-in": "stock_in",
           "salary-payment": "salary_payment",
           "salary-advance": "salary_advance",
-          mcp: "mcp",
         };
         const needed = permMap[path];
         if (!needed) return json({ error: "unknown endpoint" }, 404);
