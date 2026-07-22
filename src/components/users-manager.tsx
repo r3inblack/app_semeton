@@ -411,17 +411,6 @@ export function UsersManager() {
         <PermissionsDialog user={permsUser} onClose={() => setPermsUser(null)} />
       )}
 
-      {/* Custom Role dialog */}
-      {openRoles && (
-        <CustomRoleDialog
-          initial={editingRole}
-          onClose={() => { setOpenRoles(false); setEditingRole(null); }}
-          onSaved={() => {
-            qc.invalidateQueries({ queryKey: ["custom-roles"] });
-            qc.invalidateQueries({ queryKey: ["role-perms"] });
-          }}
-        />
-      )}
     </CardContent></Card>
   );
 }
