@@ -174,6 +174,10 @@ function AppSidebar() {
   const { data: settings } = useAppSettings();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  const hiddenForStafGudang = new Set(["supplier_returns", "reports_returns"]);
+  const isHiddenForCurrentRole = (module?: string) =>
+    role === "staf_gudang" && !!module && hiddenForStafGudang.has(module);
+
   const settingsVisible =
     isSuperAdmin ||
     can("users", "view") ||
@@ -186,10 +190,13 @@ function AppSidebar() {
       return settingsVisible ? item : null;
     }
     if (item.children) {
-      const kids = item.children.filter((c) => !c.module || can(c.module, "view"));
+      const kids = item.children.filter(
+        (c) => !isHiddenForCurrentRole(c.module) && (!c.module || can(c.module, "view")),
+      );
       if (!kids.length) return null;
       return { ...item, children: kids };
     }
+    if (isHiddenForCurrentRole(item.module)) return null;
     if (item.module && !can(item.module, "view")) return null;
     return item;
   }).filter(Boolean) as NavItem[];
