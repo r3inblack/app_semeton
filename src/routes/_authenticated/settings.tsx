@@ -111,6 +111,59 @@ function TelegramTab() {
     } catch (e: any) { toast.error(e.message); }
   };
 
+  const webhookUrl = (() => {
+    if (typeof window === "undefined") return "";
+    const host = window.location.host;
+    // Prefer stable public host for TanStack public routes.
+    // id-preview--<uuid>.<domain>  -> project--<uuid>-dev.<domain>
+    const m = host.match(/^id-preview--([^.]+)\.(.+)$/);
+    const stableHost = m ? `project--${m[1]}-dev.${m[2]}` : host;
+    return `https://${stableHost}/api/public/telegram/webhook`;
+  })();
+
+  const deriveSecretBrowser = async (token: string) => {
+    const buf = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode("tg-webhook:" + token),
+    );
+    // base64url
+    const bytes = new Uint8Array(buf);
+    let bin = "";
+    for (const b of bytes) bin += String.fromCharCode(b);
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  };
+
+  const registerWebhook = async () => {
+    if (!form.telegram_bot_token) return toast.error("Bot Token belum diisi");
+    try {
+      const secret = await deriveSecretBrowser(form.telegram_bot_token);
+      const r = await fetch(`https://api.telegram.org/bot${form.telegram_bot_token}/setWebhook`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: webhookUrl,
+          secret_token: secret,
+          allowed_updates: ["message", "edited_message"],
+        }),
+      });
+      const j = await r.json();
+      if (j.ok) toast.success("Webhook terdaftar");
+      else toast.error(j.description || "Gagal mendaftarkan webhook");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const removeWebhook = async () => {
+    if (!form.telegram_bot_token) return toast.error("Bot Token belum diisi");
+    try {
+      const r = await fetch(`https://api.telegram.org/bot${form.telegram_bot_token}/deleteWebhook`, {
+        method: "POST",
+      });
+      const j = await r.json();
+      if (j.ok) toast.success("Webhook dihapus");
+      else toast.error(j.description || "Gagal");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
   return (
     <div className="space-y-6">
       <Card><CardContent className="pt-6 space-y-4 max-w-lg">
@@ -128,9 +181,27 @@ function TelegramTab() {
             Kosongkan jika penerima notifikasi diatur pada daftar Owner di bawah.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button onClick={save}>Simpan</Button>
           <Button variant="outline" onClick={test} disabled={!form.telegram_bot_token || !form.telegram_chat_id}>Kirim Test</Button>
+        </div>
+      </CardContent></Card>
+
+      <Card><CardContent className="pt-6 space-y-3 max-w-lg">
+        <div>
+          <h3 className="font-semibold">Webhook Balasan Harga</h3>
+          <p className="text-sm text-muted-foreground">
+            Daftarkan webhook agar owner yang memiliki izin dapat menentukan harga beli & jual pengajuan barang masuk langsung dari Telegram (reply pesan dengan format: <code>&lt;harga_beli&gt; &lt;harga_jual&gt;</code>).
+          </p>
+        </div>
+        <div className="space-y-1">
+          <Label>URL Webhook</Label>
+          <Input value={webhookUrl} readOnly />
+          <p className="text-xs text-muted-foreground">Aplikasi harus sudah dipublish agar URL ini bisa dijangkau Telegram.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={registerWebhook} disabled={!form.telegram_bot_token}>Daftarkan Webhook</Button>
+          <Button variant="outline" onClick={removeWebhook} disabled={!form.telegram_bot_token}>Hapus Webhook</Button>
         </div>
       </CardContent></Card>
 
