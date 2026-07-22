@@ -65,8 +65,6 @@ export function UsersManager() {
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [pwUser, setPwUser] = useState<UserRow | null>(null);
   const [permsUser, setPermsUser] = useState<UserRow | null>(null);
-  const [openRoles, setOpenRoles] = useState(false);
-  const [editingRole, setEditingRole] = useState<CustomRole | null>(null);
 
   const [form, setForm] = useState({
     username: "", password: "", full_name: "",
