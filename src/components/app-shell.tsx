@@ -207,7 +207,11 @@ function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">
-        <div className="px-3 py-2 text-xs text-sidebar-foreground/60 truncate">{user?.email}</div>
+        {user?.email && (
+          <div className="px-3 py-2 text-xs text-sidebar-foreground/60 truncate">
+            {user.email}
+          </div>
+        )}
         <Button
           variant="ghost"
           className="justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
