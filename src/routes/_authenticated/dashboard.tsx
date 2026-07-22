@@ -213,7 +213,26 @@ function AdminDashboard() {
   );
 }
 
-function StafDashboard({ warehouseId }: { warehouseId?: string | null }) {
+function Dashboard() {
+  const { isAdmin, isStaf, profile, loading } = useRole();
+  if (loading)
+    return (
+      <AppShell title="Dashboard">
+        <div>Memuat…</div>
+      </AppShell>
+    );
+  return (
+    <AppShell title="Dashboard">
+      {isAdmin ? <AdminDashboard /> : isStaf ? (
+        <StafDashboard warehouseId={profile?.warehouse_id} employeeId={(profile as any)?.employee_id ?? null} />
+      ) : null}
+    </AppShell>
+  );
+}
+
+function StafDashboardShim() { return null; }
+
+function StafDashboard({ warehouseId, employeeId }: { warehouseId?: string | null; employeeId?: string | null }) {
   const stock = useQuery({
     queryKey: ["staf_stock", warehouseId],
     enabled: !!warehouseId,
