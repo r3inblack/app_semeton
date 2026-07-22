@@ -59,7 +59,12 @@ export const ALL_MODULES: { key: string; label: string; group: string }[] = [
   { key: "settings_telegram", label: "Notifikasi Telegram", group: "Pengaturan" },
 ];
 
-type PermMap = Record<string, { view: boolean; manage: boolean }>;
+type PermSet = { view: boolean; create: boolean; update: boolean; delete: boolean; manage: boolean };
+type PermMap = Record<string, PermSet>;
+
+const emptyPerm = (): PermSet => ({
+  view: false, create: false, update: false, delete: false, manage: false,
+});
 
 export function useRole() {
   const { user } = useSession();
@@ -76,33 +81,49 @@ export function useRole() {
         rlist.find((r) => r === "super_admin") ?? rlist[0] ?? "viewer";
 
       const perms: PermMap = {};
-      for (const m of ALL_MODULES) perms[m.key] = { view: false, manage: false };
+      for (const m of ALL_MODULES) perms[m.key] = emptyPerm();
+
+      const applyRow = (module: string, action: string, allowed: boolean) => {
+        if (!perms[module]) perms[module] = emptyPerm();
+        if (action === "view") perms[module].view = allowed;
+        else if (action === "create") perms[module].create = allowed;
+        else if (action === "update") perms[module].update = allowed;
+        else if (action === "delete") perms[module].delete = allowed;
+        else if (action === "manage") perms[module].manage = allowed;
+      };
 
       if (role === "super_admin") {
-        for (const k of Object.keys(perms)) perms[k] = { view: true, manage: true };
+        for (const k of Object.keys(perms)) {
+          perms[k] = { view: true, create: true, update: true, delete: true, manage: true };
+        }
       } else if (role === "custom") {
-        const { data: up } = await supabase
-          .from("user_permissions" as any)
-          .select("module, action, allowed")
-          .eq("user_id", user!.id);
-        for (const row of (up ?? []) as any[]) {
-          if (!perms[row.module]) perms[row.module] = { view: false, manage: false };
-          if (row.action === "view") perms[row.module].view = !!row.allowed;
-          if (row.action === "manage") perms[row.module].manage = !!row.allowed;
+        const customRoleId = (profile as any)?.custom_role_id;
+        if (customRoleId) {
+          const { data: cp } = await supabase
+            .from("custom_role_permissions" as any)
+            .select("module, action, allowed")
+            .eq("custom_role_id", customRoleId);
+          for (const row of (cp ?? []) as any[]) applyRow(row.module, row.action, !!row.allowed);
+        } else {
+          const { data: up } = await supabase
+            .from("user_permissions" as any)
+            .select("module, action, allowed")
+            .eq("user_id", user!.id);
+          for (const row of (up ?? []) as any[]) applyRow(row.module, row.action, !!row.allowed);
         }
       } else {
         const { data: def } = await supabase
           .from("role_default_permissions" as any)
           .select("module, action, allowed")
           .eq("role", role);
-        for (const row of (def ?? []) as any[]) {
-          if (!perms[row.module]) perms[row.module] = { view: false, manage: false };
-          if (row.action === "view") perms[row.module].view = !!row.allowed;
-          if (row.action === "manage") perms[row.module].manage = !!row.allowed;
-        }
+        for (const row of (def ?? []) as any[]) applyRow(row.module, row.action, !!row.allowed);
       }
-      // manage implies view
-      for (const k of Object.keys(perms)) if (perms[k].manage) perms[k].view = true;
+      // Backwards compat: manage implies view/create/update/delete; any granular implies view + manage
+      for (const k of Object.keys(perms)) {
+        const p = perms[k];
+        if (p.manage) { p.view = true; p.create = true; p.update = true; p.delete = true; }
+        if (p.create || p.update || p.delete) { p.view = true; p.manage = true; }
+      }
 
       return { role, profile, perms };
     },
