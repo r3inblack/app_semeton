@@ -196,9 +196,7 @@ export function UsersManager() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => { setEditingRole(null); setOpenRoles(true); }}>
-            <Shield className="h-4 w-4 mr-1" /> Tambah Role
-          </Button>
+
           <Dialog open={openNew} onOpenChange={setOpenNew}>
             <DialogTrigger asChild>
               <Button><Plus className="h-4 w-4 mr-1" /> Tambah User</Button>
