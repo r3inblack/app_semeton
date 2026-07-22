@@ -88,13 +88,17 @@ export function CrudTable<T extends { id: string; [k: string]: any }>({
             <DialogContent>
               <DialogHeader><DialogTitle>{editing ? "Edit" : "Tambah"} {title}</DialogTitle></DialogHeader>
               <div className="space-y-3">
-                {fields.map((f) => (
+                {fields.map((f) => {
+                  const disabled = f.disabledWhen ? f.disabledWhen(form) : false;
+                  const value = disabled ? "" : (form[f.name] ?? "");
+                  return (
                   <div key={f.name} className="space-y-1">
                     <Label>{f.label}</Label>
                     {f.type === "select" ? (
                       <select
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                        value={form[f.name] ?? ""}
+                        disabled={disabled}
+                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        value={value}
                         onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
                       >
                         <option value="">— pilih —</option>
@@ -102,18 +106,21 @@ export function CrudTable<T extends { id: string; [k: string]: any }>({
                       </select>
                     ) : f.type === "number" ? (
                       <NumberInput
-                        value={form[f.name] ?? ""}
+                        disabled={disabled}
+                        value={value}
                         onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
                       />
                     ) : (
                       <Input
+                        disabled={disabled}
                         type="text"
-                        value={form[f.name] ?? ""}
+                        value={value}
                         onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
                       />
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
               <DialogFooter>
                 <Button onClick={save}>Simpan</Button>
