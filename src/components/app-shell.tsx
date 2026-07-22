@@ -84,6 +84,7 @@ const NAV: NavItem[] = [
       { title: "Gudang", url: "/master/warehouses", module: "master_warehouses" },
       { title: "Produk", url: "/master/products", module: "master_products" },
       { title: "Kategori Pengeluaran", url: "/master/expense-categories", module: "master_expense_categories" },
+      { title: "Rekening Penerima", url: "/master/bank-accounts", module: "master_bank_accounts" },
     ],
   },
   {
@@ -102,6 +103,7 @@ const NAV: NavItem[] = [
     icon: Wallet,
     children: [
       { title: "Setoran Pelanggan", url: "/payments/customer", module: "payments_customer" },
+      { title: "Persetujuan Setoran", url: "/payments/pending", module: "setoran_pending" },
       { title: "Bayar Supplier", url: "/payments/supplier", module: "payments_supplier" },
       { title: "Pengeluaran", url: "/expenses", module: "expenses" },
     ],

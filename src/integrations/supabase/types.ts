@@ -127,6 +127,36 @@ export type Database = {
         }
         Relationships: []
       }
+      bank_accounts: {
+        Row: {
+          account_holder: string
+          account_number: string
+          active: boolean
+          bank_name: string
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          account_holder: string
+          account_number: string
+          active?: boolean
+          bank_name: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          account_holder?: string
+          account_number?: string
+          active?: boolean
+          bank_name?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cash_balance: {
         Row: {
           amount: number
@@ -476,6 +506,66 @@ export type Database = {
           occurred_at?: string
         }
         Relationships: []
+      }
+      pending_customer_payments: {
+        Row: {
+          amount: number
+          bank_account_id: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          note: string | null
+          processed_at: string | null
+          processed_by: string | null
+          proof_path: string | null
+          reject_reason: string | null
+          status: string
+          submitter_name: string | null
+        }
+        Insert: {
+          amount: number
+          bank_account_id?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          note?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          proof_path?: string | null
+          reject_reason?: string | null
+          status?: string
+          submitter_name?: string | null
+        }
+        Update: {
+          amount?: number
+          bank_account_id?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          note?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          proof_path?: string | null
+          reject_reason?: string | null
+          status?: string
+          submitter_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_customer_payments_bank_account_id_fkey"
+            columns: ["bank_account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_customer_payments_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pending_employee_bonus: {
         Row: {
@@ -1396,6 +1486,14 @@ export type Database = {
         }
         Returns: string
       }
+      approve_pending_customer_payment: {
+        Args: { p_id: string }
+        Returns: string
+      }
+      approve_pending_customer_payment_via_telegram: {
+        Args: { p_id: string }
+        Returns: string
+      }
       approve_pending_employee_bonus: {
         Args: { p_id: string }
         Returns: string
@@ -1510,6 +1608,10 @@ export type Database = {
           p_warehouse_id: string
         }
         Returns: string
+      }
+      reject_pending_customer_payment: {
+        Args: { p_id: string; p_reason: string }
+        Returns: undefined
       }
       reject_pending_employee_bonus: {
         Args: { p_id: string; p_reason: string }

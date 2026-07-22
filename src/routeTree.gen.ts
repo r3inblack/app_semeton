@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PortalRouteImport } from './routes/portal'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -35,6 +36,7 @@ import { Route as AuthenticatedReportsExpensesRouteImport } from './routes/_auth
 import { Route as AuthenticatedReportsCashflowRouteImport } from './routes/_authenticated/reports.cashflow'
 import { Route as AuthenticatedReportsBonusRouteImport } from './routes/_authenticated/reports.bonus'
 import { Route as AuthenticatedPaymentsSupplierRouteImport } from './routes/_authenticated/payments.supplier'
+import { Route as AuthenticatedPaymentsPendingRouteImport } from './routes/_authenticated/payments.pending'
 import { Route as AuthenticatedPaymentsCustomerRouteImport } from './routes/_authenticated/payments.customer'
 import { Route as AuthenticatedMasterWarehousesRouteImport } from './routes/_authenticated/master.warehouses'
 import { Route as AuthenticatedMasterSuppliersRouteImport } from './routes/_authenticated/master.suppliers'
@@ -42,9 +44,15 @@ import { Route as AuthenticatedMasterProductsRouteImport } from './routes/_authe
 import { Route as AuthenticatedMasterExpenseCategoriesRouteImport } from './routes/_authenticated/master.expense-categories'
 import { Route as AuthenticatedMasterEmployeesRouteImport } from './routes/_authenticated/master.employees'
 import { Route as AuthenticatedMasterCustomersRouteImport } from './routes/_authenticated/master.customers'
+import { Route as AuthenticatedMasterBankAccountsRouteImport } from './routes/_authenticated/master.bank-accounts'
 import { Route as ApiPublicV1SplatRouteImport } from './routes/api/public/v1/$'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -192,6 +200,12 @@ const AuthenticatedPaymentsSupplierRoute =
     path: '/payments/supplier',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPaymentsPendingRoute =
+  AuthenticatedPaymentsPendingRouteImport.update({
+    id: '/payments/pending',
+    path: '/payments/pending',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPaymentsCustomerRoute =
   AuthenticatedPaymentsCustomerRouteImport.update({
     id: '/payments/customer',
@@ -234,6 +248,12 @@ const AuthenticatedMasterCustomersRoute =
     path: '/master/customers',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMasterBankAccountsRoute =
+  AuthenticatedMasterBankAccountsRouteImport.update({
+    id: '/master/bank-accounts',
+    path: '/master/bank-accounts',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicV1SplatRoute = ApiPublicV1SplatRouteImport.update({
   id: '/api/public/v1/$',
   path: '/api/public/v1/$',
@@ -249,10 +269,12 @@ const ApiPublicTelegramWebhookRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/portal': typeof PortalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/expenses': typeof AuthenticatedExpensesRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/master/bank-accounts': typeof AuthenticatedMasterBankAccountsRoute
   '/master/customers': typeof AuthenticatedMasterCustomersRoute
   '/master/employees': typeof AuthenticatedMasterEmployeesRoute
   '/master/expense-categories': typeof AuthenticatedMasterExpenseCategoriesRoute
@@ -260,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
+  '/payments/pending': typeof AuthenticatedPaymentsPendingRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
   '/reports/bonus': typeof AuthenticatedReportsBonusRoute
   '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
@@ -285,10 +308,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/portal': typeof PortalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/expenses': typeof AuthenticatedExpensesRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/master/bank-accounts': typeof AuthenticatedMasterBankAccountsRoute
   '/master/customers': typeof AuthenticatedMasterCustomersRoute
   '/master/employees': typeof AuthenticatedMasterEmployeesRoute
   '/master/expense-categories': typeof AuthenticatedMasterExpenseCategoriesRoute
@@ -296,6 +321,7 @@ export interface FileRoutesByTo {
   '/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
+  '/payments/pending': typeof AuthenticatedPaymentsPendingRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
   '/reports/bonus': typeof AuthenticatedReportsBonusRoute
   '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
@@ -323,10 +349,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/portal': typeof PortalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/master/bank-accounts': typeof AuthenticatedMasterBankAccountsRoute
   '/_authenticated/master/customers': typeof AuthenticatedMasterCustomersRoute
   '/_authenticated/master/employees': typeof AuthenticatedMasterEmployeesRoute
   '/_authenticated/master/expense-categories': typeof AuthenticatedMasterExpenseCategoriesRoute
@@ -334,6 +362,7 @@ export interface FileRoutesById {
   '/_authenticated/master/suppliers': typeof AuthenticatedMasterSuppliersRoute
   '/_authenticated/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/_authenticated/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
+  '/_authenticated/payments/pending': typeof AuthenticatedPaymentsPendingRoute
   '/_authenticated/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
   '/_authenticated/reports/bonus': typeof AuthenticatedReportsBonusRoute
   '/_authenticated/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
@@ -361,10 +390,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/portal'
     | '/dashboard'
     | '/expenses'
     | '/sales'
     | '/settings'
+    | '/master/bank-accounts'
     | '/master/customers'
     | '/master/employees'
     | '/master/expense-categories'
@@ -372,6 +403,7 @@ export interface FileRouteTypes {
     | '/master/suppliers'
     | '/master/warehouses'
     | '/payments/customer'
+    | '/payments/pending'
     | '/payments/supplier'
     | '/reports/bonus'
     | '/reports/cashflow'
@@ -397,10 +429,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/portal'
     | '/dashboard'
     | '/expenses'
     | '/sales'
     | '/settings'
+    | '/master/bank-accounts'
     | '/master/customers'
     | '/master/employees'
     | '/master/expense-categories'
@@ -408,6 +442,7 @@ export interface FileRouteTypes {
     | '/master/suppliers'
     | '/master/warehouses'
     | '/payments/customer'
+    | '/payments/pending'
     | '/payments/supplier'
     | '/reports/bonus'
     | '/reports/cashflow'
@@ -434,10 +469,12 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/portal'
     | '/_authenticated/dashboard'
     | '/_authenticated/expenses'
     | '/_authenticated/sales'
     | '/_authenticated/settings'
+    | '/_authenticated/master/bank-accounts'
     | '/_authenticated/master/customers'
     | '/_authenticated/master/employees'
     | '/_authenticated/master/expense-categories'
@@ -445,6 +482,7 @@ export interface FileRouteTypes {
     | '/_authenticated/master/suppliers'
     | '/_authenticated/master/warehouses'
     | '/_authenticated/payments/customer'
+    | '/_authenticated/payments/pending'
     | '/_authenticated/payments/supplier'
     | '/_authenticated/reports/bonus'
     | '/_authenticated/reports/cashflow'
@@ -472,12 +510,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PortalRoute: typeof PortalRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -660,6 +706,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPaymentsSupplierRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/payments/pending': {
+      id: '/_authenticated/payments/pending'
+      path: '/payments/pending'
+      fullPath: '/payments/pending'
+      preLoaderRoute: typeof AuthenticatedPaymentsPendingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/payments/customer': {
       id: '/_authenticated/payments/customer'
       path: '/payments/customer'
@@ -709,6 +762,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMasterCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/master/bank-accounts': {
+      id: '/_authenticated/master/bank-accounts'
+      path: '/master/bank-accounts'
+      fullPath: '/master/bank-accounts'
+      preLoaderRoute: typeof AuthenticatedMasterBankAccountsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/v1/$': {
       id: '/api/public/v1/$'
       path: '/api/public/v1/$'
@@ -731,6 +791,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedMasterBankAccountsRoute: typeof AuthenticatedMasterBankAccountsRoute
   AuthenticatedMasterCustomersRoute: typeof AuthenticatedMasterCustomersRoute
   AuthenticatedMasterEmployeesRoute: typeof AuthenticatedMasterEmployeesRoute
   AuthenticatedMasterExpenseCategoriesRoute: typeof AuthenticatedMasterExpenseCategoriesRoute
@@ -738,6 +799,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMasterSuppliersRoute: typeof AuthenticatedMasterSuppliersRoute
   AuthenticatedMasterWarehousesRoute: typeof AuthenticatedMasterWarehousesRoute
   AuthenticatedPaymentsCustomerRoute: typeof AuthenticatedPaymentsCustomerRoute
+  AuthenticatedPaymentsPendingRoute: typeof AuthenticatedPaymentsPendingRoute
   AuthenticatedPaymentsSupplierRoute: typeof AuthenticatedPaymentsSupplierRoute
   AuthenticatedReportsBonusRoute: typeof AuthenticatedReportsBonusRoute
   AuthenticatedReportsCashflowRoute: typeof AuthenticatedReportsCashflowRoute
@@ -764,6 +826,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedMasterBankAccountsRoute: AuthenticatedMasterBankAccountsRoute,
   AuthenticatedMasterCustomersRoute: AuthenticatedMasterCustomersRoute,
   AuthenticatedMasterEmployeesRoute: AuthenticatedMasterEmployeesRoute,
   AuthenticatedMasterExpenseCategoriesRoute:
@@ -772,6 +835,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMasterSuppliersRoute: AuthenticatedMasterSuppliersRoute,
   AuthenticatedMasterWarehousesRoute: AuthenticatedMasterWarehousesRoute,
   AuthenticatedPaymentsCustomerRoute: AuthenticatedPaymentsCustomerRoute,
+  AuthenticatedPaymentsPendingRoute: AuthenticatedPaymentsPendingRoute,
   AuthenticatedPaymentsSupplierRoute: AuthenticatedPaymentsSupplierRoute,
   AuthenticatedReportsBonusRoute: AuthenticatedReportsBonusRoute,
   AuthenticatedReportsCashflowRoute: AuthenticatedReportsCashflowRoute,
@@ -800,6 +864,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  PortalRoute: PortalRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
 }
