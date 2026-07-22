@@ -25,6 +25,7 @@ export type FieldDef<T> = {
   required?: boolean;
   render?: (value: any, row: T) => ReactNode;
   hideInTable?: boolean;
+  disabledWhen?: (form: any) => boolean;
 };
 
 export function CrudTable<T extends { id: string; [k: string]: any }>({
