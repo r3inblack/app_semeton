@@ -24,6 +24,16 @@ import { useRole } from "@/hooks/use-role";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
+  head: () => ({
+    meta: [
+      { title: "Pengaturan | Aplikasi Semeton" },
+      { name: "description", content: "Kelola nama aplikasi, notifikasi Telegram, pengguna & hak akses, serta setup data awal." },
+      { property: "og:title", content: "Pengaturan | Aplikasi Semeton" },
+      { property: "og:description", content: "Kelola nama aplikasi, notifikasi Telegram, pengguna & hak akses, serta setup data awal." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
 });
 
 function SettingsPage() {
