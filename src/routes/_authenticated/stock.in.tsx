@@ -65,7 +65,7 @@ function StockInPage() {
         }
         onSubmit={async (v) => {
           if (isGudang) {
-            const { error } = await supabase.rpc("submit_pending_stock_in", {
+            const { data: pendingId, error } = await supabase.rpc("submit_pending_stock_in", {
               p_supplier_id: v.supplier_id,
               p_warehouse_id: v.warehouse_id,
               p_product_id: v.product_id,
@@ -83,7 +83,9 @@ function StockInPage() {
                 `Produk: ${product}\n` +
                 `Qty: ${fmtNum(Number(v.qty))}\n` +
                 (v.note ? `Catatan: ${v.note}\n` : "") +
-                `\nMenunggu penetapan harga beli & jual oleh Super Admin.`,
+                `\nBalas pesan ini dengan format:\n<code>&lt;harga_beli&gt; &lt;harga_jual&gt;</code>\n` +
+                `Contoh: <code>10000 12000</code>\n` +
+                `\n#ID:${pendingId}`,
             );
           } else {
             const { error } = await supabase.rpc("record_stock_in", {
