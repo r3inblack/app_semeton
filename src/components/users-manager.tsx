@@ -29,7 +29,10 @@ import { toast } from "sonner";
 type UserRow = {
   id: string; email: string | undefined; full_name: string | null;
   is_master: boolean; warehouse_id: string | null; role: AppRole;
+  employee_id: string | null; employee_name: string | null;
 };
+
+type Employee = { id: string; name: string; category: string | null; warehouse_id: string | null };
 
 const ROLE_OPTIONS: AppRole[] = [
   "super_admin", "admin", "manager", "staff_keuangan",
@@ -45,6 +48,7 @@ export function UsersManager() {
   const remove = useServerFn(deleteUser);
 
   const warehouses = useList<{ id: string; name: string }>("warehouses");
+  const employees = useList<Employee>("employees");
   const q = useQuery({ queryKey: ["admin-users"], queryFn: () => list() });
 
   const [openNew, setOpenNew] = useState(false);
@@ -54,12 +58,19 @@ export function UsersManager() {
 
   const [form, setForm] = useState({
     username: "", password: "", full_name: "",
-    role: "viewer" as AppRole, warehouse_id: "",
+    role: "viewer" as AppRole, warehouse_id: "", employee_id: "",
   });
   const [editForm, setEditForm] = useState({
-    full_name: "", role: "viewer" as AppRole, warehouse_id: "",
+    full_name: "", role: "viewer" as AppRole, warehouse_id: "", employee_id: "",
   });
   const [newPw, setNewPw] = useState("");
+
+  // Employees not yet linked (for the "New user" dialog)
+  const linkedIds = new Set((q.data ?? []).map((u: UserRow) => u.employee_id).filter(Boolean) as string[]);
+  const availableEmployeesNew = (employees.data ?? []).filter((e) => !linkedIds.has(e.id));
+  const availableEmployeesEdit = (employees.data ?? []).filter(
+    (e) => !linkedIds.has(e.id) || e.id === editing?.employee_id,
+  );
 
   const availableRoles = ROLE_OPTIONS.filter((r) => isSuperAdmin || r !== "super_admin");
 
