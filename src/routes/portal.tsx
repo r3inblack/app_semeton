@@ -221,18 +221,11 @@ function CustomerPortal({ customer, onExit }: { customer: Verified; onExit: () =
             </div>
             <div className="space-y-1">
               <Label>Rekening Tujuan</Label>
-              <Select value={bankId} onValueChange={setBankId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih rekening" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(banks.data ?? []).map((b: any) => (
-                    <SelectItem key={b.id} value={b.id}>
-                      {b.bank_name} — {b.account_number} ({b.account_holder})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                value={bankInfo}
+                onChange={(e) => setBankInfo(e.target.value)}
+                placeholder="Contoh: BCA 1234567890 a/n Budi"
+              />
             </div>
           </div>
           <div className="space-y-1">
