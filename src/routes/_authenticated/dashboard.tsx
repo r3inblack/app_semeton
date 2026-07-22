@@ -236,7 +236,7 @@ function Dashboard() {
 
 
 
-function StafDashboard({ warehouseId, employeeId }: { warehouseId?: string | null; employeeId?: string | null }) {
+function StafDashboard({ warehouseId, employeeId, can }: { warehouseId?: string | null; employeeId?: string | null; can: (m: string, a?: any) => boolean }) {
   const stock = useQuery({
     queryKey: ["staf_stock", warehouseId],
     enabled: !!warehouseId,
