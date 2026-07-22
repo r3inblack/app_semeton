@@ -91,16 +91,19 @@ export function UsersManager() {
       if (!form.username.trim()) throw new Error("Username wajib diisi");
       if (!form.password || form.password.length < 6)
         throw new Error("Password minimal 6 karakter");
+      if (form.role === "custom" && !form.custom_role_id)
+        throw new Error("Pilih role custom terlebih dulu");
       return create({ data: {
         username: form.username, password: form.password, full_name: form.full_name,
         role: form.role, warehouse_id: form.warehouse_id || null,
         employee_id: form.employee_id || null,
+        custom_role_id: form.custom_role_id || null,
       } });
     },
     onSuccess: () => {
       toast.success("User dibuat");
       setOpenNew(false);
-      setForm({ username: "", password: "", full_name: "", role: "viewer", warehouse_id: "", employee_id: "" });
+      setForm({ username: "", password: "", full_name: "", role: "viewer", warehouse_id: "", employee_id: "", custom_role_id: "" });
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
     onError: (e: any) => toast.error(e.message),
@@ -108,18 +111,25 @@ export function UsersManager() {
 
 
   const mUpdate = useMutation({
-    mutationFn: () => update({ data: {
-      id: editing!.id, full_name: editForm.full_name, role: editForm.role,
-      warehouse_id: editForm.warehouse_id || null,
-      employee_id: editForm.employee_id || null,
-    } }),
+    mutationFn: () => {
+      if (editForm.role === "custom" && !editForm.custom_role_id)
+        throw new Error("Pilih role custom terlebih dulu");
+      return update({ data: {
+        id: editing!.id, full_name: editForm.full_name, role: editForm.role,
+        warehouse_id: editForm.warehouse_id || null,
+        employee_id: editForm.employee_id || null,
+        custom_role_id: editForm.custom_role_id || null,
+      } });
+    },
     onSuccess: () => {
       toast.success("User diperbarui");
       setEditing(null);
       qc.invalidateQueries({ queryKey: ["admin-users"] });
+      qc.invalidateQueries({ queryKey: ["role-perms"] });
     },
     onError: (e: any) => toast.error(e.message),
   });
+
 
   const mPassword = useMutation({
     mutationFn: async () => {
@@ -150,6 +160,7 @@ export function UsersManager() {
       role: u.role,
       warehouse_id: u.warehouse_id ?? "",
       employee_id: u.employee_id ?? "",
+      custom_role_id: u.custom_role_id ?? "",
     });
   };
 
