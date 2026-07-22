@@ -105,7 +105,39 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           return Response.json({ ok: true });
         }
 
-        const idMatch = (replied + "\n" + text).match(
+        const combined = replied + "\n" + text;
+
+        // Bonus approval: #BONUS:<uuid> — just reply "ok" / "setuju" / "y"
+        const bonusMatch = combined.match(
+          /#BONUS[:\s]*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i,
+        );
+        if (bonusMatch) {
+          const bonusId = bonusMatch[1];
+          const approveWord = /\b(ok|oke|okay|setuju|approve|y|ya|yes)\b/i.test(text);
+          const rejectWord = /\b(tolak|reject|no|tidak|batal)\b/i.test(text);
+          if (rejectWord) {
+            const { error } = await admin.rpc("reject_pending_employee_bonus", { p_id: bonusId, p_reason: "via Telegram" });
+            if (error) { await tgSend(botToken, chatId, `❌ Gagal: ${error.message}`, messageId); await log("rpc_error", error.message); }
+            else { await tgSend(botToken, chatId, "🚫 Pengajuan bonus ditolak.", messageId); await log("bonus_rejected", `id=${bonusId}`); }
+            return Response.json({ ok: true });
+          }
+          if (!approveWord) {
+            await tgSend(botToken, chatId, "Balas dengan <code>ok</code> untuk menyetujui atau <code>tolak</code> untuk menolak.", messageId);
+            await log("bonus_no_action", `id=${bonusId}`);
+            return Response.json({ ok: true });
+          }
+          const { error } = await admin.rpc("approve_pending_employee_bonus_via_telegram", { p_id: bonusId });
+          if (error) {
+            await tgSend(botToken, chatId, `❌ Gagal: ${error.message}`, messageId);
+            await log("rpc_error", error.message);
+            return Response.json({ ok: true });
+          }
+          await tgSend(botToken, chatId, "✅ Bonus barang disetujui. Stok dikurangi & tercatat sebagai pengeluaran.", messageId);
+          await log("bonus_approved", `id=${bonusId}`);
+          return Response.json({ ok: true });
+        }
+
+        const idMatch = combined.match(
           /#ID[:\s]*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i,
         );
         if (!idMatch) {

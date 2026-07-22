@@ -8,7 +8,8 @@ import { useList } from "@/lib/list-hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtNum } from "@/lib/format";
-import { sendTransactionNotification } from "@/lib/telegram";
+import { useRole } from "@/hooks/use-role";
+import { sendPricingNotification, sendTransactionNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/salary/bonus")({
   component: Page,
@@ -16,9 +17,11 @@ export const Route = createFileRoute("/_authenticated/salary/bonus")({
 
 function Page() {
   const qc = useQueryClient();
+  const { isSuperAdmin } = useRole();
   const employees = useList<any>("employees");
   const warehouses = useList<any>("warehouses");
   const products = useList<any>("products");
+
   const history = useQuery({
     queryKey: ["employee_bonus_history"],
     queryFn: async () => {
@@ -35,10 +38,15 @@ function Page() {
     <AppShell title="Bonus Barang">
       <PageHeader
         title="Bonus Barang untuk Karyawan"
-        description="HANYA mengurangi stok gudang. TIDAK memotong hak gaji & TIDAK memotong kas."
+        description={
+          isSuperAdmin
+            ? "Mencatat bonus akan mengurangi stok dan otomatis dicatat sebagai pengeluaran senilai harga beli."
+            : "Ajukan bonus barang. Menunggu persetujuan Super Admin sebelum stok dikurangi."
+        }
       />
       <TxForm
-        title="Catat Bonus Barang"
+        title={isSuperAdmin ? "Catat Bonus Barang" : "Ajukan Bonus Barang"}
+        submitLabel={isSuperAdmin ? "Simpan" : "Ajukan"}
         fields={[
           { name: "employee_id", label: "Karyawan", type: "select", options: (employees.data ?? []).map((x) => ({ value: x.id, label: x.name })) },
           { name: "warehouse_id", label: "Gudang Asal", type: "select", options: (warehouses.data ?? []).map((x) => ({ value: x.id, label: x.name })) },
@@ -48,19 +56,33 @@ function Page() {
         ]}
         onSubmit={async (v) => {
           const qty = Number(v.qty);
-          const { error } = await supabase.rpc("record_employee_bonus", {
-            p_employee_id: v.employee_id, p_warehouse_id: v.warehouse_id, p_product_id: v.product_id,
-            p_qty: qty, p_note: v.note || null,
-          });
-          if (error) throw error;
           const emp = employees.data?.find((e) => e.id === v.employee_id)?.name ?? "-";
           const wh = warehouses.data?.find((w) => w.id === v.warehouse_id)?.name ?? "-";
           const prod = products.data?.find((p) => p.id === v.product_id)?.name ?? "-";
-          sendTransactionNotification(
-            "employee_bonus",
-            { employee: emp, warehouse: wh, product: prod, qty: fmtNum(qty), note: v.note || "" },
-            `🎁 <b>Bonus Barang Karyawan</b>\nKaryawan: ${emp}\nGudang: ${wh}\nProduk: ${prod}\nQty: ${fmtNum(qty)}`,
-          );
+
+          if (isSuperAdmin) {
+            const { error } = await supabase.rpc("record_employee_bonus", {
+              p_employee_id: v.employee_id, p_warehouse_id: v.warehouse_id, p_product_id: v.product_id,
+              p_qty: qty, p_note: v.note || null,
+            });
+            if (error) throw error;
+            sendTransactionNotification(
+              "employee_bonus",
+              { employee: emp, warehouse: wh, product: prod, qty: fmtNum(qty), note: v.note || "" },
+              `🎁 <b>Bonus Barang Karyawan</b>\nKaryawan: ${emp}\nGudang: ${wh}\nProduk: ${prod}\nQty: ${fmtNum(qty)}`,
+            );
+          } else {
+            const { data: pendingId, error } = await supabase.rpc("submit_pending_employee_bonus", {
+              p_employee_id: v.employee_id, p_warehouse_id: v.warehouse_id, p_product_id: v.product_id,
+              p_qty: qty, p_note: v.note || null,
+            });
+            if (error) throw error;
+            await sendPricingNotification(
+              "employee_bonus_pending",
+              { employee: emp, warehouse: wh, product: prod, qty: fmtNum(qty), note: v.note || "", pending_id: pendingId },
+              `<b>🎁 Pengajuan Bonus Barang</b>\nKaryawan: ${emp}\nGudang: ${wh}\nProduk: ${prod}\nQty: ${fmtNum(qty)}\n\nBalas dengan <code>ok</code> untuk menyetujui.\n#BONUS:${pendingId}`,
+            );
+          }
           qc.invalidateQueries();
         }}
       />

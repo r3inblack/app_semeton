@@ -16,20 +16,24 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedSupplierReturnsRouteImport } from './routes/_authenticated/supplier.returns'
 import { Route as AuthenticatedStockPendingRouteImport } from './routes/_authenticated/stock.pending'
 import { Route as AuthenticatedStockMutationsRouteImport } from './routes/_authenticated/stock.mutations'
 import { Route as AuthenticatedStockLevelsRouteImport } from './routes/_authenticated/stock.levels'
 import { Route as AuthenticatedStockInRouteImport } from './routes/_authenticated/stock.in'
 import { Route as AuthenticatedSalaryPaymentRouteImport } from './routes/_authenticated/salary.payment'
+import { Route as AuthenticatedSalaryBonusPendingRouteImport } from './routes/_authenticated/salary.bonus-pending'
 import { Route as AuthenticatedSalaryBonusRouteImport } from './routes/_authenticated/salary.bonus'
 import { Route as AuthenticatedSalaryAdvanceRouteImport } from './routes/_authenticated/salary.advance'
 import { Route as AuthenticatedSalaryAccrualKurirRouteImport } from './routes/_authenticated/salary.accrual-kurir'
 import { Route as AuthenticatedSalaryAccrualRouteImport } from './routes/_authenticated/salary.accrual'
+import { Route as AuthenticatedReportsReturnsRouteImport } from './routes/_authenticated/reports.returns'
 import { Route as AuthenticatedReportsReceivablesRouteImport } from './routes/_authenticated/reports.receivables'
 import { Route as AuthenticatedReportsPayablesRouteImport } from './routes/_authenticated/reports.payables'
 import { Route as AuthenticatedReportsMutationsRouteImport } from './routes/_authenticated/reports.mutations'
 import { Route as AuthenticatedReportsExpensesRouteImport } from './routes/_authenticated/reports.expenses'
 import { Route as AuthenticatedReportsCashflowRouteImport } from './routes/_authenticated/reports.cashflow'
+import { Route as AuthenticatedReportsBonusRouteImport } from './routes/_authenticated/reports.bonus'
 import { Route as AuthenticatedPaymentsSupplierRouteImport } from './routes/_authenticated/payments.supplier'
 import { Route as AuthenticatedPaymentsCustomerRouteImport } from './routes/_authenticated/payments.customer'
 import { Route as AuthenticatedMasterWarehousesRouteImport } from './routes/_authenticated/master.warehouses'
@@ -75,6 +79,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSupplierReturnsRoute =
+  AuthenticatedSupplierReturnsRouteImport.update({
+    id: '/supplier/returns',
+    path: '/supplier/returns',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedStockPendingRoute =
   AuthenticatedStockPendingRouteImport.update({
     id: '/stock/pending',
@@ -104,6 +114,12 @@ const AuthenticatedSalaryPaymentRoute =
     path: '/salary/payment',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSalaryBonusPendingRoute =
+  AuthenticatedSalaryBonusPendingRouteImport.update({
+    id: '/salary/bonus-pending',
+    path: '/salary/bonus-pending',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSalaryBonusRoute =
   AuthenticatedSalaryBonusRouteImport.update({
     id: '/salary/bonus',
@@ -126,6 +142,12 @@ const AuthenticatedSalaryAccrualRoute =
   AuthenticatedSalaryAccrualRouteImport.update({
     id: '/salary/accrual',
     path: '/salary/accrual',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReportsReturnsRoute =
+  AuthenticatedReportsReturnsRouteImport.update({
+    id: '/reports/returns',
+    path: '/reports/returns',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedReportsReceivablesRoute =
@@ -156,6 +178,12 @@ const AuthenticatedReportsCashflowRoute =
   AuthenticatedReportsCashflowRouteImport.update({
     id: '/reports/cashflow',
     path: '/reports/cashflow',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReportsBonusRoute =
+  AuthenticatedReportsBonusRouteImport.update({
+    id: '/reports/bonus',
+    path: '/reports/bonus',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPaymentsSupplierRoute =
@@ -233,20 +261,24 @@ export interface FileRoutesByFullPath {
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/reports/bonus': typeof AuthenticatedReportsBonusRoute
   '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
   '/reports/expenses': typeof AuthenticatedReportsExpensesRoute
   '/reports/mutations': typeof AuthenticatedReportsMutationsRoute
   '/reports/payables': typeof AuthenticatedReportsPayablesRoute
   '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
+  '/reports/returns': typeof AuthenticatedReportsReturnsRoute
   '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
   '/salary/accrual-kurir': typeof AuthenticatedSalaryAccrualKurirRoute
   '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
   '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
+  '/salary/bonus-pending': typeof AuthenticatedSalaryBonusPendingRoute
   '/salary/payment': typeof AuthenticatedSalaryPaymentRoute
   '/stock/in': typeof AuthenticatedStockInRoute
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
+  '/supplier/returns': typeof AuthenticatedSupplierReturnsRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
@@ -265,20 +297,24 @@ export interface FileRoutesByTo {
   '/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/reports/bonus': typeof AuthenticatedReportsBonusRoute
   '/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
   '/reports/expenses': typeof AuthenticatedReportsExpensesRoute
   '/reports/mutations': typeof AuthenticatedReportsMutationsRoute
   '/reports/payables': typeof AuthenticatedReportsPayablesRoute
   '/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
+  '/reports/returns': typeof AuthenticatedReportsReturnsRoute
   '/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
   '/salary/accrual-kurir': typeof AuthenticatedSalaryAccrualKurirRoute
   '/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
   '/salary/bonus': typeof AuthenticatedSalaryBonusRoute
+  '/salary/bonus-pending': typeof AuthenticatedSalaryBonusPendingRoute
   '/salary/payment': typeof AuthenticatedSalaryPaymentRoute
   '/stock/in': typeof AuthenticatedStockInRoute
   '/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
+  '/supplier/returns': typeof AuthenticatedSupplierReturnsRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
@@ -299,20 +335,24 @@ export interface FileRoutesById {
   '/_authenticated/master/warehouses': typeof AuthenticatedMasterWarehousesRoute
   '/_authenticated/payments/customer': typeof AuthenticatedPaymentsCustomerRoute
   '/_authenticated/payments/supplier': typeof AuthenticatedPaymentsSupplierRoute
+  '/_authenticated/reports/bonus': typeof AuthenticatedReportsBonusRoute
   '/_authenticated/reports/cashflow': typeof AuthenticatedReportsCashflowRoute
   '/_authenticated/reports/expenses': typeof AuthenticatedReportsExpensesRoute
   '/_authenticated/reports/mutations': typeof AuthenticatedReportsMutationsRoute
   '/_authenticated/reports/payables': typeof AuthenticatedReportsPayablesRoute
   '/_authenticated/reports/receivables': typeof AuthenticatedReportsReceivablesRoute
+  '/_authenticated/reports/returns': typeof AuthenticatedReportsReturnsRoute
   '/_authenticated/salary/accrual': typeof AuthenticatedSalaryAccrualRoute
   '/_authenticated/salary/accrual-kurir': typeof AuthenticatedSalaryAccrualKurirRoute
   '/_authenticated/salary/advance': typeof AuthenticatedSalaryAdvanceRoute
   '/_authenticated/salary/bonus': typeof AuthenticatedSalaryBonusRoute
+  '/_authenticated/salary/bonus-pending': typeof AuthenticatedSalaryBonusPendingRoute
   '/_authenticated/salary/payment': typeof AuthenticatedSalaryPaymentRoute
   '/_authenticated/stock/in': typeof AuthenticatedStockInRoute
   '/_authenticated/stock/levels': typeof AuthenticatedStockLevelsRoute
   '/_authenticated/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/_authenticated/stock/pending': typeof AuthenticatedStockPendingRoute
+  '/_authenticated/supplier/returns': typeof AuthenticatedSupplierReturnsRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
@@ -333,20 +373,24 @@ export interface FileRouteTypes {
     | '/master/warehouses'
     | '/payments/customer'
     | '/payments/supplier'
+    | '/reports/bonus'
     | '/reports/cashflow'
     | '/reports/expenses'
     | '/reports/mutations'
     | '/reports/payables'
     | '/reports/receivables'
+    | '/reports/returns'
     | '/salary/accrual'
     | '/salary/accrual-kurir'
     | '/salary/advance'
     | '/salary/bonus'
+    | '/salary/bonus-pending'
     | '/salary/payment'
     | '/stock/in'
     | '/stock/levels'
     | '/stock/mutations'
     | '/stock/pending'
+    | '/supplier/returns'
     | '/api/public/telegram/webhook'
     | '/api/public/v1/$'
   fileRoutesByTo: FileRoutesByTo
@@ -365,20 +409,24 @@ export interface FileRouteTypes {
     | '/master/warehouses'
     | '/payments/customer'
     | '/payments/supplier'
+    | '/reports/bonus'
     | '/reports/cashflow'
     | '/reports/expenses'
     | '/reports/mutations'
     | '/reports/payables'
     | '/reports/receivables'
+    | '/reports/returns'
     | '/salary/accrual'
     | '/salary/accrual-kurir'
     | '/salary/advance'
     | '/salary/bonus'
+    | '/salary/bonus-pending'
     | '/salary/payment'
     | '/stock/in'
     | '/stock/levels'
     | '/stock/mutations'
     | '/stock/pending'
+    | '/supplier/returns'
     | '/api/public/telegram/webhook'
     | '/api/public/v1/$'
   id:
@@ -398,20 +446,24 @@ export interface FileRouteTypes {
     | '/_authenticated/master/warehouses'
     | '/_authenticated/payments/customer'
     | '/_authenticated/payments/supplier'
+    | '/_authenticated/reports/bonus'
     | '/_authenticated/reports/cashflow'
     | '/_authenticated/reports/expenses'
     | '/_authenticated/reports/mutations'
     | '/_authenticated/reports/payables'
     | '/_authenticated/reports/receivables'
+    | '/_authenticated/reports/returns'
     | '/_authenticated/salary/accrual'
     | '/_authenticated/salary/accrual-kurir'
     | '/_authenticated/salary/advance'
     | '/_authenticated/salary/bonus'
+    | '/_authenticated/salary/bonus-pending'
     | '/_authenticated/salary/payment'
     | '/_authenticated/stock/in'
     | '/_authenticated/stock/levels'
     | '/_authenticated/stock/mutations'
     | '/_authenticated/stock/pending'
+    | '/_authenticated/supplier/returns'
     | '/api/public/telegram/webhook'
     | '/api/public/v1/$'
   fileRoutesById: FileRoutesById
@@ -475,6 +527,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/supplier/returns': {
+      id: '/_authenticated/supplier/returns'
+      path: '/supplier/returns'
+      fullPath: '/supplier/returns'
+      preLoaderRoute: typeof AuthenticatedSupplierReturnsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/stock/pending': {
       id: '/_authenticated/stock/pending'
       path: '/stock/pending'
@@ -510,6 +569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSalaryPaymentRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/salary/bonus-pending': {
+      id: '/_authenticated/salary/bonus-pending'
+      path: '/salary/bonus-pending'
+      fullPath: '/salary/bonus-pending'
+      preLoaderRoute: typeof AuthenticatedSalaryBonusPendingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/salary/bonus': {
       id: '/_authenticated/salary/bonus'
       path: '/salary/bonus'
@@ -536,6 +602,13 @@ declare module '@tanstack/react-router' {
       path: '/salary/accrual'
       fullPath: '/salary/accrual'
       preLoaderRoute: typeof AuthenticatedSalaryAccrualRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports/returns': {
+      id: '/_authenticated/reports/returns'
+      path: '/reports/returns'
+      fullPath: '/reports/returns'
+      preLoaderRoute: typeof AuthenticatedReportsReturnsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/reports/receivables': {
@@ -571,6 +644,13 @@ declare module '@tanstack/react-router' {
       path: '/reports/cashflow'
       fullPath: '/reports/cashflow'
       preLoaderRoute: typeof AuthenticatedReportsCashflowRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports/bonus': {
+      id: '/_authenticated/reports/bonus'
+      path: '/reports/bonus'
+      fullPath: '/reports/bonus'
+      preLoaderRoute: typeof AuthenticatedReportsBonusRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/payments/supplier': {
@@ -659,20 +739,24 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMasterWarehousesRoute: typeof AuthenticatedMasterWarehousesRoute
   AuthenticatedPaymentsCustomerRoute: typeof AuthenticatedPaymentsCustomerRoute
   AuthenticatedPaymentsSupplierRoute: typeof AuthenticatedPaymentsSupplierRoute
+  AuthenticatedReportsBonusRoute: typeof AuthenticatedReportsBonusRoute
   AuthenticatedReportsCashflowRoute: typeof AuthenticatedReportsCashflowRoute
   AuthenticatedReportsExpensesRoute: typeof AuthenticatedReportsExpensesRoute
   AuthenticatedReportsMutationsRoute: typeof AuthenticatedReportsMutationsRoute
   AuthenticatedReportsPayablesRoute: typeof AuthenticatedReportsPayablesRoute
   AuthenticatedReportsReceivablesRoute: typeof AuthenticatedReportsReceivablesRoute
+  AuthenticatedReportsReturnsRoute: typeof AuthenticatedReportsReturnsRoute
   AuthenticatedSalaryAccrualRoute: typeof AuthenticatedSalaryAccrualRoute
   AuthenticatedSalaryAccrualKurirRoute: typeof AuthenticatedSalaryAccrualKurirRoute
   AuthenticatedSalaryAdvanceRoute: typeof AuthenticatedSalaryAdvanceRoute
   AuthenticatedSalaryBonusRoute: typeof AuthenticatedSalaryBonusRoute
+  AuthenticatedSalaryBonusPendingRoute: typeof AuthenticatedSalaryBonusPendingRoute
   AuthenticatedSalaryPaymentRoute: typeof AuthenticatedSalaryPaymentRoute
   AuthenticatedStockInRoute: typeof AuthenticatedStockInRoute
   AuthenticatedStockLevelsRoute: typeof AuthenticatedStockLevelsRoute
   AuthenticatedStockMutationsRoute: typeof AuthenticatedStockMutationsRoute
   AuthenticatedStockPendingRoute: typeof AuthenticatedStockPendingRoute
+  AuthenticatedSupplierReturnsRoute: typeof AuthenticatedSupplierReturnsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -689,20 +773,24 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMasterWarehousesRoute: AuthenticatedMasterWarehousesRoute,
   AuthenticatedPaymentsCustomerRoute: AuthenticatedPaymentsCustomerRoute,
   AuthenticatedPaymentsSupplierRoute: AuthenticatedPaymentsSupplierRoute,
+  AuthenticatedReportsBonusRoute: AuthenticatedReportsBonusRoute,
   AuthenticatedReportsCashflowRoute: AuthenticatedReportsCashflowRoute,
   AuthenticatedReportsExpensesRoute: AuthenticatedReportsExpensesRoute,
   AuthenticatedReportsMutationsRoute: AuthenticatedReportsMutationsRoute,
   AuthenticatedReportsPayablesRoute: AuthenticatedReportsPayablesRoute,
   AuthenticatedReportsReceivablesRoute: AuthenticatedReportsReceivablesRoute,
+  AuthenticatedReportsReturnsRoute: AuthenticatedReportsReturnsRoute,
   AuthenticatedSalaryAccrualRoute: AuthenticatedSalaryAccrualRoute,
   AuthenticatedSalaryAccrualKurirRoute: AuthenticatedSalaryAccrualKurirRoute,
   AuthenticatedSalaryAdvanceRoute: AuthenticatedSalaryAdvanceRoute,
   AuthenticatedSalaryBonusRoute: AuthenticatedSalaryBonusRoute,
+  AuthenticatedSalaryBonusPendingRoute: AuthenticatedSalaryBonusPendingRoute,
   AuthenticatedSalaryPaymentRoute: AuthenticatedSalaryPaymentRoute,
   AuthenticatedStockInRoute: AuthenticatedStockInRoute,
   AuthenticatedStockLevelsRoute: AuthenticatedStockLevelsRoute,
   AuthenticatedStockMutationsRoute: AuthenticatedStockMutationsRoute,
   AuthenticatedStockPendingRoute: AuthenticatedStockPendingRoute,
+  AuthenticatedSupplierReturnsRoute: AuthenticatedSupplierReturnsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
