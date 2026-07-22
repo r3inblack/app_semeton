@@ -54,7 +54,8 @@ export function CrudTable<T extends { id: string; [k: string]: any }>({
     const payload: any = {};
     for (const f of fields) {
       const disabled = f.disabledWhen ? f.disabledWhen(form) : false;
-      let v = disabled ? null : form[f.name];
+      if (disabled) continue;
+      let v = form[f.name];
       if (f.type === "number") v = v === "" || v == null ? 0 : Number(v);
       if (v === "") v = null;
       payload[f.name] = v;
