@@ -8,6 +8,7 @@ import { useList } from "@/lib/list-hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtNum } from "@/lib/format";
+import { sendTransactionNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/salary/bonus")({
   component: Page,
@@ -46,11 +47,18 @@ function Page() {
           { name: "note", label: "Catatan", type: "textarea" },
         ]}
         onSubmit={async (v) => {
+          const qty = Number(v.qty);
           const { error } = await supabase.rpc("record_employee_bonus", {
             p_employee_id: v.employee_id, p_warehouse_id: v.warehouse_id, p_product_id: v.product_id,
-            p_qty: Number(v.qty), p_note: v.note || null,
+            p_qty: qty, p_note: v.note || null,
           });
           if (error) throw error;
+          const emp = employees.data?.find((e) => e.id === v.employee_id)?.name ?? "-";
+          const wh = warehouses.data?.find((w) => w.id === v.warehouse_id)?.name ?? "-";
+          const prod = products.data?.find((p) => p.id === v.product_id)?.name ?? "-";
+          sendTransactionNotification(
+            `🎁 <b>Bonus Barang Karyawan</b>\nKaryawan: ${emp}\nGudang: ${wh}\nProduk: ${prod}\nQty: ${fmtNum(qty)}`,
+          );
           qc.invalidateQueries();
         }}
       />

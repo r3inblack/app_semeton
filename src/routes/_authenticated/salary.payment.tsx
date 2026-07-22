@@ -8,6 +8,7 @@ import { useList } from "@/lib/list-hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR } from "@/lib/format";
+import { sendTransactionNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/salary/payment")({
   component: Page,
@@ -39,10 +40,13 @@ function Page() {
           { name: "note", label: "Catatan", type: "textarea" },
         ]}
         onSubmit={async (v) => {
+          const amount = Number(v.amount);
           const { error } = await supabase.rpc("record_salary_payment", {
-            p_employee_id: v.employee_id, p_amount: Number(v.amount), p_note: v.note || null,
+            p_employee_id: v.employee_id, p_amount: amount, p_note: v.note || null,
           });
           if (error) throw error;
+          const emp = employees.data?.find((e) => e.id === v.employee_id);
+          sendTransactionNotification(`💼 <b>Bayar Gaji</b>\nKaryawan: ${emp?.name ?? "-"}\nNominal: ${fmtIDR(amount)}`);
           qc.invalidateQueries();
         }}
       />

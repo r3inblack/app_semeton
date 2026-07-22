@@ -8,6 +8,7 @@ import { useList } from "@/lib/list-hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR, fmtNum } from "@/lib/format";
+import { sendTransactionNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/sales")({
   component: SalesPage,
@@ -46,11 +47,16 @@ function SalesPage() {
         onSubmit={async (v) => {
           const prod = products.data?.find((p) => p.id === v.product_id);
           const price = v.unit_price ? Number(v.unit_price) : Number(prod?.sell_price ?? 0);
+          const qty = Number(v.qty);
           const { error } = await supabase.rpc("record_sale", {
             p_customer_id: v.customer_id, p_warehouse_id: v.warehouse_id, p_product_id: v.product_id,
-            p_qty: Number(v.qty), p_unit_price: price, p_note: v.note || null,
+            p_qty: qty, p_unit_price: price, p_note: v.note || null,
           });
           if (error) throw error;
+          const cust = customers.data?.find((c) => c.id === v.customer_id);
+          sendTransactionNotification(
+            `🛒 <b>Penjualan Kredit</b>\nPelanggan: ${cust?.name ?? "-"}\nProduk: ${prod?.name ?? "-"}\nQty: ${fmtNum(qty)}\nTotal: ${fmtIDR(qty * price)}`,
+          );
           qc.invalidateQueries();
         }}
       />
