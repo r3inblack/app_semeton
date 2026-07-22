@@ -187,73 +187,113 @@ export function UsersManager() {
 
   return (
     <Card><CardContent className="pt-6 space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <div>
           <h3 className="font-semibold">Manajemen Pengguna & Hak Akses</h3>
           <p className="text-sm text-muted-foreground">
             Buat dan kelola user aplikasi. Username otomatis dijadikan email <code>username@semeton.app</code>.
-            Pilih role <b>Custom</b> untuk mengatur hak akses per-modul.
+            Buat <b>Role</b> baru untuk mengatur hak akses per-modul (lihat, buat, ubah, hapus).
           </p>
         </div>
-        <Dialog open={openNew} onOpenChange={setOpenNew}>
-          <DialogTrigger asChild>
-            <Button><Plus className="h-4 w-4 mr-1" /> Tambah User</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle>Tambah User Baru</DialogTitle></DialogHeader>
-            <div className="space-y-3">
-              <Field label="Ambil Data Karyawan (opsional)">
-                <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                  value={form.employee_id} onChange={(e) => onPickEmployeeNew(e.target.value)}>
-                  <option value="">— tidak dikaitkan —</option>
-                  {availableEmployeesNew.map((e) => (
-                    <option key={e.id} value={e.id}>{e.name}{e.category ? ` (${e.category})` : ""}</option>
-                  ))}
-                </select>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Pilih karyawan agar nominal gaji tampil pada dashboard user tersebut.
-                </p>
-              </Field>
-              <Field label="Username">
-                <Input value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="misal: budi" />
-              </Field>
-              <Field label="Nama Lengkap">
-                <Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
-              </Field>
-              <Field label="Password">
-                <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Minimal 6 karakter" />
-              </Field>
-              <Field label="Role / Level">
-                <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                  value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as AppRole })}>
-                  {availableRoles.map((r) => (
-                    <option key={r} value={r}>{ROLE_LABELS[r]}</option>
-                  ))}
-                </select>
-              </Field>
-              {form.role === "staf_gudang" && (
-                <Field label="Gudang">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => { setEditingRole(null); setOpenRoles(true); }}>
+            <Shield className="h-4 w-4 mr-1" /> Tambah Role
+          </Button>
+          <Dialog open={openNew} onOpenChange={setOpenNew}>
+            <DialogTrigger asChild>
+              <Button><Plus className="h-4 w-4 mr-1" /> Tambah User</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>Tambah User Baru</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                <Field label="Ambil Data Karyawan (opsional)">
                   <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                    value={form.warehouse_id} onChange={(e) => setForm({ ...form, warehouse_id: e.target.value })}>
-                    <option value="">— pilih —</option>
-                    {(warehouses.data ?? []).map((w) => (
-                      <option key={w.id} value={w.id}>{w.name}</option>
+                    value={form.employee_id} onChange={(e) => onPickEmployeeNew(e.target.value)}>
+                    <option value="">— tidak dikaitkan —</option>
+                    {availableEmployeesNew.map((e) => (
+                      <option key={e.id} value={e.id}>{e.name}{e.category ? ` (${e.category})` : ""}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Pilih karyawan agar nominal gaji tampil pada dashboard user tersebut.
+                  </p>
+                </Field>
+                <Field label="Username">
+                  <Input value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="misal: budi" />
+                </Field>
+                <Field label="Nama Lengkap">
+                  <Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+                </Field>
+                <Field label="Password">
+                  <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Minimal 6 karakter" />
+                </Field>
+                <Field label="Role / Level">
+                  <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                    value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as AppRole, custom_role_id: "" })}>
+                    {availableRoles.map((r) => (
+                      <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                     ))}
                   </select>
                 </Field>
-              )}
-              {form.role === "custom" && (
-                <p className="text-xs text-muted-foreground">
-                  Setelah user dibuat, klik ikon perisai di baris user untuk mengatur hak akses per-modul.
-                </p>
-              )}
-            </div>
-            <DialogFooter>
-              <Button onClick={() => mCreate.mutate()} disabled={mCreate.isPending}>Simpan</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+                {form.role === "custom" && (
+                  <Field label="Pilih Role Custom">
+                    <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                      value={form.custom_role_id}
+                      onChange={(e) => setForm({ ...form, custom_role_id: e.target.value })}>
+                      <option value="">— pilih role —</option>
+                      {customRoles.map((r) => (
+                        <option key={r.id} value={r.id}>{r.name}</option>
+                      ))}
+                    </select>
+                    {!customRoles.length && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Belum ada role custom. Klik <b>Tambah Role</b> di kanan atas terlebih dulu.
+                      </p>
+                    )}
+                  </Field>
+                )}
+                {form.role === "staf_gudang" && (
+                  <Field label="Gudang">
+                    <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                      value={form.warehouse_id} onChange={(e) => setForm({ ...form, warehouse_id: e.target.value })}>
+                      <option value="">— pilih —</option>
+                      {(warehouses.data ?? []).map((w) => (
+                        <option key={w.id} value={w.id}>{w.name}</option>
+                      ))}
+                    </select>
+                  </Field>
+                )}
+              </div>
+              <DialogFooter>
+                <Button onClick={() => mCreate.mutate()} disabled={mCreate.isPending}>Simpan</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
+
+      {/* Custom roles quick list */}
+      {!!customRoles.length && (
+        <div className="rounded border bg-muted/30 p-3">
+          <div className="text-xs font-semibold uppercase text-muted-foreground mb-2">Role Custom</div>
+          <div className="flex flex-wrap gap-2">
+            {customRoles.map((r) => (
+              <div key={r.id} className="flex items-center gap-1 rounded-full border bg-background px-3 py-1 text-sm">
+                <Shield className="h-3.5 w-3.5 text-primary" />
+                <span>{r.name}</span>
+                <button
+                  className="ml-1 text-muted-foreground hover:text-foreground"
+                  title="Edit role"
+                  onClick={() => { setEditingRole(r); setOpenRoles(true); }}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
 
       <div className="overflow-auto">
         <Table>
