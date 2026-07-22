@@ -15,6 +15,8 @@ import {
 import { fmtDate, fmtNum } from "@/lib/format";
 import { useRole } from "@/hooks/use-role";
 import { toast } from "sonner";
+import { sendTransactionNotification } from "@/lib/telegram";
+import { fmtIDR } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/stock/pending")({
   component: PendingStockInPage,
@@ -58,6 +60,10 @@ function PendingStockInPage() {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Disetujui dan stok ditambahkan");
+    const qty = Number(selected.qty);
+    sendTransactionNotification(
+      `✅ <b>Barang Masuk Disetujui</b>\nSupplier: ${selected.suppliers?.name ?? "-"}\nGudang: ${selected.warehouses?.name ?? "-"}\nProduk: ${selected.products?.name ?? "-"}\nQty: ${qty}\nHarga Beli: ${fmtIDR(b)}\nTotal: ${fmtIDR(qty * b)}`,
+    );
     setSelected(null); setBuy(""); setSell("");
     qc.invalidateQueries();
   };

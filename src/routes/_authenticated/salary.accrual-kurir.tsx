@@ -8,6 +8,7 @@ import { useList } from "@/lib/list-hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR } from "@/lib/format";
+import { sendTransactionNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/salary/accrual-kurir")({
   component: Page,
@@ -51,6 +52,8 @@ function Page() {
             p_employee_id: v.employee_id, p_units: 1, p_rate: amount, p_note: v.note || null,
           });
           if (error) throw error;
+          const emp = kurirEmployees.find((e) => e.id === v.employee_id);
+          sendTransactionNotification(`➕ <b>Tambah Hak Gaji (Kurir)</b>\nKurir: ${emp?.name ?? "-"}\nJumlah: ${fmtIDR(amount)}`);
           qc.invalidateQueries();
         }}
       />
