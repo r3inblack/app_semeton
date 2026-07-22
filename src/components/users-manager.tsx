@@ -243,7 +243,7 @@ export function UsersManager() {
                     </select>
                     {!customRoles.length && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        Belum ada role custom. Klik <b>Tambah Role</b> di kanan atas terlebih dulu.
+                        Belum ada role custom. Buka tab <b>Role & Hak Akses</b> untuk membuatnya.
                       </p>
                     )}
                   </Field>
