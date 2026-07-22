@@ -225,29 +225,33 @@ export function UsersManager() {
                 </Field>
                 <Field label="Role / Level">
                   <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                    value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as AppRole, custom_role_id: "" })}>
-                    {availableRoles.map((r) => (
+                    value={form.role === "custom" && form.custom_role_id ? `custom:${form.custom_role_id}` : form.role}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v.startsWith("custom:")) {
+                        setForm({ ...form, role: "custom", custom_role_id: v.slice(7) });
+                      } else {
+                        setForm({ ...form, role: v as AppRole, custom_role_id: "" });
+                      }
+                    }}>
+                    {availableRoles.filter((r) => r !== "custom").map((r) => (
                       <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                     ))}
-                  </select>
-                </Field>
-                {form.role === "custom" && (
-                  <Field label="Pilih Role Custom">
-                    <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                      value={form.custom_role_id}
-                      onChange={(e) => setForm({ ...form, custom_role_id: e.target.value })}>
-                      <option value="">— pilih role —</option>
-                      {customRoles.map((r) => (
-                        <option key={r.id} value={r.id}>{r.name}</option>
-                      ))}
-                    </select>
-                    {!customRoles.length && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Belum ada role custom. Buka tab <b>Role & Hak Akses</b> untuk membuatnya.
-                      </p>
+                    {customRoles.length > 0 && (
+                      <optgroup label="Role Custom">
+                        {customRoles.map((r) => (
+                          <option key={r.id} value={`custom:${r.id}`}>{r.name}</option>
+                        ))}
+                      </optgroup>
                     )}
-                  </Field>
-                )}
+                  </select>
+                  {!customRoles.length && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Buat role custom di tab <b>Role & Hak Akses</b>.
+                    </p>
+                  )}
+                </Field>
+
                 {form.role === "staf_gudang" && (
                   <Field label="Gudang">
                     <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
