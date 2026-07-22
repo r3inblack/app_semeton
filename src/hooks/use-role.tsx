@@ -48,6 +48,7 @@ export const ALL_MODULES: { key: string; label: string; group: string }[] = [
   { key: "reports_receivables", label: "Laporan Piutang", group: "Laporan" },
   { key: "reports_payables", label: "Laporan Hutang", group: "Laporan" },
   { key: "reports_mutations", label: "Laporan Mutasi", group: "Laporan" },
+  { key: "reports_expenses", label: "Laporan Pengeluaran", group: "Laporan" },
   { key: "users", label: "Manajemen User", group: "Pengaturan" },
   { key: "settings_app", label: "Nama Aplikasi", group: "Pengaturan" },
   { key: "settings_telegram", label: "Notifikasi Telegram", group: "Pengaturan" },
