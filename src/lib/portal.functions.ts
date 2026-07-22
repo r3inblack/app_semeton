@@ -187,3 +187,49 @@ export const portalSubmitPayment = createServerFn({ method: "POST" })
 
     return { ok: true as const, id: inserted!.id };
   });
+
+/** Upload bukti transfer via server (service-role) supaya bucket tidak perlu policy anon. */
+export const portalUploadProof = createServerFn({ method: "POST" })
+  .inputValidator(
+    (d: unknown) =>
+      d as {
+        code: string;
+        filename: string;
+        content_type?: string | null;
+        data_base64: string;
+      },
+  )
+  .handler(async ({ data }) => {
+    const code = String(data.code || "").trim().toUpperCase();
+    if (!code) return { ok: false as const, reason: "code_required" };
+    const b64 = String(data.data_base64 || "");
+    if (!b64) return { ok: false as const, reason: "empty_file" };
+    // Size guard ~8MB
+    if (b64.length > 8 * 1024 * 1024 * 1.4)
+      return { ok: false as const, reason: "file_too_large" };
+
+    const ct = String(data.content_type || "").toLowerCase();
+    const allowed = ["image/jpeg", "image/png", "image/webp", "image/heic", "application/pdf"];
+    if (ct && !allowed.includes(ct))
+      return { ok: false as const, reason: "invalid_type" };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: cust } = await supabaseAdmin
+      .from("customers")
+      .select("id, code")
+      .eq("code", code)
+      .maybeSingle();
+    if (!cust) return { ok: false as const, reason: "not_found" };
+
+    const ext = (data.filename?.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || "jpg";
+    const key = `${cust.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const bytes = Buffer.from(b64, "base64");
+    const { error } = await supabaseAdmin.storage
+      .from("payment-proofs")
+      .upload(key, bytes, {
+        contentType: ct || "application/octet-stream",
+        upsert: false,
+      });
+    if (error) return { ok: false as const, reason: error.message };
+    return { ok: true as const, path: key };
+  });
