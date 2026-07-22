@@ -246,3 +246,84 @@ export const setUserPermissions = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+// ============ CUSTOM ROLES ============
+
+export const listCustomRoles = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: roles, error } = await context.supabase
+      .from("custom_roles")
+      .select("id, name, created_at")
+      .order("name");
+    if (error) throw new Error(error.message);
+    const ids = (roles ?? []).map((r: any) => r.id);
+    const { data: perms } = ids.length
+      ? await context.supabase
+          .from("custom_role_permissions")
+          .select("custom_role_id, module, action, allowed")
+          .in("custom_role_id", ids)
+      : { data: [] as any[] };
+    return (roles ?? []).map((r: any) => ({
+      ...r,
+      permissions: (perms ?? []).filter((p: any) => p.custom_role_id === r.id),
+    }));
+  });
+
+export const upsertCustomRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (d: {
+      id?: string;
+      name: string;
+      permissions: { module: string; action: string; allowed: boolean }[];
+    }) => d,
+  )
+  .handler(async ({ data, context }) => {
+    await assertCanManageUsers(context.supabase, context.userId);
+    if (!data.name.trim()) throw new Error("Nama role wajib diisi");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let roleId = data.id;
+    if (roleId) {
+      const { error } = await supabaseAdmin
+        .from("custom_roles")
+        .update({ name: data.name.trim() })
+        .eq("id", roleId);
+      if (error) throw new Error(error.message);
+    } else {
+      const { data: created, error } = await supabaseAdmin
+        .from("custom_roles")
+        .insert({ name: data.name.trim() })
+        .select("id")
+        .single();
+      if (error) throw new Error(error.message);
+      roleId = created.id;
+    }
+    await supabaseAdmin.from("custom_role_permissions").delete().eq("custom_role_id", roleId!);
+    const rows = data.permissions
+      .filter((p) => p.allowed)
+      .map((p) => ({
+        custom_role_id: roleId!,
+        module: p.module,
+        action: p.action,
+        allowed: true,
+      }));
+    if (rows.length) {
+      const { error } = await supabaseAdmin.from("custom_role_permissions").insert(rows);
+      if (error) throw new Error(error.message);
+    }
+    return { id: roleId };
+  });
+
+export const deleteCustomRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => d)
+  .handler(async ({ data, context }) => {
+    await assertCanManageUsers(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Detach any users using this role
+    await supabaseAdmin.from("profiles").update({ custom_role_id: null }).eq("custom_role_id", data.id);
+    const { error } = await supabaseAdmin.from("custom_roles").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
