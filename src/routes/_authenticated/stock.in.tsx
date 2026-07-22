@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR, fmtNum } from "@/lib/format";
 import { useRole } from "@/hooks/use-role";
-import { sendTelegramNotification } from "@/lib/telegram";
+import { sendPricingNotification } from "@/lib/telegram";
 
 export const Route = createFileRoute("/_authenticated/stock/in")({
   component: StockInPage,
