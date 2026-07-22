@@ -23,9 +23,23 @@ async function tgSend(botToken: string, chatId: string, text: string) {
   }
 }
 
+async function getCashBalance(): Promise<number | null> {
+  try {
+    const { data } = await supabase.from("cash_balance").select("amount").eq("id", 1).maybeSingle();
+    return data ? Number((data as any).amount ?? 0) : null;
+  } catch {
+    return null;
+  }
+}
+
+function fmtIDR(n: number) {
+  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+}
+
 /**
  * Notifikasi transaksi (setoran pelanggan, bayar supplier, pengeluaran, dsb).
  * Dikirim ke satu grup Telegram — bot token & chat_id grup diatur di Pengaturan.
+ * Otomatis menambahkan Sisa Saldo Kas di akhir pesan.
  */
 export async function sendTransactionNotification(message: string) {
   try {
@@ -34,7 +48,9 @@ export async function sendTransactionNotification(message: string) {
     const token = (s as any).telegram_group_bot_token || s.telegram_bot_token;
     const chatId = (s as any).telegram_group_chat_id;
     if (!token || !chatId) return;
-    await tgSend(String(token), String(chatId).trim(), message);
+    const bal = await getCashBalance();
+    const suffix = bal !== null ? `\n\n💵 <b>Sisa Saldo Kas:</b> ${fmtIDR(bal)}` : "";
+    await tgSend(String(token), String(chatId).trim(), `${message}${suffix}`);
   } catch (e) {
     console.warn("Telegram notif transaksi gagal", e);
   }
