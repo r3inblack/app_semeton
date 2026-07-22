@@ -79,6 +79,7 @@ export const createUser = createServerFn({ method: "POST" })
       full_name: string;
       role: AppRole;
       warehouse_id?: string | null;
+      employee_id?: string | null;
     }) => d,
   )
   .handler(async ({ data, context }) => {
@@ -91,6 +92,11 @@ export const createUser = createServerFn({ method: "POST" })
     if (data.password.length < 6) throw new Error("Password minimal 6 karakter");
     const email = data.username.includes("@") ? data.username : `${data.username}@semeton.app`;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (data.employee_id) {
+      const { data: taken } = await supabaseAdmin
+        .from("profiles").select("id").eq("employee_id", data.employee_id).maybeSingle();
+      if (taken) throw new Error("Karyawan ini sudah dikaitkan ke user lain");
+    }
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password: data.password,
@@ -101,7 +107,11 @@ export const createUser = createServerFn({ method: "POST" })
     const uid = created.user!.id;
     await supabaseAdmin
       .from("profiles")
-      .update({ full_name: data.full_name, warehouse_id: data.warehouse_id ?? null })
+      .update({
+        full_name: data.full_name,
+        warehouse_id: data.warehouse_id ?? null,
+        employee_id: data.employee_id ?? null,
+      })
       .eq("id", uid);
     await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
     await supabaseAdmin.from("user_roles").insert({ user_id: uid, role: data.role });
