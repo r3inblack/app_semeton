@@ -1113,7 +1113,12 @@ export type Database = {
         | "viewer"
         | "custom"
       cash_direction: "in" | "out"
-      employee_category: "gudang" | "kurir"
+      employee_category:
+        | "gudang"
+        | "kurir"
+        | "kasir"
+        | "staff_keuangan"
+        | "manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1252,7 +1257,13 @@ export const Constants = {
         "custom",
       ],
       cash_direction: ["in", "out"],
-      employee_category: ["gudang", "kurir"],
+      employee_category: [
+        "gudang",
+        "kurir",
+        "kasir",
+        "staff_keuangan",
+        "manager",
+      ],
     },
   },
 } as const
