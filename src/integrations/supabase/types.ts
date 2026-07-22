@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_keys: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          permissions: string[]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          permissions?: string[]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          permissions?: string[]
+        }
+        Relationships: []
+      }
+      api_request_logs: {
+        Row: {
+          api_key_id: string | null
+          created_at: string
+          endpoint: string
+          id: string
+          ip: string | null
+          method: string
+          request: Json | null
+          response: Json | null
+          status: number
+        }
+        Insert: {
+          api_key_id?: string | null
+          created_at?: string
+          endpoint: string
+          id?: string
+          ip?: string | null
+          method: string
+          request?: Json | null
+          response?: Json | null
+          status: number
+        }
+        Update: {
+          api_key_id?: string | null
+          created_at?: string
+          endpoint?: string
+          id?: string
+          ip?: string | null
+          method?: string
+          request?: Json | null
+          response?: Json | null
+          status?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_request_logs_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_settings: {
         Row: {
           app_name: string
@@ -1041,6 +1121,75 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      api_record_customer_payment: {
+        Args: {
+          _actor: string
+          _amount: number
+          _customer: string
+          _note: string
+        }
+        Returns: string
+      }
+      api_record_expense: {
+        Args: {
+          _actor: string
+          _amount: number
+          _category: string
+          _note: string
+        }
+        Returns: string
+      }
+      api_record_salary_advance: {
+        Args: {
+          _actor: string
+          _amount: number
+          _employee: string
+          _note: string
+        }
+        Returns: string
+      }
+      api_record_salary_payment: {
+        Args: {
+          _actor: string
+          _amount: number
+          _employee: string
+          _note: string
+        }
+        Returns: string
+      }
+      api_record_sale: {
+        Args: {
+          _actor: string
+          _customer: string
+          _note: string
+          _product: string
+          _qty: number
+          _unit_price: number
+          _warehouse: string
+        }
+        Returns: string
+      }
+      api_record_stock_in: {
+        Args: {
+          _actor: string
+          _note: string
+          _product: string
+          _qty: number
+          _supplier: string
+          _unit_price: number
+          _warehouse: string
+        }
+        Returns: string
+      }
+      api_record_supplier_payment: {
+        Args: {
+          _actor: string
+          _amount: number
+          _note: string
+          _supplier: string
+        }
+        Returns: string
+      }
       approve_pending_stock_in: {
         Args: { p_buy_price: number; p_id: string; p_sell_price: number }
         Returns: string
