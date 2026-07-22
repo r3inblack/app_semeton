@@ -12,7 +12,7 @@ export type AppRole =
   | "viewer"
   | "custom";
 
-export type PermAction = "view" | "manage";
+export type PermAction = "view" | "create" | "update" | "delete" | "manage";
 
 export const ROLE_LABELS: Record<AppRole, string> = {
   super_admin: "Super Admin",
