@@ -33,7 +33,7 @@ function SalesPage() {
 
   return (
     <AppShell title="Penjualan">
-      <PageHeader title="Penjualan Kredit" description="Stok berkurang → piutang pelanggan bertambah" />
+      <PageHeader title="Penjualan" description="Tunai, DP, atau kredit — harga bisa diubah per transaksi" />
       <TxForm
         title="Catat Penjualan"
         fields={[
@@ -41,20 +41,46 @@ function SalesPage() {
           { name: "warehouse_id", label: "Gudang", type: "select", options: (warehouses.data ?? []).map((x) => ({ value: x.id, label: x.name })) },
           { name: "product_id", label: "Produk", type: "select", options: (products.data ?? []).map((x) => ({ value: x.id, label: `${x.name} — ${fmtIDR(x.sell_price)}` })) },
           { name: "qty", label: "Qty", type: "number" },
-          { name: "unit_price", label: "Harga / unit", type: "number" },
+          { name: "unit_price", label: "Harga / unit (kosongkan = pakai harga jual default)", type: "number" },
+          { name: "payment_type", label: "Jenis Pembayaran", type: "select", options: [
+            { value: "kredit", label: "Kredit (belum bayar)" },
+            { value: "tunai", label: "Tunai (lunas)" },
+            { value: "dp", label: "DP (bayar sebagian)" },
+          ] },
+          { name: "paid_amount", label: "Nominal DP (isi jika DP)", type: "number" },
           { name: "note", label: "Catatan", type: "textarea" },
         ]}
         onSubmit={async (v) => {
           const prod = products.data?.find((p) => p.id === v.product_id);
           const price = v.unit_price ? Number(v.unit_price) : Number(prod?.sell_price ?? 0);
           const qty = Number(v.qty);
+          const total = qty * price;
+          const paymentType = (v.payment_type as string) || "kredit";
+          let paid = 0;
+          if (paymentType === "tunai") paid = total;
+          else if (paymentType === "dp") paid = Number(v.paid_amount || 0);
+          if (paymentType === "dp" && (!(paid > 0) || paid >= total)) {
+            throw new Error("Nominal DP harus lebih dari 0 dan kurang dari total");
+          }
+
           const { error } = await supabase.rpc("record_sale", {
             p_customer_id: v.customer_id, p_warehouse_id: v.warehouse_id, p_product_id: v.product_id,
             p_qty: qty, p_unit_price: price, p_note: v.note || null,
           });
           if (error) throw error;
+
           const cust = customers.data?.find((c) => c.id === v.customer_id);
           const wh = warehouses.data?.find((w) => w.id === v.warehouse_id);
+          const label = paymentType === "tunai" ? "Tunai" : paymentType === "dp" ? "DP" : "Kredit";
+
+          if (paid > 0) {
+            const payNote = `${label} penjualan ${prod?.name ?? ""}${v.note ? " — " + v.note : ""}`;
+            const { error: payErr } = await supabase.rpc("record_customer_payment", {
+              p_customer_id: v.customer_id, p_amount: paid, p_note: payNote,
+            });
+            if (payErr) throw payErr;
+          }
+
           sendTransactionNotification(
             "sale",
             {
@@ -63,9 +89,9 @@ function SalesPage() {
               product: prod?.name ?? "-",
               qty: fmtNum(qty),
               unit_price: fmtIDR(price),
-              total: fmtIDR(qty * price),
+              total: fmtIDR(total),
             },
-            `🛒 <b>Penjualan Kredit</b>\nPelanggan: ${cust?.name ?? "-"}\nProduk: ${prod?.name ?? "-"}\nQty: ${fmtNum(qty)}\nTotal: ${fmtIDR(qty * price)}`,
+            `🛒 <b>Penjualan ${label}</b>\nPelanggan: ${cust?.name ?? "-"}\nProduk: ${prod?.name ?? "-"}\nQty: ${fmtNum(qty)}\nHarga: ${fmtIDR(price)}\nTotal: ${fmtIDR(total)}${paid > 0 ? `\nDibayar: ${fmtIDR(paid)}\nSisa Piutang: ${fmtIDR(total - paid)}` : ""}`,
           );
           qc.invalidateQueries();
         }}
