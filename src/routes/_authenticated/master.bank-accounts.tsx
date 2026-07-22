@@ -17,7 +17,6 @@ export const Route = createFileRoute("/_authenticated/master/bank-accounts")({
           { name: "bank_name", label: "Bank" },
           { name: "account_number", label: "Nomor Rekening" },
           { name: "account_holder", label: "Atas Nama" },
-          { name: "active", label: "Aktif", type: "boolean" as any },
         ]}
       />
     </AppShell>
