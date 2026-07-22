@@ -45,18 +45,25 @@ export const listUsers = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     const ids = usersData.users.map((u) => u.id);
     const [{ data: profiles }, { data: roles }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id, full_name, is_master, warehouse_id").in("id", ids),
+      supabaseAdmin.from("profiles").select("id, full_name, is_master, warehouse_id, employee_id").in("id", ids),
       supabaseAdmin.from("user_roles").select("user_id, role").in("user_id", ids),
     ]);
+    const empIds = (profiles ?? []).map((p: any) => p.employee_id).filter(Boolean);
+    const { data: employees } = empIds.length
+      ? await supabaseAdmin.from("employees").select("id, name").in("id", empIds)
+      : { data: [] as any[] };
     return usersData.users.map((u) => {
       const p = profiles?.find((x: any) => x.id === u.id);
       const r = roles?.find((x: any) => x.user_id === u.id);
+      const emp = employees?.find((x: any) => x.id === p?.employee_id);
       return {
         id: u.id,
         email: u.email,
         full_name: p?.full_name ?? null,
         is_master: p?.is_master ?? false,
         warehouse_id: p?.warehouse_id ?? null,
+        employee_id: p?.employee_id ?? null,
+        employee_name: emp?.name ?? null,
         role: (r?.role ?? "viewer") as AppRole,
         created_at: u.created_at,
       };
