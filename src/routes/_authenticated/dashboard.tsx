@@ -216,7 +216,7 @@ function Dashboard() {
   );
 }
 
-function StafDashboardShim() { return null; }
+
 
 function StafDashboard({ warehouseId, employeeId }: { warehouseId?: string | null; employeeId?: string | null }) {
   const stock = useQuery({
