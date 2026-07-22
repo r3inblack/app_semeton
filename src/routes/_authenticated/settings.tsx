@@ -119,6 +119,20 @@ function TelegramTab() {
     } catch (e: any) { toast.error(e.message); }
   };
 
+  const testGroup = async () => {
+    const token = form.telegram_group_bot_token || form.telegram_bot_token;
+    if (!token || !form.telegram_group_chat_id) return toast.error("Bot Token & Chat ID grup wajib diisi");
+    try {
+      const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: form.telegram_group_chat_id, text: "✅ Test notifikasi transaksi grup" }),
+      });
+      const j = await r.json();
+      if (j.ok) toast.success("Pesan terkirim ke grup");
+      else toast.error(j.description || "Gagal");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
   const webhookUrl = (() => {
     if (typeof window === "undefined") return "";
     const host = window.location.host;
