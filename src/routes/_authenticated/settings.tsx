@@ -145,10 +145,11 @@ function InitialTab() {
   const [pay, setPay] = useState({ supplier_id: "", amount: "" });
   const [sal, setSal] = useState({ employee_id: "", amount: "" });
 
-  const call = async (fn: string, args: Record<string, any>, msg: string) => {
+  const call = async (fn: string, args: Record<string, any>, msg: string, onSuccess?: () => void) => {
     const { error } = await supabase.rpc(fn as any, args);
     if (error) return toast.error(error.message);
     toast.success(msg);
+    onSuccess?.();
     qc.invalidateQueries();
   };
 
@@ -157,7 +158,7 @@ function InitialTab() {
       <Card><CardContent className="pt-6 space-y-3">
         <h3 className="font-semibold">Saldo Awal Kas</h3>
         <NumberInput placeholder="Nominal" value={cash} onChange={(e) => setCash(e.target.value)} />
-        <Button onClick={() => call("set_initial_cash", { p_amount: Number(cash) }, "Saldo kas awal disimpan")}>Simpan</Button>
+        <Button onClick={() => call("set_initial_cash", { p_amount: Number(cash) }, "Saldo kas awal disimpan", () => setCash(""))}>Simpan</Button>
       </CardContent></Card>
 
       <Card><CardContent className="pt-6 space-y-3">
@@ -165,28 +166,28 @@ function InitialTab() {
         <Select value={stock.product_id} onChange={(v) => setStock({ ...stock, product_id: v })} label="Produk" options={products.data?.map((p: any) => ({ value: p.id, label: p.name })) ?? []} />
         <Select value={stock.warehouse_id} onChange={(v) => setStock({ ...stock, warehouse_id: v })} label="Gudang" options={warehouses.data?.map((w: any) => ({ value: w.id, label: w.name })) ?? []} />
         <NumberInput placeholder="Qty" value={stock.qty} onChange={(e) => setStock({ ...stock, qty: e.target.value })} />
-        <Button onClick={() => call("set_initial_stock", { p_product_id: stock.product_id, p_warehouse_id: stock.warehouse_id, p_qty: Number(stock.qty) }, "Stok awal disimpan")}>Simpan</Button>
+        <Button onClick={() => call("set_initial_stock", { p_product_id: stock.product_id, p_warehouse_id: stock.warehouse_id, p_qty: Number(stock.qty) }, "Stok awal disimpan", () => setStock({ product_id: "", warehouse_id: "", qty: "" }))}>Simpan</Button>
       </CardContent></Card>
 
       <Card><CardContent className="pt-6 space-y-3">
         <h3 className="font-semibold">Piutang Awal Pelanggan</h3>
         <Select value={rec.customer_id} onChange={(v) => setRec({ ...rec, customer_id: v })} label="Pelanggan" options={customers.data?.map((c: any) => ({ value: c.id, label: c.name })) ?? []} />
         <NumberInput placeholder="Nominal" value={rec.amount} onChange={(e) => setRec({ ...rec, amount: e.target.value })} />
-        <Button onClick={() => call("set_initial_receivable", { p_customer_id: rec.customer_id, p_amount: Number(rec.amount) }, "Piutang awal disimpan")}>Simpan</Button>
+        <Button onClick={() => call("set_initial_receivable", { p_customer_id: rec.customer_id, p_amount: Number(rec.amount) }, "Piutang awal disimpan", () => setRec({ customer_id: "", amount: "" }))}>Simpan</Button>
       </CardContent></Card>
 
       <Card><CardContent className="pt-6 space-y-3">
         <h3 className="font-semibold">Hutang Awal Supplier</h3>
         <Select value={pay.supplier_id} onChange={(v) => setPay({ ...pay, supplier_id: v })} label="Supplier" options={suppliers.data?.map((s: any) => ({ value: s.id, label: s.name })) ?? []} />
         <NumberInput placeholder="Nominal" value={pay.amount} onChange={(e) => setPay({ ...pay, amount: e.target.value })} />
-        <Button onClick={() => call("set_initial_payable", { p_supplier_id: pay.supplier_id, p_amount: Number(pay.amount) }, "Hutang awal disimpan")}>Simpan</Button>
+        <Button onClick={() => call("set_initial_payable", { p_supplier_id: pay.supplier_id, p_amount: Number(pay.amount) }, "Hutang awal disimpan", () => setPay({ supplier_id: "", amount: "" }))}>Simpan</Button>
       </CardContent></Card>
 
       <Card><CardContent className="pt-6 space-y-3">
         <h3 className="font-semibold">Sisa Gaji Awal Karyawan</h3>
         <Select value={sal.employee_id} onChange={(v) => setSal({ ...sal, employee_id: v })} label="Karyawan" options={employees.data?.map((e: any) => ({ value: e.id, label: e.name })) ?? []} />
         <NumberInput placeholder="Nominal" value={sal.amount} onChange={(e) => setSal({ ...sal, amount: e.target.value })} />
-        <Button onClick={() => call("set_initial_salary", { p_employee_id: sal.employee_id, p_amount: Number(sal.amount) }, "Sisa gaji awal disimpan")}>Simpan</Button>
+        <Button onClick={() => call("set_initial_salary", { p_employee_id: sal.employee_id, p_amount: Number(sal.amount) }, "Sisa gaji awal disimpan", () => setSal({ employee_id: "", amount: "" }))}>Simpan</Button>
       </CardContent></Card>
     </div>
   );
