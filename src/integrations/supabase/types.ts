@@ -411,6 +411,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          employee_id: string | null
           full_name: string | null
           id: string
           is_master: boolean
@@ -418,6 +419,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          employee_id?: string | null
           full_name?: string | null
           id: string
           is_master?: boolean
@@ -425,12 +427,20 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          employee_id?: string | null
           full_name?: string | null
           id?: string
           is_master?: boolean
           warehouse_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_warehouse_fk"
             columns: ["warehouse_id"]
