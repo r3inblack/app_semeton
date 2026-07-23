@@ -11,13 +11,13 @@ export const Route = createFileRoute("/_authenticated/reports/cashflow")({
       <ReportTable<any>
         queryKey="rep_cash"
         table="cash_movements"
-        select="occurred_at, direction, amount, source, note"
+        select="occurred_at, direction, amount, category, description"
         columns={[
           { header: "Waktu", cell: (r) => fmtDate(r.occurred_at) },
-          { header: "Sumber", cell: (r) => r.source },
+          { header: "Kategori", cell: (r) => r.category },
           { header: "Arah", cell: (r) => r.direction === "in" ? "Masuk" : "Keluar" },
           { header: "Nominal", align: "right", cell: (r) => <span className={r.direction === "in" ? "text-emerald-500" : "text-rose-500"}>{fmtIDR(r.amount)}</span> },
-          { header: "Catatan", cell: (r) => r.note ?? "-" },
+          { header: "Catatan", cell: (r) => r.description ?? "-" },
         ]}
       />
     </AppShell>
