@@ -74,6 +74,28 @@ function AdminDashboard({ can }: { can: (m: string, a?: any) => boolean }) {
       return data ?? [];
     },
   });
+  const supList = useQuery({
+    queryKey: ["sup_bal_list"],
+    enabled: showPay,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("supplier_balances")
+        .select("payable, suppliers(name)")
+        .order("payable", { ascending: false });
+      return data ?? [];
+    },
+  });
+  const stockList = useQuery({
+    queryKey: ["stock_levels_dashboard"],
+    enabled: true,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("stock_levels")
+        .select("qty, products(name), warehouses(name)")
+        .order("qty", { ascending: false });
+      return data ?? [];
+    },
+  });
   const chart = useQuery({
     queryKey: ["cash_chart"],
     enabled: showChart,
