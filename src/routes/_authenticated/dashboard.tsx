@@ -74,6 +74,28 @@ function AdminDashboard({ can }: { can: (m: string, a?: any) => boolean }) {
       return data ?? [];
     },
   });
+  const supList = useQuery({
+    queryKey: ["sup_bal_list"],
+    enabled: showPay,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("supplier_balances")
+        .select("payable, suppliers(name)")
+        .order("payable", { ascending: false });
+      return data ?? [];
+    },
+  });
+  const stockList = useQuery({
+    queryKey: ["stock_levels_dashboard"],
+    enabled: true,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("stock_levels")
+        .select("qty, products(name), warehouses(name)")
+        .order("qty", { ascending: false });
+      return data ?? [];
+    },
+  });
   const chart = useQuery({
     queryKey: ["cash_chart"],
     enabled: showChart,
@@ -183,6 +205,65 @@ function AdminDashboard({ can }: { can: (m: string, a?: any) => boolean }) {
           )}
         </div>
       )}
+
+      {showPay && (
+        <Card className="mt-6">
+          <CardHeader><CardTitle>Sisa Hutang per Supplier</CardTitle></CardHeader>
+          <CardContent>
+            <div className="max-h-80 overflow-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Supplier</TableHead>
+                    <TableHead className="text-right">Hutang</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {(supList.data ?? []).map((r: any, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{r.suppliers?.name ?? "-"}</TableCell>
+                      <TableCell className="text-right font-medium">{fmtIDR(r.payable)}</TableCell>
+                    </TableRow>
+                  ))}
+                  {!supList.data?.length && (
+                    <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Belum ada data</TableCell></TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Card className="mt-6">
+        <CardHeader><CardTitle>Sisa Stok per Gudang</CardTitle></CardHeader>
+        <CardContent>
+          <div className="max-h-96 overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Produk</TableHead>
+                  <TableHead>Gudang</TableHead>
+                  <TableHead className="text-right">Qty</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(stockList.data ?? []).map((r: any, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{r.products?.name ?? "-"}</TableCell>
+                    <TableCell>{r.warehouses?.name ?? "-"}</TableCell>
+                    <TableCell className="text-right font-medium">{fmtNum(r.qty)}</TableCell>
+                  </TableRow>
+                ))}
+                {!stockList.data?.length && (
+                  <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">Belum ada stok</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
 
       {showChart && (
         <Card className="mt-6">
