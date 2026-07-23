@@ -17,6 +17,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 import { Route as AuthenticatedSupplierReturnsRouteImport } from './routes/_authenticated/supplier.returns'
 import { Route as AuthenticatedStockPendingRouteImport } from './routes/_authenticated/stock.pending'
 import { Route as AuthenticatedStockMutationsRouteImport } from './routes/_authenticated/stock.mutations'
@@ -86,6 +87,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiPublicBootstrapAdminRoute = ApiPublicBootstrapAdminRouteImport.update({
+  id: '/api/public/bootstrap-admin',
+  path: '/api/public/bootstrap-admin',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSupplierReturnsRoute =
   AuthenticatedSupplierReturnsRouteImport.update({
@@ -302,6 +308,7 @@ export interface FileRoutesByFullPath {
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
   '/supplier/returns': typeof AuthenticatedSupplierReturnsRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
@@ -341,6 +348,7 @@ export interface FileRoutesByTo {
   '/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/stock/pending': typeof AuthenticatedStockPendingRoute
   '/supplier/returns': typeof AuthenticatedSupplierReturnsRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
@@ -382,6 +390,7 @@ export interface FileRoutesById {
   '/_authenticated/stock/mutations': typeof AuthenticatedStockMutationsRoute
   '/_authenticated/stock/pending': typeof AuthenticatedStockPendingRoute
   '/_authenticated/supplier/returns': typeof AuthenticatedSupplierReturnsRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/v1/$': typeof ApiPublicV1SplatRoute
 }
@@ -423,6 +432,7 @@ export interface FileRouteTypes {
     | '/stock/mutations'
     | '/stock/pending'
     | '/supplier/returns'
+    | '/api/public/bootstrap-admin'
     | '/api/public/telegram/webhook'
     | '/api/public/v1/$'
   fileRoutesByTo: FileRoutesByTo
@@ -462,6 +472,7 @@ export interface FileRouteTypes {
     | '/stock/mutations'
     | '/stock/pending'
     | '/supplier/returns'
+    | '/api/public/bootstrap-admin'
     | '/api/public/telegram/webhook'
     | '/api/public/v1/$'
   id:
@@ -502,6 +513,7 @@ export interface FileRouteTypes {
     | '/_authenticated/stock/mutations'
     | '/_authenticated/stock/pending'
     | '/_authenticated/supplier/returns'
+    | '/api/public/bootstrap-admin'
     | '/api/public/telegram/webhook'
     | '/api/public/v1/$'
   fileRoutesById: FileRoutesById
@@ -511,6 +523,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   PortalRoute: typeof PortalRoute
+  ApiPublicBootstrapAdminRoute: typeof ApiPublicBootstrapAdminRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicV1SplatRoute: typeof ApiPublicV1SplatRoute
 }
@@ -572,6 +585,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/bootstrap-admin': {
+      id: '/api/public/bootstrap-admin'
+      path: '/api/public/bootstrap-admin'
+      fullPath: '/api/public/bootstrap-admin'
+      preLoaderRoute: typeof ApiPublicBootstrapAdminRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/supplier/returns': {
       id: '/_authenticated/supplier/returns'
@@ -865,6 +885,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   PortalRoute: PortalRoute,
+  ApiPublicBootstrapAdminRoute: ApiPublicBootstrapAdminRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicV1SplatRoute: ApiPublicV1SplatRoute,
 }
