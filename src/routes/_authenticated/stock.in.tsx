@@ -133,17 +133,23 @@ function StockInPage() {
                 <TableHead>Produk</TableHead>
                 <TableHead className="text-right">Qty</TableHead>
                 {!isGudang && <TableHead className="text-right">Total</TableHead>}
+                {!isGudang && <TableHead className="text-right">Aksi</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {(history.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} className={r.voided_at ? "opacity-50" : ""}>
                   <TableCell>{fmtDate(r.occurred_at)}</TableCell>
                   <TableCell>{r.suppliers?.name}</TableCell>
                   <TableCell>{r.warehouses?.name}</TableCell>
                   <TableCell>{r.products?.name}</TableCell>
                   <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
                   {!isGudang && <TableCell className="text-right">{fmtIDR(r.total)}</TableCell>}
+                  {!isGudang && (
+                    <TableCell className="text-right">
+                      <VoidButton table="stock_in" id={r.id} voidedAt={r.voided_at} voidReason={r.void_reason} />
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
