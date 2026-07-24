@@ -43,7 +43,7 @@ async function tgSend(botToken: string, chatId: string, text: string) {
 export const sendTelegram = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => d as Payload)
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: s } = await supabaseAdmin
@@ -55,19 +55,45 @@ export const sendTelegram = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!s?.telegram_enabled) return { ok: false, reason: "disabled" };
 
+    // Resolve acting user (username + role) for audit trail
+    let actor = "-";
+    let actorRole = "";
+    try {
+      const uid = (context as any)?.userId;
+      if (uid) {
+        const { data: prof } = await supabaseAdmin
+          .from("profiles")
+          .select("username, role")
+          .eq("id", uid)
+          .maybeSingle();
+        if (prof) {
+          actor = (prof as any).username || "-";
+          actorRole = (prof as any).role || "";
+        }
+      }
+    } catch {}
+    const vars = { ...(data.vars ?? {}), actor, actor_role: actorRole };
+    const tplText = (tpl: string) => render(tpl, vars);
+
     let text = data.fallback ?? "";
     const { data: tplRow } = await supabaseAdmin
       .from("telegram_templates" as any)
       .select("template, enabled")
       .eq("key", data.key)
       .maybeSingle();
+    const tplRaw = (tplRow as any)?.template ?? "";
     if (tplRow) {
       if (!(tplRow as any).enabled) return { ok: false, reason: "tpl_off" };
-      text = render((tplRow as any).template, data.vars ?? {});
-    } else if (data.vars && text) {
-      text = render(text, data.vars);
+      text = tplText(tplRaw);
+    } else if (text) {
+      text = render(text, vars);
     }
     if (!text) return { ok: false, reason: "empty" };
+
+    // Append actor line if template didn't reference {{actor}}
+    if (!/\{\{\s*actor\s*\}\}/.test(tplRaw)) {
+      text = `${text}\n\n👤 <b>Oleh:</b> ${actor}${actorRole ? ` (${actorRole})` : ""}`;
+    }
 
     if (data.mode === "transaction") {
       const token = (s as any).telegram_group_bot_token || s.telegram_bot_token;
