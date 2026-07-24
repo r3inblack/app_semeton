@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR, fmtNum } from "@/lib/format";
 import { sendTransactionNotification } from "@/lib/telegram";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/sales")({
   component: SalesPage,
