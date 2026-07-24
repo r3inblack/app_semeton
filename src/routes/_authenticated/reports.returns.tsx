@@ -28,7 +28,7 @@ function Page() {
     queryFn: async () => {
       let query = supabase
         .from("supplier_returns" as any)
-        .select("occurred_at, qty, unit_price, total, note, suppliers(name), warehouses(name), products(name)")
+        .select("id, occurred_at, qty, unit_price, total, note, voided_at, void_reason, suppliers(name), warehouses(name), products(name)")
         .gte("occurred_at", from)
         .lte("occurred_at", to + "T23:59:59")
         .order("occurred_at", { ascending: false });
