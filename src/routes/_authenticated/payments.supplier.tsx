@@ -23,7 +23,7 @@ function Page() {
     queryFn: async () => {
       const { data } = await supabase
         .from("supplier_payments")
-        .select("occurred_at, amount, note, suppliers(name)")
+        .select("id, occurred_at, amount, note, voided_at, void_reason, suppliers(name)")
         .order("occurred_at", { ascending: false })
         .limit(20);
       return data ?? [];
@@ -59,15 +59,18 @@ function Page() {
           <h3 className="font-semibold mb-3">Riwayat Pembayaran</h3>
           <Table>
             <TableHeader><TableRow>
-              <TableHead>Waktu</TableHead><TableHead>Supplier</TableHead><TableHead className="text-right">Nominal</TableHead><TableHead>Catatan</TableHead>
+              <TableHead>Waktu</TableHead><TableHead>Supplier</TableHead><TableHead className="text-right">Nominal</TableHead><TableHead>Catatan</TableHead><TableHead className="text-right">Aksi</TableHead>
             </TableRow></TableHeader>
             <TableBody>
               {(history.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} className={r.voided_at ? "opacity-50" : ""}>
                   <TableCell>{fmtDate(r.occurred_at)}</TableCell>
                   <TableCell>{r.suppliers?.name}</TableCell>
                   <TableCell className="text-right">{fmtIDR(r.amount)}</TableCell>
                   <TableCell>{r.note ?? "-"}</TableCell>
+                  <TableCell className="text-right">
+                    <VoidButton table="supplier_payments" id={r.id} voidedAt={r.voided_at} voidReason={r.void_reason} />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
