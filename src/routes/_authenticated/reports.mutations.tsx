@@ -11,6 +11,7 @@ export const Route = createFileRoute("/_authenticated/reports/mutations")({
       <ReportTable<any>
         queryKey="rep_mut"
         table="stock_mutations"
+        voidTable="stock_mutations"
         select="occurred_at, qty, note, from_warehouse:warehouses!stock_mutations_from_warehouse_id_fkey(name), to_warehouse:warehouses!stock_mutations_to_warehouse_id_fkey(name), products(name)"
         columns={[
           { header: "Waktu", cell: (r) => fmtDate(r.occurred_at) },
