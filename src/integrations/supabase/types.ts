@@ -289,6 +289,9 @@ export type Database = {
           id: string
           note: string | null
           occurred_at: string
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
         }
         Insert: {
           amount: number
@@ -297,6 +300,9 @@ export type Database = {
           id?: string
           note?: string | null
           occurred_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Update: {
           amount?: number
@@ -305,6 +311,9 @@ export type Database = {
           id?: string
           note?: string | null
           occurred_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Relationships: [
           {
@@ -352,6 +361,9 @@ export type Database = {
           occurred_at: string
           product_id: string
           qty: number
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
           warehouse_id: string
         }
         Insert: {
@@ -362,6 +374,9 @@ export type Database = {
           occurred_at?: string
           product_id: string
           qty: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           warehouse_id: string
         }
         Update: {
@@ -372,6 +387,9 @@ export type Database = {
           occurred_at?: string
           product_id?: string
           qty?: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           warehouse_id?: string
         }
         Relationships: [
@@ -488,6 +506,9 @@ export type Database = {
           id: string
           note: string | null
           occurred_at: string
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
         }
         Insert: {
           amount: number
@@ -496,6 +517,9 @@ export type Database = {
           id?: string
           note?: string | null
           occurred_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Update: {
           amount?: number
@@ -504,6 +528,9 @@ export type Database = {
           id?: string
           note?: string | null
           occurred_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Relationships: []
       }
@@ -796,6 +823,9 @@ export type Database = {
           occurred_at: string
           rate: number
           units: number
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
         }
         Insert: {
           amount: number
@@ -806,6 +836,9 @@ export type Database = {
           occurred_at?: string
           rate: number
           units: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Update: {
           amount?: number
@@ -816,6 +849,9 @@ export type Database = {
           occurred_at?: string
           rate?: number
           units?: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Relationships: [
           {
@@ -835,6 +871,9 @@ export type Database = {
           id: string
           note: string | null
           occurred_at: string
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
         }
         Insert: {
           amount: number
@@ -843,6 +882,9 @@ export type Database = {
           id?: string
           note?: string | null
           occurred_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Update: {
           amount?: number
@@ -851,6 +893,9 @@ export type Database = {
           id?: string
           note?: string | null
           occurred_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Relationships: [
           {
@@ -870,6 +915,9 @@ export type Database = {
           id: string
           note: string | null
           occurred_at: string
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
         }
         Insert: {
           amount: number
@@ -878,6 +926,9 @@ export type Database = {
           id?: string
           note?: string | null
           occurred_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Update: {
           amount?: number
@@ -886,6 +937,9 @@ export type Database = {
           id?: string
           note?: string | null
           occurred_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Relationships: [
           {
@@ -908,6 +962,9 @@ export type Database = {
           qty: number
           total: number
           unit_price: number
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
           warehouse_id: string
         }
         Insert: {
@@ -920,6 +977,9 @@ export type Database = {
           qty: number
           total: number
           unit_price: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           warehouse_id: string
         }
         Update: {
@@ -932,6 +992,9 @@ export type Database = {
           qty?: number
           total?: number
           unit_price?: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           warehouse_id?: string
         }
         Relationships: [
@@ -969,6 +1032,9 @@ export type Database = {
           supplier_id: string
           total: number
           unit_price: number
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
           warehouse_id: string
         }
         Insert: {
@@ -981,6 +1047,9 @@ export type Database = {
           supplier_id: string
           total: number
           unit_price: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           warehouse_id: string
         }
         Update: {
@@ -993,6 +1062,9 @@ export type Database = {
           supplier_id?: string
           total?: number
           unit_price?: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           warehouse_id?: string
         }
         Relationships: [
@@ -1065,6 +1137,9 @@ export type Database = {
           product_id: string
           qty: number
           to_warehouse_id: string
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
         }
         Insert: {
           created_by?: string | null
@@ -1075,6 +1150,9 @@ export type Database = {
           product_id: string
           qty: number
           to_warehouse_id: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Update: {
           created_by?: string | null
@@ -1085,6 +1163,9 @@ export type Database = {
           product_id?: string
           qty?: number
           to_warehouse_id?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Relationships: [
           {
@@ -1141,6 +1222,9 @@ export type Database = {
           note: string | null
           occurred_at: string
           supplier_id: string
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
         }
         Insert: {
           amount: number
@@ -1149,6 +1233,9 @@ export type Database = {
           note?: string | null
           occurred_at?: string
           supplier_id: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Update: {
           amount?: number
@@ -1157,6 +1244,9 @@ export type Database = {
           note?: string | null
           occurred_at?: string
           supplier_id?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Relationships: [
           {
@@ -1179,6 +1269,9 @@ export type Database = {
           supplier_id: string
           total: number
           unit_price: number
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
           warehouse_id: string
         }
         Insert: {
@@ -1191,6 +1284,9 @@ export type Database = {
           supplier_id: string
           total: number
           unit_price: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           warehouse_id: string
         }
         Update: {
@@ -1203,6 +1299,9 @@ export type Database = {
           supplier_id?: string
           total?: number
           unit_price?: number
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           warehouse_id?: string
         }
         Relationships: [
@@ -1659,6 +1758,10 @@ export type Database = {
           p_warehouse_id: string
         }
         Returns: string
+      }
+      void_transaction: {
+        Args: { p_id: string; p_reason: string; p_table: string }
+        Returns: undefined
       }
     }
     Enums: {
