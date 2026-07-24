@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { fmtDate, fmtNum } from "@/lib/format";
 import { useRole } from "@/hooks/use-role";
 import { sendPricingNotification, sendTransactionNotification } from "@/lib/telegram";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/salary/bonus")({
   component: Page,
@@ -27,7 +28,7 @@ function Page() {
     queryFn: async () => {
       const { data } = await supabase
         .from("employee_bonuses")
-        .select("occurred_at, qty, note, employees(name), warehouses(name), products(name)")
+        .select("id, occurred_at, qty, note, voided_at, void_reason, employees(name), warehouses(name), products(name)")
         .order("occurred_at", { ascending: false })
         .limit(20);
       return data ?? [];
@@ -93,15 +94,19 @@ function Page() {
             <TableHeader><TableRow>
               <TableHead>Waktu</TableHead><TableHead>Karyawan</TableHead><TableHead>Gudang</TableHead>
               <TableHead>Produk</TableHead><TableHead className="text-right">Qty</TableHead>
+              <TableHead className="text-right">Aksi</TableHead>
             </TableRow></TableHeader>
             <TableBody>
               {(history.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} className={r.voided_at ? "opacity-50" : ""}>
                   <TableCell>{fmtDate(r.occurred_at)}</TableCell>
                   <TableCell>{r.employees?.name}</TableCell>
                   <TableCell>{r.warehouses?.name}</TableCell>
                   <TableCell>{r.products?.name}</TableCell>
                   <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
+                  <TableCell className="text-right">
+                    <VoidButton table="employee_bonuses" id={r.id} voidedAt={r.voided_at} voidReason={r.void_reason} />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
