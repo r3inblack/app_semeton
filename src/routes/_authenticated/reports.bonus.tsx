@@ -53,12 +53,13 @@ function Page() {
               <TableHead>Waktu</TableHead><TableHead>Karyawan</TableHead><TableHead>Gudang</TableHead>
               <TableHead>Produk</TableHead><TableHead className="text-right">Qty</TableHead>
               <TableHead className="text-right">Harga Beli</TableHead><TableHead className="text-right">Nilai</TableHead>
+              <TableHead className="text-right">Aksi</TableHead>
             </TableRow></TableHeader>
             <TableBody>
               {rows.map((r: any, i: number) => {
                 const buy = Number(r.products?.buy_price ?? 0);
                 return (
-                  <TableRow key={i}>
+                  <TableRow key={i} className={r.voided_at ? "opacity-50" : ""}>
                     <TableCell>{fmtDate(r.occurred_at)}</TableCell>
                     <TableCell>{r.employees?.name}</TableCell>
                     <TableCell>{r.warehouses?.name}</TableCell>
@@ -66,10 +67,13 @@ function Page() {
                     <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
                     <TableCell className="text-right">{fmtIDR(buy)}</TableCell>
                     <TableCell className="text-right">{fmtIDR(Number(r.qty) * buy)}</TableCell>
+                    <TableCell className="text-right">
+                      <VoidButton table="employee_bonuses" id={r.id} voidedAt={r.voided_at} voidReason={r.void_reason} />
+                    </TableCell>
                   </TableRow>
                 );
               })}
-              {!rows.length && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground">Tidak ada data</TableCell></TableRow>}
+              {!rows.length && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground">Tidak ada data</TableCell></TableRow>}
             </TableBody>
             {!!rows.length && (
               <TableFooter>
@@ -78,6 +82,7 @@ function Page() {
                   <TableCell className="text-right font-semibold">{fmtNum(totalQty)}</TableCell>
                   <TableCell />
                   <TableCell className="text-right font-semibold">{fmtIDR(totalValue)}</TableCell>
+                  <TableCell />
                 </TableRow>
               </TableFooter>
             )}
