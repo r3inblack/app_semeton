@@ -23,7 +23,7 @@ function Page() {
     queryFn: async () => {
       const { data } = await supabase
         .from("customer_payments")
-        .select("occurred_at, amount, note, customers(name)")
+        .select("id, occurred_at, amount, note, voided_at, void_reason, customers(name)")
         .order("occurred_at", { ascending: false })
         .limit(20);
       return data ?? [];
