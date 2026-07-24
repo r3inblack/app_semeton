@@ -25,7 +25,7 @@ function SalesPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("sales")
-        .select("occurred_at, qty, unit_price, total, customers(name), warehouses(name), products(name)")
+        .select("id, occurred_at, qty, unit_price, total, voided_at, void_reason, customers(name), warehouses(name), products(name)")
         .order("occurred_at", { ascending: false })
         .limit(20);
       return data ?? [];
