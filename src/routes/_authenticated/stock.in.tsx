@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { fmtDate, fmtIDR, fmtNum } from "@/lib/format";
 import { useRole } from "@/hooks/use-role";
 import { sendPricingNotification, sendTransactionNotification } from "@/lib/telegram";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/stock/in")({
   component: StockInPage,
