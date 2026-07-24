@@ -24,6 +24,7 @@ import { RolesManager } from "@/components/roles-manager";
 import { TelegramTemplatesManager } from "@/components/telegram-templates";
 import { TelegramWebhookDiagnostics } from "@/components/telegram-webhook-diagnostics";
 import { ApiKeysManager } from "@/components/api-keys-manager";
+import { UserGuide } from "@/components/user-guide";
 import { useRole } from "@/hooks/use-role";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -48,7 +49,7 @@ function SettingsPage() {
   const canInitial = isSuperAdmin;
   const canDanger = isSuperAdmin;
 
-  const firstTab = canApp ? "general" : canTelegram ? "telegram" : canUsers ? "users" : "initial";
+  const firstTab = canApp ? "general" : canTelegram ? "telegram" : canUsers ? "users" : canInitial ? "initial" : "guide";
 
   return (
     <AppShell title="Pengaturan">
@@ -63,6 +64,7 @@ function SettingsPage() {
           {canUsers && <TabsTrigger value="roles">Role & Hak Akses</TabsTrigger>}
           {canDanger && <TabsTrigger value="api">API Eksternal</TabsTrigger>}
           {canInitial && <TabsTrigger value="initial">Setup Data Awal</TabsTrigger>}
+          <TabsTrigger value="guide">Panduan Penggunaan</TabsTrigger>
           {canDanger && <TabsTrigger value="danger">Danger Zone</TabsTrigger>}
         </TabsList>
         {canApp && <TabsContent value="general"><GeneralTab /></TabsContent>}
@@ -73,6 +75,7 @@ function SettingsPage() {
         {canUsers && <TabsContent value="roles"><RolesManager /></TabsContent>}
         {canDanger && <TabsContent value="api"><ApiKeysManager /></TabsContent>}
         {canInitial && <TabsContent value="initial"><InitialTab /></TabsContent>}
+        <TabsContent value="guide"><UserGuide /></TabsContent>
         {canDanger && <TabsContent value="danger"><DangerTab /></TabsContent>}
       </Tabs>
     </AppShell>
