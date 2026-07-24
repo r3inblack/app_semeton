@@ -28,7 +28,7 @@ function StockInPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("stock_in")
-        .select("occurred_at, qty, unit_price, total, suppliers(name), warehouses(name), products(name)")
+        .select("id, occurred_at, qty, unit_price, total, voided_at, void_reason, suppliers(name), warehouses(name), products(name)")
         .order("occurred_at", { ascending: false })
         .limit(20);
       return data ?? [];
