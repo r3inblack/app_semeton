@@ -18,10 +18,13 @@ export const Route = createFileRoute("/_authenticated/reports/expenses")({
 });
 
 type ExpenseRow = {
+  id: string;
   occurred_at: string;
   category: string;
   amount: number;
   note: string | null;
+  voided_at: string | null;
+  void_reason: string | null;
 };
 
 function ExpensesReportPage() {
