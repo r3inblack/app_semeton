@@ -24,6 +24,7 @@ import { RolesManager } from "@/components/roles-manager";
 import { TelegramTemplatesManager } from "@/components/telegram-templates";
 import { TelegramWebhookDiagnostics } from "@/components/telegram-webhook-diagnostics";
 import { ApiKeysManager } from "@/components/api-keys-manager";
+import { UserGuide } from "@/components/user-guide";
 import { useRole } from "@/hooks/use-role";
 
 export const Route = createFileRoute("/_authenticated/settings")({
