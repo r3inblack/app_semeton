@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR, fmtNum } from "@/lib/format";
 import { sendTransactionNotification } from "@/lib/telegram";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/supplier/returns")({
   component: Page,
@@ -25,7 +26,7 @@ function Page() {
     queryFn: async () => {
       const { data } = await supabase
         .from("supplier_returns" as any)
-        .select("occurred_at, qty, unit_price, total, note, suppliers(name), warehouses(name), products(name)")
+        .select("id, occurred_at, qty, unit_price, total, note, voided_at, void_reason, suppliers(name), warehouses(name), products(name)")
         .order("occurred_at", { ascending: false })
         .limit(20);
       return data ?? [];
@@ -78,10 +79,11 @@ function Page() {
               <TableHead>Waktu</TableHead><TableHead>Supplier</TableHead><TableHead>Gudang</TableHead>
               <TableHead>Produk</TableHead><TableHead className="text-right">Qty</TableHead>
               <TableHead className="text-right">Harga Beli</TableHead><TableHead className="text-right">Total</TableHead>
+              <TableHead className="text-right">Aksi</TableHead>
             </TableRow></TableHeader>
             <TableBody>
               {(history.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} className={r.voided_at ? "opacity-50" : ""}>
                   <TableCell>{fmtDate(r.occurred_at)}</TableCell>
                   <TableCell>{r.suppliers?.name}</TableCell>
                   <TableCell>{r.warehouses?.name}</TableCell>
@@ -89,6 +91,9 @@ function Page() {
                   <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
                   <TableCell className="text-right">{fmtIDR(r.unit_price)}</TableCell>
                   <TableCell className="text-right">{fmtIDR(r.total)}</TableCell>
+                  <TableCell className="text-right">
+                    <VoidButton table="supplier_returns" id={r.id} voidedAt={r.voided_at} voidReason={r.void_reason} />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

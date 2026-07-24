@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { fmtDate, fmtIDR, fmtNum } from "@/lib/format";
 import { useRole } from "@/hooks/use-role";
 import { sendPricingNotification, sendTransactionNotification } from "@/lib/telegram";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/stock/in")({
   component: StockInPage,
@@ -27,7 +28,7 @@ function StockInPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("stock_in")
-        .select("occurred_at, qty, unit_price, total, suppliers(name), warehouses(name), products(name)")
+        .select("id, occurred_at, qty, unit_price, total, voided_at, void_reason, suppliers(name), warehouses(name), products(name)")
         .order("occurred_at", { ascending: false })
         .limit(20);
       return data ?? [];
@@ -132,17 +133,23 @@ function StockInPage() {
                 <TableHead>Produk</TableHead>
                 <TableHead className="text-right">Qty</TableHead>
                 {!isGudang && <TableHead className="text-right">Total</TableHead>}
+                {!isGudang && <TableHead className="text-right">Aksi</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {(history.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} className={r.voided_at ? "opacity-50" : ""}>
                   <TableCell>{fmtDate(r.occurred_at)}</TableCell>
                   <TableCell>{r.suppliers?.name}</TableCell>
                   <TableCell>{r.warehouses?.name}</TableCell>
                   <TableCell>{r.products?.name}</TableCell>
                   <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
                   {!isGudang && <TableCell className="text-right">{fmtIDR(r.total)}</TableCell>}
+                  {!isGudang && (
+                    <TableCell className="text-right">
+                      <VoidButton table="stock_in" id={r.id} voidedAt={r.voided_at} voidReason={r.void_reason} />
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtNum } from "@/lib/format";
 import { sendTransactionNotification } from "@/lib/telegram";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/stock/mutations")({
   component: MutationPage,
@@ -23,7 +24,7 @@ function MutationPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("stock_mutations")
-        .select("occurred_at, qty, from_warehouse:warehouses!stock_mutations_from_warehouse_id_fkey(name), to_warehouse:warehouses!stock_mutations_to_warehouse_id_fkey(name), products(name)")
+        .select("id, occurred_at, qty, voided_at, void_reason, from_warehouse:warehouses!stock_mutations_from_warehouse_id_fkey(name), to_warehouse:warehouses!stock_mutations_to_warehouse_id_fkey(name), products(name)")
         .order("occurred_at", { ascending: false })
         .limit(20);
       return data ?? [];
@@ -64,16 +65,19 @@ function MutationPage() {
           <h3 className="font-semibold mb-3">Riwayat Terbaru</h3>
           <Table>
             <TableHeader><TableRow>
-              <TableHead>Waktu</TableHead><TableHead>Dari</TableHead><TableHead>Ke</TableHead><TableHead>Produk</TableHead><TableHead className="text-right">Qty</TableHead>
+              <TableHead>Waktu</TableHead><TableHead>Dari</TableHead><TableHead>Ke</TableHead><TableHead>Produk</TableHead><TableHead className="text-right">Qty</TableHead><TableHead className="text-right">Aksi</TableHead>
             </TableRow></TableHeader>
             <TableBody>
               {(history.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} className={r.voided_at ? "opacity-50" : ""}>
                   <TableCell>{fmtDate(r.occurred_at)}</TableCell>
                   <TableCell>{r.from_warehouse?.name}</TableCell>
                   <TableCell>{r.to_warehouse?.name}</TableCell>
                   <TableCell>{r.products?.name}</TableCell>
                   <TableCell className="text-right">{fmtNum(r.qty)}</TableCell>
+                  <TableCell className="text-right">
+                    <VoidButton table="stock_mutations" id={r.id} voidedAt={r.voided_at} voidReason={r.void_reason} />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

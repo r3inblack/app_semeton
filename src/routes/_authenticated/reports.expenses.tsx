@@ -11,16 +11,20 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { fmtDate, fmtIDR } from "@/lib/format";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/reports/expenses")({
   component: ExpensesReportPage,
 });
 
 type ExpenseRow = {
+  id: string;
   occurred_at: string;
   category: string;
   amount: number;
   note: string | null;
+  voided_at: string | null;
+  void_reason: string | null;
 };
 
 function ExpensesReportPage() {
@@ -51,7 +55,7 @@ function ExpensesReportPage() {
     queryFn: async () => {
       let query: any = (supabase as any)
         .from("expenses")
-        .select("occurred_at, category, amount, note")
+        .select("id, occurred_at, category, amount, note, voided_at, void_reason")
         .order("occurred_at", { ascending: false })
         .limit(1000);
       if (from) query = query.gte("occurred_at", from);
@@ -108,20 +112,24 @@ function ExpensesReportPage() {
                   <TableHead>Kategori</TableHead>
                   <TableHead>Catatan</TableHead>
                   <TableHead className="text-right">Nominal</TableHead>
+                  <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {(q.data ?? []).map((r, i) => (
-                  <TableRow key={i}>
+                  <TableRow key={i} className={r.voided_at ? "opacity-50" : ""}>
                     <TableCell>{fmtDate(r.occurred_at)}</TableCell>
                     <TableCell>{r.category}</TableCell>
                     <TableCell>{r.note ?? "-"}</TableCell>
                     <TableCell className="text-right text-rose-600">{fmtIDR(r.amount)}</TableCell>
+                    <TableCell className="text-right">
+                      <VoidButton table="expenses" id={r.id} voidedAt={r.voided_at} voidReason={r.void_reason} />
+                    </TableCell>
                   </TableRow>
                 ))}
                 {!q.data?.length && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    <TableCell colSpan={5} className="text-center text-muted-foreground">
                       {q.isLoading ? "Memuat..." : "Tidak ada data"}
                     </TableCell>
                   </TableRow>

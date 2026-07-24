@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate, fmtIDR } from "@/lib/format";
 import { sendTransactionNotification } from "@/lib/telegram";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
   component: Page,
@@ -32,7 +33,7 @@ function Page() {
     queryFn: async () => {
       const { data } = await supabase
         .from("expenses")
-        .select("occurred_at, category, amount, note")
+        .select("id, occurred_at, category, amount, note, voided_at, void_reason")
         .order("occurred_at", { ascending: false })
         .limit(20);
       return data ?? [];
@@ -71,15 +72,18 @@ function Page() {
           <h3 className="font-semibold mb-3">Riwayat Pengeluaran</h3>
           <Table>
             <TableHeader><TableRow>
-              <TableHead>Waktu</TableHead><TableHead>Kategori</TableHead><TableHead className="text-right">Nominal</TableHead><TableHead>Catatan</TableHead>
+              <TableHead>Waktu</TableHead><TableHead>Kategori</TableHead><TableHead className="text-right">Nominal</TableHead><TableHead>Catatan</TableHead><TableHead className="text-right">Aksi</TableHead>
             </TableRow></TableHeader>
             <TableBody>
               {(history.data ?? []).map((r: any, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} className={r.voided_at ? "opacity-50" : ""}>
                   <TableCell>{fmtDate(r.occurred_at)}</TableCell>
                   <TableCell>{r.category}</TableCell>
                   <TableCell className="text-right">{fmtIDR(r.amount)}</TableCell>
                   <TableCell>{r.note ?? "-"}</TableCell>
+                  <TableCell className="text-right">
+                    <VoidButton table="expenses" id={r.id} voidedAt={r.voided_at} voidReason={r.void_reason} />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
