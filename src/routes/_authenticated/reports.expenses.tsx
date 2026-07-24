@@ -55,7 +55,7 @@ function ExpensesReportPage() {
     queryFn: async () => {
       let query: any = (supabase as any)
         .from("expenses")
-        .select("occurred_at, category, amount, note")
+        .select("id, occurred_at, category, amount, note, voided_at, void_reason")
         .order("occurred_at", { ascending: false })
         .limit(1000);
       if (from) query = query.gte("occurred_at", from);
