@@ -11,6 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { fmtDate, fmtIDR } from "@/lib/format";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/reports/expenses")({
   component: ExpensesReportPage,
