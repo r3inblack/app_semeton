@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useList } from "@/lib/list-hooks";
 import { fmtDate, fmtIDR, fmtNum } from "@/lib/format";
+import { VoidButton } from "@/components/void-button";
 
 export const Route = createFileRoute("/_authenticated/reports/returns")({
   component: Page,
