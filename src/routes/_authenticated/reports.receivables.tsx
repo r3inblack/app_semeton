@@ -14,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/reports/receivables")({
           <ReportTable<any>
             queryKey="rep_sales"
             table="sales"
+            voidTable="sales"
             select="occurred_at, qty, total, customers(name), products(name)"
             columns={[
               { header: "Waktu", cell: (r) => fmtDate(r.occurred_at) },
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/_authenticated/reports/receivables")({
           <ReportTable<any>
             queryKey="rep_pay"
             table="customer_payments"
+            voidTable="customer_payments"
             select="occurred_at, amount, note, customers(name)"
             columns={[
               { header: "Waktu", cell: (r) => fmtDate(r.occurred_at) },
