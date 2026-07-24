@@ -20,6 +20,7 @@ export const Route = createFileRoute("/_authenticated/reports/cashflow")({
           { header: "Catatan", cell: (r) => r.description ?? "-" },
         ]}
       />
+      <p className="text-xs text-muted-foreground mt-2">Catatan: pergerakan kas dihasilkan dari transaksi. Untuk membatalkan, buka laporan/menu transaksi sumbernya.</p>
     </AppShell>
   ),
 });
